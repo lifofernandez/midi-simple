@@ -1,0 +1,53 @@
+########################################
+# Track
+nombre: Bajo
+canal: 33
+
+########################################
+# Alturas
+
+tonica: 60
+octava: -1 
+escalas: 
+  - &A
+    nombre: Chromatica
+    alturas: [0,1,2,3,4,5,6,7,8,9,10,11,12]
+  - &B
+    nombre: Diatonica Mayor 
+    alturas: [0,2,4,5,7,9,11]
+  - &C
+    nombre: Diatonica Menor
+    alturas: [0,2,3,5,7,8,10,12]
+  - &D
+    nombre: Pentatonica Menor
+    alturas: [0,2,3,5,7]
+escala: *D
+
+
+########################################
+# Duracion
+
+duraciones: [ .5,.5 ]
+overlap: 10
+
+
+########################################
+# Dinamica
+
+dinamicas: [ .9, .75, ] 
+# cantidad_dinamicas: scalar @dinamicas
+
+
+########################################
+# Secuencia de alturas [ @altura[ n ] ]
+
+motivos:
+  - &A
+    orden: [1,5,3] 
+  - &B
+    modificadores: ["reverse"] 
+    orden: [5,3,"5 -12"] 
+  - &C
+    orden: ["5 -12","1 -2" ,"1 -1"] 
+secuencia: [ *A, *B, *A, *C ] 
+repeticiones: 12
