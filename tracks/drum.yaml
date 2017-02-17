@@ -1,0 +1,43 @@
+########################################
+# Track
+
+nombre: Bateria
+canal: 10 
+programa: 10 
+
+
+########################################
+# Alturas
+
+tonica: 35
+octava: 0 
+escalas: 
+  - &A
+    nombre: Cromatica
+    alturas: [0,1,2,3,4,5,6,7,8,9,10,11]
+escala: *A
+
+
+########################################
+# Duracion
+
+duraciones: [1,1]
+retraso: 1 
+
+
+########################################
+# Dinamica
+
+dinamicas: [1] 
+piso: 1 
+variacion: 0 
+
+
+########################################
+# Secuencia de alturas [ @altura[ n ] ]
+
+motivos:
+  - &A
+    orden: [1] 
+secuencia: [ *A ] 
+repeticiones: 12
