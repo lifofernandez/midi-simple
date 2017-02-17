@@ -52,6 +52,6 @@ motivos:
     modificadores: ["reverse"] 
     orden: [5,3,5] 
   - &C
-    orden: [4,"1 -2" ,"1 -1"] 
-secuencia: [ *A, *B, *A, *C ] 
+    orden: [4,"1 -2","1 -1"] 
+secuencia_motivica: [ *A, *B, *A, *C ] 
 repeticiones: 12

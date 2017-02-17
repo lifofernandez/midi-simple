@@ -9,10 +9,10 @@ use YAML::XS 'LoadFile';
 ########################################
 # General setup
 
-my $pulso = 1000_000; # milisecs 
+my $pulso = 600_000; # milisecs 
 my @confs = ( 
-    'tracks/drum.yaml',
-    #   'tracks/bajo.yaml',
+   'tracks/drum.yaml',
+#    'tracks/bajo.yaml',
 );
 my @tracks;
 
@@ -21,11 +21,10 @@ foreach ( @confs ){
     
     ########################################
     # load track from YAML
-    # my $conf = LoadFile( 'tracks/bajo.yaml' );
     my $conf = LoadFile( $_ );
     
     # Track Setup
-    say $conf->{ nombre };
+    my $nombre = $conf->{ nombre };
     my $canal = $conf->{ canal };
     my $programa = $conf->{ programa };
     
@@ -35,9 +34,14 @@ foreach ( @confs ){
     
     my $tonica = $conf->{ tonica };
     my $octava = $conf->{ octava };
-    my @escala = @{ $conf->{ escala }{ alturas } };
+
+
+    my @escala = map { 
+        eval $_ 
+    } @{ $conf->{ escala }{ alturas } };
+
     my @alturas = map { 
-        $_ + $tonica + ( 12 * $octava ) 
+        eval $_ + $tonica + ( 12 * $octava ) 
     } @escala;
     my $cantidad_alturas = scalar @alturas;
     
@@ -56,14 +60,14 @@ foreach ( @confs ){
     
     my @dinamicas = @{ $conf->{ dinamicas } }; 
     my $cantidad_dinamicas = scalar @dinamicas;
-    my $piso = $conf->{ piso }; 
     my $variacion = $conf->{ variacion }; 
+    my $piso = $conf->{ piso }; 
     
     
     ########################################
     # Secuencia de alturas ( @altura[ n ] )
     
-    my @motivios = @{ $conf->{ secuencia } };
+    my @motivios = @{ $conf->{ secuencia_motivica } };
     my $repeticiones = $conf->{ repeticiones };
     
     my @secuencia;  
@@ -71,15 +75,16 @@ foreach ( @confs ){
         push @secuencia,  @{ $_->{ orden } };
     }
     push @secuencia, ( @secuencia ) x $repeticiones;
-    
+    print Dumper( @secuencia ); 
     
     ########################################
     # Construir 
     
     # Setup
     my @events = (
-        [ 'set_tempo', 0, $pulso ], # 1qn = 1000 miliseconds
-        [ 'patch_change', 1, $canal, $programa ], # 1qn = 1000 miliseconds
+        [ 'set_tempo', 0, $pulso ], 
+        [ 'text_event', 0, "Track: ".$nombre ], 
+        [ 'patch_change', 0, $canal, $programa ], 
     );
     
     my $index = 0;
@@ -94,8 +99,7 @@ foreach ( @confs ){
         my $altura = @alturas[ ( $delta - 1) % $cantidad_alturas ] + $transpo;
         my $duracion = 96 * @duraciones[ $index % $cantidad_duraciones ] ;
         my $dinamica = 127 * @dinamicas[ $index % $cantidad_dinamicas ] ;
-	# my $compresion = $piso + rand ( $variacion ); # variacion y compresion dinamica 
-        my $compresion = $piso; # variacion y compresion dinamica 
+	my $compresion = $piso + rand ( $variacion );
         push @events, (
 	    [ 'note_on' , $retraso, $canal, $altura, $dinamica * $compresion ],
 	    [ 'note_off', $duracion, $canal, $altura, 0 ]
@@ -109,7 +113,6 @@ foreach ( @confs ){
     push @tracks, $track;
 
 }
-print Dumper( @tracks);
 my $opus = MIDI::Opus->new({
     'format' => 1, 
     'tracks' => \@tracks 

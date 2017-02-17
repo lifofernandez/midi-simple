@@ -2,26 +2,27 @@
 # Track
 
 nombre: Bateria
-canal: 10 
+canal: 9
 programa: 10 
 
 
 ########################################
 # Alturas
 
-tonica: 35
+tonica: 35 # C0 Acoustic Bass Drum
 octava: 0 
 escalas: 
   - &A
     nombre: Cromatica
-    alturas: [0,1,2,3,4,5,6,7,8,9,10,11]
+    alturas: ["0..11"]
 escala: *A
 
 
 ########################################
 # Duracion
 
-duraciones: [1,1]
+# duraciones: [0.25,0.75]
+duraciones: [1]
 retraso: 1 
 
 
@@ -29,8 +30,8 @@ retraso: 1
 # Dinamica
 
 dinamicas: [1] 
-piso: 1 
-variacion: 0 
+piso: .8 
+variacion: .2
 
 
 ########################################
@@ -38,6 +39,6 @@ variacion: 0
 
 motivos:
   - &A
-    orden: [1] 
-secuencia: [ *A ] 
+    orden: [1,4] 
+secuencia_motivica: [ *A ] 
 repeticiones: 12
