@@ -46,11 +46,11 @@ variacion: .2
 # Secuencia de alturas [ @altura[ n ] ]
 
 motivos:
-  - &A
+  - &a
     orden: [1,2,3] 
-  - &B
-    modis: ["reverse"] 
+  - &b
+    reverse: true 
     orden: [1,3,5] 
-secuencia_motivica: [ *A, *B ] 
+secuencia_motivica: [ *a, *b ] 
 repeticiones: 12
 

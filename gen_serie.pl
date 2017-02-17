@@ -75,15 +75,13 @@ foreach ( @confs ){
 	my @motivo = @{ $_->{ orden } };
 
         # manipulacion motivica
-	if( $_->{ modis } ){
-            # my %modis = map { $_ = 1 } @{ $_->{ modis } };
-            my @modis = @{ $_->{ modis } };
-	    if ( grep( /^reverse/,@modis ) ){
-	        @motivo = reverse @motivo; 
-	    } 
-	}
+
+	if ( $_->{ reverse } ){
+	    @motivo = reverse @motivo; 
+	} 
         push @secuencia, @motivo;
     }
+    
     push @secuencia, ( @secuencia ) x $repeticiones;
     print Dumper( @secuencia ); 
     
@@ -107,7 +105,7 @@ foreach ( @confs ){
     	    $transpo
         ) = split;
 
-        my $altura = @escala[ ( $delta - 1) % $cantidad_alturas ] + $transpo;
+        my $altura = @escala[ ( $delta - 1 ) % $cantidad_alturas ] + $transpo;
 
         my $duracion = 96 * @duraciones[ $index % $cantidad_duraciones ] ;
         my $dinamica = 127 * @dinamicas[ $index % $cantidad_dinamicas ] ;
@@ -125,10 +123,10 @@ foreach ( @confs ){
     push @tracks, $track;
 
 }
+
 my $opus = MIDI::Opus->new({
     'format' => 1, 
     'tracks' => \@tracks 
 });
-
 $opus->write_to_file( 'output/melody.mid' );
 
