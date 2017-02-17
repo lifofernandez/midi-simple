@@ -9,10 +9,10 @@ use YAML::XS 'LoadFile';
 ########################################
 # General setup
 
-my $pulso = 600_000; # milisecs 
+my $pulso = 600_000; # mili
 my @confs = ( 
    'tracks/drum.yaml',
-#    'tracks/bajo.yaml',
+   'tracks/bajo.yaml',
 );
 my @tracks;
 
@@ -20,10 +20,10 @@ my @tracks;
 foreach ( @confs ){
     
     ########################################
-    # load track from YAML
+    # Load track from YAML
     my $conf = LoadFile( $_ );
     
-    # Track Setup
+    # Track setup
     my $nombre = $conf->{ nombre };
     my $canal = $conf->{ canal };
     my $programa = $conf->{ programa };
@@ -35,15 +35,15 @@ foreach ( @confs ){
     my $tonica = $conf->{ tonica };
     my $octava = $conf->{ octava };
 
-
-    my @escala = map { 
-        eval $_ 
+    # Revisar esto, espara soportar rangos 
+    my @alturas = map { 
+        eval $_  
     } @{ $conf->{ escala }{ alturas } };
 
-    my @alturas = map { 
-        eval $_ + $tonica + ( 12 * $octava ) 
-    } @escala;
-    my $cantidad_alturas = scalar @alturas;
+    my @escala = map { 
+        $_ + $tonica + ( 12 * $octava ) 
+    } @alturas;
+    my $cantidad_alturas = scalar @escala;
     
     
     ########################################
@@ -52,7 +52,7 @@ foreach ( @confs ){
     my @duraciones = @{ $conf->{ duraciones } };
     my $cantidad_duraciones = scalar @duraciones;
     my $retraso = $conf->{ retraso }; 
-    # To do: note end overlap
+    # To do: superposicion de las notas
     
     
     ########################################
@@ -65,14 +65,24 @@ foreach ( @confs ){
     
     
     ########################################
-    # Secuencia de alturas ( @altura[ n ] )
+    # Secuencia de alturas ( @escala[ n ] )
     
-    my @motivios = @{ $conf->{ secuencia_motivica } };
+    my @motivos = @{ $conf->{ secuencia_motivica } };
     my $repeticiones = $conf->{ repeticiones };
     
     my @secuencia;  
-    foreach ( @motivios ){
-        push @secuencia,  @{ $_->{ orden } };
+    foreach ( @motivos ){
+	my @motivo = @{ $_->{ orden } };
+
+        # manipulacion motivica
+	if( $_->{ modis } ){
+            # my %modis = map { $_ = 1 } @{ $_->{ modis } };
+            my @modis = @{ $_->{ modis } };
+	    if ( grep( /^reverse/,@modis ) ){
+	        @motivo = reverse @motivo; 
+	    } 
+	}
+        push @secuencia, @motivo;
     }
     push @secuencia, ( @secuencia ) x $repeticiones;
     print Dumper( @secuencia ); 
@@ -94,9 +104,11 @@ foreach ( @confs ){
     ){
         my ( 
             $delta, # posicion en las lista de alturas
-    	$transpo
+    	    $transpo
         ) = split;
-        my $altura = @alturas[ ( $delta - 1) % $cantidad_alturas ] + $transpo;
+
+        my $altura = @escala[ ( $delta - 1) % $cantidad_alturas ] + $transpo;
+
         my $duracion = 96 * @duraciones[ $index % $cantidad_duraciones ] ;
         my $dinamica = 127 * @dinamicas[ $index % $cantidad_dinamicas ] ;
 	my $compresion = $piso + rand ( $variacion );

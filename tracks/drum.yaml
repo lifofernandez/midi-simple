@@ -14,7 +14,7 @@ octava: 0
 escalas: 
   - &A
     nombre: Cromatica
-    alturas: ["0..11"]
+    alturas: ["0..54"]
 escala: *A
 
 
@@ -42,3 +42,4 @@ motivos:
     orden: [1,4] 
 secuencia_motivica: [ *A ] 
 repeticiones: 12
+
