@@ -1,4 +1,9 @@
 #!/usr/bin/env perl
+# MIDI  sequencer
+# 
+# Lisandro Fernández 2017
+
+
 
 use feature 'say';
 use strict;
@@ -10,9 +15,11 @@ use YAML::XS 'LoadFile';
 # General setup
 
 my $pulso = 600_000; # mili
+my $tic = 240; 
 my @confs = ( 
-   'tracks/drum.yaml',
-   'tracks/bajo.yaml',
+   'tracks/drums.yml',
+   'tracks/cymbals.yml',
+   'tracks/bajo.yml',
 );
 my @tracks;
 
@@ -75,9 +82,11 @@ foreach ( @confs ){
 	my @motivo = @{ $_->{ orden } };
 
         # manipulacion motivica
-
 	if ( $_->{ reverse } ){
-	    @motivo = reverse @motivo; 
+	     @motivo = reverse @motivo; 
+	} 
+	if ( $_->{ matriz } ){
+             #    @motivo = reverse @motivo; 
 	} 
         push @secuencia, @motivo;
     }
@@ -96,6 +105,7 @@ foreach ( @confs ){
     );
     
     my $index = 0;
+    my $momento = 0;
     foreach ( 
     	# reverse
     	@secuencia 
@@ -106,14 +116,19 @@ foreach ( @confs ){
         ) = split;
 
         my $altura = @escala[ ( $delta - 1 ) % $cantidad_alturas ] + $transpo;
-
-        my $duracion = 96 * @duraciones[ $index % $cantidad_duraciones ] ;
-        my $dinamica = 127 * @dinamicas[ $index % $cantidad_dinamicas ] ;
+        
+	my $duracion   =  $tic * @duraciones[ $index % $cantidad_duraciones ] ;
+	my $dinamica   = 127 * @dinamicas[ $index % $cantidad_dinamicas ] ;
 	my $compresion = $piso + rand ( $variacion );
+	
+	my $inicio = $retraso;
+	my $final  = $duracion;
+
         push @events, (
-	    [ 'note_on' , $retraso, $canal, $altura, $dinamica * $compresion ],
-	    [ 'note_off', $duracion, $canal, $altura, 0 ]
+	    [ 'note_on' , $inicio, $canal, $altura, $dinamica * $compresion ],
+	    [ 'note_off', $final, $canal, $altura, 0 ]
         );
+	$momento += $duracion;
         $index++;
     }
     
@@ -126,6 +141,7 @@ foreach ( @confs ){
 
 my $opus = MIDI::Opus->new({
     'format' => 1, 
+    'ticks' => $tic,
     'tracks' => \@tracks 
 });
 $opus->write_to_file( 'output/melody.mid' );

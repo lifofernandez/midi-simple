@@ -31,13 +31,13 @@ escala: *D
 # Duracion
 
 duraciones: [1,.5,.5]
-retraso: 1
+retraso: 0 
 
 
 ########################################
 # Dinamica
 
-dinamicas: [.9,.75] 
+dinamicas: [0,.9,.75] 
 piso: .8 
 variacion: .2 
 
