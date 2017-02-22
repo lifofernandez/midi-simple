@@ -110,27 +110,34 @@ foreach ( @confs ){
 	     $componente{ "altura" } = $nota_altura;
 	     $componente{ "duracion" } =  1; 
 	     $componente{ "dinamica" } = .5;
+    #     my $duracion   = $tic * @duraciones[ $index % $cantidad_duraciones ];
+    #     my $dinamica   = 127 * @dinamicas[ $index % $cantidad_dinamicas ];
+    #     my $compresion = $piso + rand ( $variacion );
+    #     
+    #     my $inicio = $retraso;
+    #     my $final  = $duracion;
+
 	     
 	     push @componentes, %componente;
         }	
-	$motivos{ $this_id }->{ "componentes" } = @componentes; 
+	$motivos{ $this_id }{ "componentes" } = \@componentes; 
 
-	# push @motivos, %motivo ;
     }
     
 
     ########################################
-    # Poner motivos en secuencia ( array de motivos ) 
+    # Secuenciar motivos ( array de motivos ) 
     # nota: Add super especial feture: control de  gap/superposicion entre motivos
     
-    my $repeticiones = 
+    # my $repeticiones = 
 
     my @secuencia;  
     foreach( @{ $conf->{ secuencia_motivica } } ){
-        say $_
-	push @secuencia, 
+        my $id =  $_;
+	push @secuencia, %motivos{ $id }->{ "componentes"}  ;
     }
-    # push @secuencia, ( @secuencia ) x $conf->{ repeticiones };
+    # print Dumper( @secuencia );
+    push @secuencia, ( @secuencia ) x $conf->{ repeticiones };
     
     ########################################
     # Convertir Secuencia a MIDI::Events 
@@ -143,31 +150,19 @@ foreach ( @confs ){
     );
     
     my $index = 0;
-    # foreach ( 
-    # 	# reverse
-    # 	@secuencia 
-    # ){
-    #     my ( 
-    #         $delta, # posicion en las lista de alturas
-    # 	      $transpo
-    #     ) = split;
-
-    #     # Toda esta opereta la voy a pasr al motivo
-    #     my $altura = @escala[ ( $delta - 1 ) % $cantidad_alturas ] + $transpo;
-    #     
-    #     my $duracion   = $tic * @duraciones[ $index % $cantidad_duraciones ];
-    #     my $dinamica   = 127 * @dinamicas[ $index % $cantidad_dinamicas ];
-    #     my $compresion = $piso + rand ( $variacion );
-    #     
-    #     my $inicio = $retraso;
-    #     my $final  = $duracion;
-
+    foreach ( 
+     	# reverse
+     	@secuencia 
+    ){
+        my %nota = $_;
+        print Dumper(  %nota );
     #     push @events, (
     #         [ 'note_on' , $inicio, $canal, $altura, $dinamica * $compresion ],
     #         [ 'note_off', $final,  $canal, $altura, 0 ]
     #     );
     #     $index++;
-    # }
+
+    }
      
     my $track = MIDI::Track->new({ 
         'events' => \@events 
