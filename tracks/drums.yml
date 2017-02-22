@@ -1,38 +1,27 @@
 ########################################
-# Track
 
-nombre: Bateria
+# General Track Configs
+nombre: Tambores
 canal: 9
 programa: 10 
 
-
-########################################
 # Alturas
-
 tonica: 35 # C0 Acoustic Bass Drum
 octava: 0 
 escalas: 
   - &A
     nombre: Cromatica
-    alturas: ["0..54"]
-escala: *A
+    notas: ["0..54"]
+alturas: *A
 
-
-########################################
 # Duracion
-
-# duraciones: [0.25,0.75]
 duraciones: [1]
 retraso: 0 
 
-
-########################################
 # Dinamica
-
 dinamicas: [1] 
 piso: .9 
 variacion: .1
-
 
 ########################################
 # Secuencia de alturas [ @altura[ n ] ]

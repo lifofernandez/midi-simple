@@ -1,14 +1,11 @@
 ########################################
-# Track
 
-nombre: Bateria
+# General Track Configs
+nombre: Platillos
 canal: 9
 programa: 10 
 
-
-########################################
 # Alturas
-
 tonica: 0 # C0 Acoustic Bass Drum
 octava: 0 
 escalas: 
@@ -17,22 +14,14 @@ escalas:
     alturas: ["42,44,46"]
 escala: *A
 
-
-########################################
-# Duracion
-
-# duraciones: [0.25,0.75]
+# Duraciones
 duraciones: [.25]
 retraso: 0  
 
-
-########################################
 # Dinamica
-
-dinamicas: [1] 
+dinamicas: [.87,.8,.93] 
 piso: .9 
 variacion: .1
-
 
 ########################################
 # Secuencia de alturas [ @altura[ n ] ]

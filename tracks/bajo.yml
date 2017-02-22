@@ -1,43 +1,24 @@
 ########################################
-# Track
 
+# General Track Configs
 nombre: Bajo
 canal: 1 
 programa: 33
 
-
-########################################
 # Alturas
-
 tonica: 60
 octava: -2 
-escalas: 
-  - &A
-    nombre: Cromatica
-    alturas: [0,1,2,3,4,5,6,7,8,9,10,11]
-  - &B
-    nombre: Diatonica Mayor 
-    alturas: [0,2,4,5,7,9,11]
-  - &C
-    nombre: Diatonica Menor
-    alturas: [0,2,3,5,7,8,10,12]
-  - &D
+
+escala: 
     nombre: Pentatonica Menor
-    alturas: [0,2,3,5,7]
-escala: *D
+    notas: [0,2,3,5,7]
 
-
-########################################
 # Duracion
-
-duraciones: [1,.5,.5]
+duraciones: [.25]
 retraso: 0 
 
-
-########################################
 # Dinamica
-
-dinamicas: [0,.9,.75] 
+dinamicas: [.3,.9,.75] 
 piso: .8 
 variacion: .2 
 
@@ -46,11 +27,31 @@ variacion: .2
 # Secuencia de alturas [ @altura[ n ] ]
 
 motivos:
-  - &a
-    orden: [1,2,3] 
-  - &b
-    reverse: true 
+  - 
+    identificador: uno 
+    orden: [1,3,1,5,2,4,5,2] 
+  - 
+    identificador: dos
+    escala: 
+        nombre: Diatonica Menor
+        notas: [0,2,3,5,7,8,10]
+    tonica: 62 
+    octava: -1 
     orden: [1,3,5] 
-secuencia_motivica: [ *a, *b ] 
+    reverse: true 
+secuencia_motivica: [ "uno", "dos" ] 
 repeticiones: 12
 
+# escalas: 
+#   - &A
+#     nombre: Cromatica
+#     notas: [0,1,2,3,4,5,6,7,8,9,10,11]
+#   - &B
+#     nombre: Diatonica Mayor 
+#     notas: [0,2,4,5,7,9,11]
+#   - &C
+#     nombre: Diatonica Menor
+#     notas: [0,2,3,5,7,8,10,]
+#   - &D
+#     nombre: Pentatonica Menor
+#     notas: [0,2,3,5,7]
