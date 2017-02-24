@@ -49,15 +49,12 @@ foreach ( @confs ){
     my @alturas = map { 
         $_ + $tonica + ( 12 * $octava ) 
     } @escala;
-    my $cantidad_alturas = scalar @escala;
     
     my @duraciones = @{ $conf->{ duraciones } };
-    my $cantidad_duraciones = scalar @duraciones;
     my $retraso = $conf->{ retraso }; 
     # To do: superposicion de las notas
     
     my @dinamicas = @{ $conf->{ dinamicas } }; 
-    my $cantidad_dinamicas = scalar @dinamicas;
     my $piso = $conf->{ piso }; 
     my $variacion = $conf->{ variacion }; 
     
@@ -65,7 +62,7 @@ foreach ( @confs ){
     ########################################
     # Manipular y definir motivos 
 
-    my %motivos; 
+    my %motivos = (); 
     foreach( 
      	# reverse
      	@{ $conf->{ motivos } }
@@ -90,38 +87,48 @@ foreach ( @confs ){
         my @this_alturas = map { 
             $_ + $this_tonica + ( 12 * $this_octava ) 
         } @this_escala;
+	print Dumper(@this_escala);
 
 	my @this_duraciones = %temp{ "duraciones"} ? %temp{ "duraciones" } : @duraciones;
-
 	my @this_dinamicas = %temp{ "dinamicas" }  ? %temp{ "dinamicas" } : @dinamicas;
 	my $this_piso = %temp{ "piso" } ? %temp{ "piso" } : $piso;
 	my $this_variacion = %temp{ "variacion" } ? %temp{ "variacion" } : $variacion;
         
-	# Construir componentes ( altura, duración y dinámica )
-        my @componentes;
-	foreach( @{ %temp{ "orden" } } ){
+	# Construir componentes del motivo ( indice, altura, duración y dinámica )
+	
+
+	my $n = 1;
+        my @temp_comps = ();
+	foreach( @{ %temp{ "progresion" } } ){
              my ( 
                   $lector_altura, # posicion en las lista de alturas
          	  $ajuste
              ) = split;
-             my $nota_altura = @this_alturas[ ( $lector_altura - 1 ) % scalar @this_alturas ] + $ajuste;
 
-	     my %componente;
-	     $componente{ "altura" } = $nota_altura;
-	     $componente{ "duracion" } =  1; 
-	     $componente{ "dinamica" } = .5;
-    #     my $duracion   = $tic * @duraciones[ $index % $cantidad_duraciones ];
-    #     my $dinamica   = 127 * @dinamicas[ $index % $cantidad_dinamicas ];
-    #     my $compresion = $piso + rand ( $variacion );
-    #     
-    #     my $inicio = $retraso;
-    #     my $final  = $duracion;
-
+	     my $nota_altura = @this_alturas[ ( $lector_altura - 1 ) % scalar @this_alturas ] + $ajuste;
 	     
-	     push @componentes, %componente;
-        }	
-	$motivos{ $this_id }{ "componentes" } = \@componentes; 
 
+             #     my $duracion   = $tic * @duraciones[ $index % $cantidad_duraciones ];
+             #     my $dinamica   = 127 * @dinamicas[ $index % $cantidad_dinamicas ];
+             #     my $compresion = $piso + rand ( $variacion );
+             #     
+             #     my $inicio = $retraso;
+             #     my $final  = $duracion;
+
+	     my $componente = { 
+	        indice   => $n,
+	        altura   => $nota_altura,
+	        duracion => 1,
+	        dinamica => .5,
+             };
+	     
+	     push @temp_comps, $componente;
+	     $n++;
+        }	
+
+	my %componentes = @temp_comps;
+	# Agregar motivios
+	$motivos{ $this_id }{"componentes"}= \%componentes; 
     }
     
 
@@ -133,11 +140,12 @@ foreach ( @confs ){
 
     my @secuencia;  
     foreach( @{ $conf->{ secuencia_motivica } } ){
-        my $id =  $_;
-	push @secuencia, %motivos{ $id }->{ "componentes"}  ;
+         my $id =  $_;
+	 #print Dumper( %motivos{ $id} );
+         push @secuencia, %motivos{ $id }->{ "componentes"}  ;
     }
-    # print Dumper( @secuencia );
-    push @secuencia, ( @secuencia ) x $conf->{ repeticiones };
+    ## print Dumper( @secuencia );
+    # push @secuencia, ( @secuencia ) x $conf->{ repeticiones };
     
     ########################################
     # Convertir Secuencia a MIDI::Events 
@@ -154,8 +162,8 @@ foreach ( @confs ){
      	# reverse
      	@secuencia 
     ){
-        my %nota = $_;
-        print Dumper(  %nota );
+        my %nota = @{ $_ };
+        say %nota{"duracion"} ;
     #     push @events, (
     #         [ 'note_on' , $inicio, $canal, $altura, $dinamica * $compresion ],
     #         [ 'note_off', $final,  $canal, $altura, 0 ]

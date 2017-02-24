@@ -28,7 +28,7 @@ variacion: .1
 
 motivos:
   - &A
-    orden: [1,4] 
+    progresion: [1,4] 
 secuencia_motivica: [ *A ] 
 repeticiones: 12
 
