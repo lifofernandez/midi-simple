@@ -87,33 +87,32 @@ foreach ( @confs ){
         my @this_alturas = map { 
             $_ + $this_tonica + ( 12 * $this_octava ) 
         } @this_escala;
-	print Dumper(@this_escala);
 
-	my @this_duraciones = %temp{ "duraciones"} ? %temp{ "duraciones" } : @duraciones;
-	my @this_dinamicas = %temp{ "dinamicas" }  ? %temp{ "dinamicas" } : @dinamicas;
-	my $this_piso = %temp{ "piso" } ? %temp{ "piso" } : $piso;
-	my $this_variacion = %temp{ "variacion" } ? %temp{ "variacion" } : $variacion;
+	# my @this_duraciones = %temp{ "duraciones"} ? %temp{ "duraciones" } : @duraciones;
+	# my @this_dinamicas = %temp{ "dinamicas" }  ? %temp{ "dinamicas" } : @dinamicas;
+	# my $this_piso = %temp{ "piso" } ? %temp{ "piso" } : $piso;
+	# my $this_variacion = %temp{ "variacion" } ? %temp{ "variacion" } : $variacion;
         
-	# Construir componentes del motivo ( indice, altura, duración y dinámica )
-	
-
+	# Generar Componentes del motivo ( indice, altura, duración y dinámica )
 	my $n = 1;
         my @temp_comps = ();
-	foreach( @{ %temp{ "progresion" } } ){
+	for( @{ %temp{ "progresion" } } ){
              my ( 
-                  $lector_altura, # posicion en las lista de alturas
-         	  $ajuste
+                $lector_altura, # posicion en las lista de alturas
+         	$ajuste,
+		$repetir,
              ) = split;
 
-	     my $nota_altura = @this_alturas[ ( $lector_altura - 1 ) % scalar @this_alturas ] + $ajuste;
-	     
+	     my $nota_altura = @this_alturas[ ( $lector_altura - 1 ) % @this_alturas  ] + $ajuste;
+	     # add note repetition suport "while repetir...."
 
-             #     my $duracion   = $tic * @duraciones[ $index % $cantidad_duraciones ];
-             #     my $dinamica   = 127 * @dinamicas[ $index % $cantidad_dinamicas ];
-             #     my $compresion = $piso + rand ( $variacion );
-             #     
-             #     my $inicio = $retraso;
-             #     my $final  = $duracion;
+             #my $duracion   = $tic * @duraciones[ $index % $cantidad_duraciones ];
+             #my $dinamica   = 127 * @dinamicas[ $index % $cantidad_dinamicas ];
+	     # add silense suport
+             #my $compresion = $piso + rand ( $variacion );
+             #
+             #my $inicio = $retraso;
+             #my $final  = $duracion;
 
 	     my $componente = { 
 	        indice   => $n,
@@ -126,29 +125,17 @@ foreach ( @confs ){
 	     $n++;
         }	
 
-	my %componentes = @temp_comps;
-	# Agregar motivios
+
+	my %componentes; 
+	@componentes{ @temp_comps } = @temp_comps;
 	$motivos{ $this_id }{"componentes"}= \%componentes; 
     }
-    
 
     ########################################
     # Secuenciar motivos ( array de motivos ) 
-    # nota: Add super especial feture: control de  gap/superposicion entre motivos
-    
-    # my $repeticiones = 
-
-    my @secuencia;  
-    foreach( @{ $conf->{ secuencia_motivica } } ){
-         my $id =  $_;
-	 #print Dumper( %motivos{ $id} );
-         push @secuencia, %motivos{ $id }->{ "componentes"}  ;
-    }
-    ## print Dumper( @secuencia );
-    # push @secuencia, ( @secuencia ) x $conf->{ repeticiones };
-    
+    # nota: Add super especial feture: control de  gap/overlap motivos
+    # to do: agregar repticiones de secuencia
     ########################################
-    # Convertir Secuencia a MIDI::Events 
     
     # Setup
     my @events = (
@@ -158,20 +145,35 @@ foreach ( @confs ){
     );
     
     my $index = 0;
-    foreach ( 
-     	# reverse
-     	@secuencia 
+    for( 
+	 # reverse
+	 @{ $conf->{ secuencia_motivica } } 
+	 # x $conf->{ repeticiones }  
     ){
-        my %nota = @{ $_ };
-        say %nota{"duracion"} ;
-    #     push @events, (
-    #         [ 'note_on' , $inicio, $canal, $altura, $dinamica * $compresion ],
-    #         [ 'note_off', $final,  $canal, $altura, 0 ]
-    #     );
-    #     $index++;
+	 say ( $_ ); 
+         my %notas = %{ %motivos{ $_ }->{ "componentes" } }; 
+
+         # notas a MIDI::Events 
+         for my $nota ( keys %notas ){
+              my $altura = %notas{ $nota }->{ "altura" };
+	      
+              my $inicio = 0; 
+              my $final = $tic * %notas{ $nota }->{ "duracion" };
+
+              my $dinamica = 127 * %notas{ $nota }->{ "dinamica" };
+	      
+              push @events, (
+              #   [ 'note_on' , $inicio, $canal, $altura, $dinamica * $compresion ],
+                  [ 'note_on' , $inicio, $canal, $altura, $dinamica],
+                  [ 'note_off', $final,  $canal, $altura, 0 ]
+              );
+
+              $index++;
+    
+	 }
 
     }
-     
+   print Dumper( @events); 
     my $track = MIDI::Track->new({ 
         'events' => \@events 
     });

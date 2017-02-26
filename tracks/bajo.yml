@@ -28,8 +28,14 @@ variacion: .2
 
 motivos:
   - 
+    escala: 
+        nombre: Diatonica Menor
+        notas: [0,2,3]
+    identificador: "c"
+    progresion: [1,3] 
+  - 
     identificador: "a"
-    progresion: [1,3,1,5,2,4,5,2] 
+    progresion: [1,3,1,5,2,4,5,2,6] 
   - 
     identificador: "b"
     escala: 
@@ -39,7 +45,7 @@ motivos:
     octava: -1 
     progresion: [1,3,5,7,8] 
     reverse: true 
-secuencia_motivica: [ "a", "b" ] 
+secuencia_motivica: [ "a","b","b","a"] 
 repeticiones: 2
 
 # escalas: 
