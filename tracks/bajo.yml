@@ -19,7 +19,6 @@ retraso: 0
 
 # Dinamica
 dinamicas: [.3,.9,.75] 
-piso: .8 
 variacion: .2 
 
 
@@ -29,7 +28,7 @@ variacion: .2
 motivos:
   - 
     escala: 
-        nombre: Diatonica Menor
+        nombre: Triada Menor
         notas: [0,2,3]
     identificador: "c"
     progresion: [1,3] 
@@ -42,7 +41,7 @@ motivos:
         nombre: Diatonica Menor
         notas: [0,2,3,5,7,8,10]
     tonica: 62 
-    octava: -1 
+    octava: -2 
     progresion: [1,3,5,7,8] 
     reverse: true 
 secuencia_motivica: [ "a","b","b","a"] 

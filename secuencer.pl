@@ -137,7 +137,7 @@ foreach ( @confs ){
     # to do: agregar repticiones de secuencia
     ########################################
     
-    # Setup
+    # Track setup
     my @events = (
         [ 'set_tempo', 0, $pulso ], 
         [ 'text_event', 0, "Track: " . $nombre ], 
@@ -160,11 +160,11 @@ foreach ( @confs ){
               my $inicio = 0; 
               my $final = $tic * %notas{ $nota }->{ "duracion" };
 
-              my $dinamica = 127 * %notas{ $nota }->{ "dinamica" };
+              my $dinamica = 127 * %notas{ $nota }->{ "dinamica" } ;
+              my $random = ( 1 -  %notas{ $nota }->{ "variacion" } ) + rand( $variacion );
 	      
               push @events, (
-              #   [ 'note_on' , $inicio, $canal, $altura, $dinamica * $compresion ],
-                  [ 'note_on' , $inicio, $canal, $altura, $dinamica],
+                  [ 'note_on' , $inicio, $canal, $altura, $dinamica * $random ],
                   [ 'note_off', $final,  $canal, $altura, 0 ]
               );
 
@@ -173,7 +173,7 @@ foreach ( @confs ){
 	 }
 
     }
-   print Dumper( @events); 
+    print Dumper( @events); 
     my $track = MIDI::Track->new({ 
         'events' => \@events 
     });

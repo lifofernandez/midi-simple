@@ -20,7 +20,6 @@ retraso: 0
 
 # Dinamica
 dinamicas: [1] 
-piso: .9 
 variacion: .1
 
 ########################################
