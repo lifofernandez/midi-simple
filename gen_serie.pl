@@ -25,20 +25,19 @@ my @tracks;
 
 
 foreach ( @confs ){
-    
+
     ########################################
     # Load track from YAML
     my $conf = LoadFile( $_ );
-    
+
     # Track setup
     my $nombre = $conf->{ nombre };
     my $canal = $conf->{ canal };
     my $programa = $conf->{ programa };
-    
-    
+
     ########################################
     # Alturas
-    
+
     my $tonica = $conf->{ tonica };
     my $octava = $conf->{ octava };
 
@@ -51,87 +50,87 @@ foreach ( @confs ){
         $_ + $tonica + ( 12 * $octava ) 
     } @alturas;
     my $cantidad_alturas = scalar @escala;
-    
-    
+
+
     ########################################
     # Duracion
-    
+
     my @duraciones = @{ $conf->{ duraciones } };
     my $cantidad_duraciones = scalar @duraciones;
     my $retraso = $conf->{ retraso }; 
     # To do: superposicion de las notas
-    
-    
+
+
     ########################################
     # Dinamica
-    
+
     my @dinamicas = @{ $conf->{ dinamicas } }; 
     my $cantidad_dinamicas = scalar @dinamicas;
     my $variacion = $conf->{ variacion }; 
     my $piso = $conf->{ piso }; 
-    
-    
+
+
     ########################################
     # Secuencia de alturas ( @escala[ n ] )
-    
+
     my @motivos = @{ $conf->{ secuencia_motivica } };
     my $repeticiones = $conf->{ repeticiones };
-    
-    my @secuencia;  
+
+    my @secuencia;
     foreach ( @motivos ){
-	my @motivo = @{ $_->{ orden } };
+        my @motivo = @{ $_->{ orden } };
 
         # manipulacion motivica
-	if ( $_->{ reverse } ){
-	     @motivo = reverse @motivo; 
-	} 
-	if ( $_->{ matriz } ){
-             #    @motivo = reverse @motivo; 
-	} 
+        if ( $_->{ reverse } ){
+            @motivo = reverse @motivo; 
+        }
+        if ( $_->{ matriz } ){
+            #@motivo = reverse @motivo; 
+        }
         push @secuencia, @motivo;
     }
-    
+
     push @secuencia, ( @secuencia ) x $repeticiones;
     print Dumper( @secuencia ); 
-    
+
     ########################################
     # Construir 
-    
+
     # Setup
     my @events = (
         [ 'set_tempo', 0, $pulso ], 
         [ 'text_event', 0, "Track: ".$nombre ], 
         [ 'patch_change', 0, $canal, $programa ], 
     );
-    
+
     my $index = 0;
     my $momento = 0;
     foreach ( 
-    	# reverse
-    	@secuencia 
+        # reverse
+        @secuencia 
     ){
-        my ( 
+        my (
             $delta, # posicion en las lista de alturas
-    	    $transpo
+            $transpo
         ) = split;
 
         my $altura = @escala[ ( $delta - 1 ) % $cantidad_alturas ] + $transpo;
-        
-	my $duracion   =  $tic * @duraciones[ $index % $cantidad_duraciones ] ;
-	my $dinamica   = 127 * @dinamicas[ $index % $cantidad_dinamicas ] ;
-	my $compresion = $piso + rand ( $variacion );
-	
-	my $inicio = $retraso;
-	my $final  = $duracion;
+
+        my $duracion   = $tic * @duraciones[ $index % $cantidad_duraciones ] ;
+        my $dinamica   = 127 * @dinamicas[ $index % $cantidad_dinamicas ] ;
+        my $compresion = $piso + rand ( $variacion );
+
+        my $inicio = $tic * $retraso;
+        my $final  = $duracion;
 
         push @events, (
-	    [ 'note_on' , $inicio, $canal, $altura, $dinamica * $compresion ],
-	    [ 'note_off', $final, $canal, $altura, 0 ]
+            [ 'note_on' , $inicio, $canal, $altura, $dinamica * $compresion ],
+            [ 'note_off', $final, $canal, $altura, 0 ]
         );
-	$momento += $duracion;
+        $momento += $duracion;
         $index++;
     }
-    
+
     my $track = MIDI::Track->new({ 
         'events' => \@events 
     });
