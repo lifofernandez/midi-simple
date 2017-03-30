@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-# MIDI  sequencer
+# MIDI sequencer
 # 
 # Lisandro Fernández 2017
 
@@ -13,8 +13,9 @@ use YAML::XS 'LoadFile';
 
 ########################################
 # General setup
+my $bpm = 80;
 
-my $pulso = 600_000; # mili
+my $pulso = ( 1000 / $bpm ) . '_000'; # mili
 my $tic = 240; 
 my @confs = ( 
    'tracks/drums.yml',
@@ -41,12 +42,12 @@ foreach ( @confs ){
     my $tonica = $conf->{ tonica };
     my $octava = $conf->{ octava };
 
-    # Revisar esto, espara soportar rangos 
-    my @alturas = map { 
-        eval $_  
+    # Revisar esto (es para soportar rangos)
+    my @alturas = map {
+        eval $_
     } @{ $conf->{ escala }{ alturas } };
 
-    my @escala = map { 
+    my @escala = map {
         $_ + $tonica + ( 12 * $octava ) 
     } @alturas;
     my $cantidad_alturas = scalar @escala;
@@ -57,7 +58,7 @@ foreach ( @confs ){
 
     my @duraciones = @{ $conf->{ duraciones } };
     my $cantidad_duraciones = scalar @duraciones;
-    my $retraso = $conf->{ retraso }; 
+    my $retraso = $conf->{ retraso };
     # To do: superposicion de las notas
 
 
@@ -82,30 +83,30 @@ foreach ( @confs ){
 
         # manipulacion motivica
         if ( $_->{ reverse } ){
-            @motivo = reverse @motivo; 
+            @motivo = reverse @motivo;
         }
         if ( $_->{ matriz } ){
-            #@motivo = reverse @motivo; 
+            #@motivo = reverse @motivo;
         }
         push @secuencia, @motivo;
     }
 
     push @secuencia, ( @secuencia ) x $repeticiones;
-    print Dumper( @secuencia ); 
+    print Dumper( @secuencia );
 
     ########################################
-    # Construir 
+    # Construir
 
     # Setup
     my @events = (
-        [ 'set_tempo', 0, $pulso ], 
-        [ 'text_event', 0, "Track: ".$nombre ], 
-        [ 'patch_change', 0, $canal, $programa ], 
+        [ 'set_tempo', 0, $pulso ],
+        [ 'text_event', 0, "Track: ".$nombre ],
+        [ 'patch_change', 0, $canal, $programa ],
     );
 
     my $index = 0;
     my $momento = 0;
-    foreach ( 
+    foreach (
         # reverse
         @secuencia 
     ){
@@ -116,8 +117,8 @@ foreach ( @confs ){
 
         my $altura = @escala[ ( $delta - 1 ) % $cantidad_alturas ] + $transpo;
 
-        my $duracion   = $tic * @duraciones[ $index % $cantidad_duraciones ] ;
-        my $dinamica   = 127 * @dinamicas[ $index % $cantidad_dinamicas ] ;
+        my $duracion = $tic * @duraciones[ $index % $cantidad_duraciones ] ;
+        my $dinamica = 127 * @dinamicas[ $index % $cantidad_dinamicas ] ;
         my $compresion = $piso + rand ( $variacion );
 
         my $inicio = $tic * $retraso;
@@ -131,17 +132,16 @@ foreach ( @confs ){
         $index++;
     }
 
-    my $track = MIDI::Track->new({ 
-        'events' => \@events 
+    my $track = MIDI::Track->new({
+        'events' => \@events
     });
     push @tracks, $track;
-
 }
 
 my $opus = MIDI::Opus->new({
-    'format' => 1, 
+    'format' => 1,
     'ticks' => $tic,
-    'tracks' => \@tracks 
+    'tracks' => \@tracks
 });
-$opus->write_to_file( 'output/melody.mid' );
+$opus->write_to_file( 'output/opus.mid' );
 
