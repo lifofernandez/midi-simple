@@ -9,12 +9,12 @@ programa: 10
 ########################################
 # Alturas
 
-tonica: 35 # C0 Acoustic Bass Drum
+tonica: 36 # C0 Acoustic Bass Drum
 octava: 0 
 escalas: 
   - &A
     nombre: Cromatica
-    alturas: ["1..54"]
+    alturas: ["0..54"]
 escala: *A
 
 

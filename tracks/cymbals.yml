@@ -29,9 +29,9 @@ retraso: 0
 ########################################
 # Dinamica
 
-dinamicas: [.7]
-piso: .9
-variacion: .1
+dinamicas: [.9,.9,.9,.1]
+piso: .1
+variacion: .9
 
 
 ########################################

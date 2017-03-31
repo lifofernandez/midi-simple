@@ -17,11 +17,7 @@ my $bpm = 80;
 
 my $pulso = ( 1000 / $bpm ) . '_000'; # mili
 my $tic = 240; 
-my @confs = ( 
-   'tracks/drums.yml',
-   'tracks/cymbals.yml',
-   'tracks/bajo.yml',
-);
+my @confs = <./tracks/*>;
 my @tracks;
 
 
@@ -35,6 +31,7 @@ foreach ( @confs ){
     my $nombre = $conf->{ nombre };
     my $canal = $conf->{ canal };
     my $programa = $conf->{ programa };
+    say  $nombre. ' (canal: '. $canal .' programa: '. $programa.')';
 
     ########################################
     # Alturas
@@ -58,7 +55,7 @@ foreach ( @confs ){
 
     my @duraciones = @{ $conf->{ duraciones } };
     my $cantidad_duraciones = scalar @duraciones;
-    my $retraso = $conf->{ retraso };
+    my $retraso = $conf->{ retraso }; #revisar
     # To do: superposicion de las notas
 
 
@@ -92,7 +89,6 @@ foreach ( @confs ){
     }
 
     push @secuencia, ( @secuencia ) x $repeticiones;
-    print Dumper( @secuencia );
 
     ########################################
     # Construir
@@ -112,20 +108,20 @@ foreach ( @confs ){
     ){
         my (
             $delta, # posicion en las lista de alturas
-            $transpo
+            $transp
         ) = split;
 
-        my $altura = @escala[ ( $delta - 1 ) % $cantidad_alturas ] + $transpo;
+        my $altura = @escala[ ( $delta - 1 ) % $cantidad_alturas ] + $transp;
 
         my $duracion = $tic * @duraciones[ $index % $cantidad_duraciones ] ;
-        my $dinamica = 127 * @dinamicas[ $index % $cantidad_dinamicas ] ;
-        my $compresion = $piso + rand ( $variacion );
+        my $dinamica= 127 * @dinamicas[ $index % $cantidad_dinamicas ] ;
+        my $fluctuacion = $piso + rand ( $variacion );
 
         my $inicio = $tic * $retraso;
         my $final  = $duracion;
 
         push @events, (
-            [ 'note_on' , $inicio, $canal, $altura, $dinamica * $compresion ],
+            [ 'note_on' , $inicio, $canal, $altura, $dinamica * $fluctuacion],
             [ 'note_off', $final, $canal, $altura, 0 ]
         );
         $momento += $duracion;

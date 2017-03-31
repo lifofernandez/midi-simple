@@ -24,7 +24,7 @@ escalas:
   - &D
     nombre: Pentatonica Menor
     alturas: [0,2,3,5,7]
-escala: *A
+escala: *D
 
 
 ########################################
@@ -47,10 +47,10 @@ variacion: .2
 
 motivos:
   - &a
-    orden: [1,2,3] 
+    orden: [1,5 -12,1] 
   - &b
-    reverse: true 
-    orden: [1,3,5] 
+    #reverse: true 
+    orden: [2,1 -2,2] 
 secuencia_motivica: [ *a, *b, ] 
 repeticiones: 12
 
