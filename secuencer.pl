@@ -62,23 +62,54 @@ foreach ( @configs ){
     # Cargar Motivos
     # agregar config generales al motivo
 
-    my %MOTIVOS= ();
-    for(
-        @{ $config_file->{ motivos } }
-    ){
-        my %motivo = %{ $_ };
-        my $motivo_ID = $motivo{ ID };
-        say " " . $motivo_ID;
+    #my %MOTIVOS= ();
+    #for my $ID( keys
+    #    %{ $config_file->{ motivos } }
+    #){
+    #    my %motivo = %{ $config_file->{ motivos }{ $ID } };
+    #    say " " . $ID;
 
-        for my $prop_global (keys %conf_global){
-            if ( !$motivo{ $prop_global } ){
-                my $valor_global = $conf_global{ $prop_global };
-                $motivo{$prop_global} = $valor_global;
+    #    for my $prop_global (keys %conf_global){
+    #        if ( !$motivo{ $prop_global } ){
+    #            my $valor_global = $conf_global{ $prop_global };
+    #            $motivo{$prop_global} = $valor_global;
+    #        }
+    #    }
+    #    $MOTIVOS{ $ID } = \%motivo;
+    #}
+    #dump(%MOTIVOS);
+    my %ESTRUCTURAS = ();
+    for my $eID( 
+        keys %{ $config_file->{ ESTRUCTURAS } }
+    ){
+        my %estructura = %{ $config_file->{ ESTRUCTURAS }{ $eID } };
+        say "estructura: " . $eID;
+
+        my %MOTIVOS = ();
+        for my $mID(
+            keys %{ $estructura{ MOTIVOS } }
+        ){
+            say "  motivo: " . $mID;
+            my %motivo = %{ $estructura{ MOTIVOS }{ $mID } };
+
+            # Agrego propiedades globales a los motivos
+            for my $prop_global(
+                keys %conf_global
+            ){
+                if ( !$motivo{ $prop_global } ){
+                    my $valor_global = $conf_global{ $prop_global };
+                    $motivo{ $prop_global } = $valor_global;
+                }
             }
+
+            $MOTIVOS{ $mID } = \%motivo;
         }
-        $MOTIVOS{ $motivo_ID } = \%motivo;
+        $estructura{ MOTIVOS } = \%MOTIVOS;
+
+        $ESTRUCTURAS{ $eID } = \%estructura ;
     }
-    dump(%MOTIVOS);
+
+    dump( %{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a } } );
 
     ########################################
     # Procesar motivos
@@ -203,3 +234,21 @@ foreach ( @configs ){
 # });
 # 
 # $opus->write_to_file( 'output/secuencia.mid' );
+
+
+__DATA__
+
+pruebas:
+ uno:
+  elemento1: 123123
+  elemento2: 222222
+ dos:
+  elemento1: 333333
+  elemento2: 44444
+
+for my $m ( keys
+    %{ $config_file->{ pruebas } }
+){
+    dump($m);
+    dump( $config_file->{ pruebas }{$m} )
+}

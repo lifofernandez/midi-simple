@@ -2,39 +2,48 @@
 
 # Global Track Configs
 global:
-    nombre: Bajo
-    canal: 1 
-    programa: 33
-
-    tonica: 60
-    octava: -2 
-    alturas: [0,2,3,5,7]
-    duraciones: [25]
-    retraso: 0 
-    dinamicas: [.3,.9,.75] 
-    variacion: .2 
+  nombre: Bajo
+  canal: 1 
+  programa: 33
+ 
+  tonica: 60
+  octava: -2 
+  alturas: [0,2,3,5,7]
+  duraciones: [25]
+  retraso: 0 
+  dinamicas: [.3,.9,.75] 
+  variacion: .2 
 
 ########################################
-# paleta/set de motivos
+# hash de ESTRUCTURAS > motivos
+ESTRUCTURAS:
+  A:
+    MOTIVOS:
+      a:
+        # progresion de alturas = @alturas[ delta ] 
+        # minimo elemento de un motivo
+        progresion : [1,3,1,5,2,4,5,2,6]  
+        dinamicas: [.2,.1,.3] 
+      b:
+        alturas    : [0,2,3,5,7,8,10]
+        tonica     : 62 
+        octava     : -2 
+        progresion : [1,3,5,7,8] 
+        reverse    : true 
+      c:
+        alturas    : [1,3,5]
+        progresion : [1,3] 
+    secuencia    : [a,b,b,a] 
+    repeticiones : 1 
+  B:
+    MOTIVOS:
+      c:
+        alturas    : [1,2,2,3,5]
+        progresion : [1,3] 
+      d:
+        progresion : [1,3,1,5,2,6]  
+        dinamicas  : [.3,.9,.75] 
+    secuencia    : [c,d,d] 
+    repeticiones : 2
 
-motivos:
-  -
-    ID: a
-    # progresion de alturas [ @altura[ n ] ]
-    progresion_alturas: [1,3,1,5,2,4,5,2,6] 
-    dinamicas: [.3,.9,.75] 
-  -
-    ID: b
-    alturas: [0,2,3,5,7,8,10]
-    tonica: 62 
-    octava: -2 
-    progresion_alturas: [1,3,5,7,8] 
-    reverse: true 
-  -
-    ID: c
-    alturas: [1,3,5]
-    progresion_alturas: [1,3] 
-
-secuencia_motivica: ["a", "b", "b", "a"] 
-repeticiones: 2
 
