@@ -7,7 +7,7 @@
 
 use feature 'say';
 use strict;
-use Data::Dump qw( dump );
+#use Data::Dump qw( dump );
 use Data::Dumper;
 use MIDI;
 use YAML::XS 'LoadFile';
@@ -26,58 +26,21 @@ foreach ( @configs ){
     ########################################
     # Load track from YAML
     my $config_file = LoadFile( $_ );
-    my %conf_global = %{ $config_file->{ global } } ;
+    my %defaults = eval_ops( \%{ $config_file->{ global } });
+   # print Dumper( $defaults{ alturas } );
+
 
     # Track setup
-    my $nombre = $conf_global{ nombre };
+
+    my $nombre = $defaults{ nombre };
     say $nombre;
-    my $canal = $conf_global{ canal };
-    my $programa = $conf_global{ programa };
-
-
-    # ########################################
-    # # Configuraciones generales
-
-    # my $tonica = $conf->{ tonica };
-    # my $octava = $conf->{ octava };
-
-    # my @escala = map {
-    #     eval $_ # Perl Ranges suport 
-    # } @{ $conf->{ alturas } };
-
-    # #my @alturas = map {
-    # #    $_ + $tonica + ( 12 * $octava ) 
-    # #} @escala;
-
-    # my @duraciones = @{ $conf->{ duraciones } };
-    # my $retraso = $conf->{ retraso };
-    # # To do: superposicion de las notas
-
-    # my @dinamicas = @{ $conf->{ dinamicas } };
-    # my $piso = $conf->{ piso };
-    # my $variacion = $conf->{ variacion };
-
+    my $canal = $defaults{ canal };
+    my $programa = $defaults{ programa };
 
     ########################################
-    # Cargar Motivos
+    # Cargar Estructuras Motivos
     # agregar config generales al motivo
 
-    #my %MOTIVOS= ();
-    #for my $ID( keys
-    #    %{ $config_file->{ motivos } }
-    #){
-    #    my %motivo = %{ $config_file->{ motivos }{ $ID } };
-    #    say " " . $ID;
-
-    #    for my $prop_global (keys %conf_global){
-    #        if ( !$motivo{ $prop_global } ){
-    #            my $valor_global = $conf_global{ $prop_global };
-    #            $motivo{$prop_global} = $valor_global;
-    #        }
-    #    }
-    #    $MOTIVOS{ $ID } = \%motivo;
-    #}
-    #dump(%MOTIVOS);
     my %ESTRUCTURAS = ();
     for my $eID( 
         keys %{ $config_file->{ ESTRUCTURAS } }
@@ -90,17 +53,17 @@ foreach ( @configs ){
             keys %{ $estructura{ MOTIVOS } }
         ){
             say "  motivo: " . $mID;
-            my %motivo = %{ $estructura{ MOTIVOS }{ $mID } };
+            my %motivo = eval_ops( \%{ $estructura{ MOTIVOS }{ $mID } } );
 
-            # Agrego propiedades globales a los motivos
             for my $prop_global(
-                keys %conf_global
+                keys %defaults
             ){
                 if ( !$motivo{ $prop_global } ){
-                    my $valor_global = $conf_global{ $prop_global };
+                    my $valor_global = $defaults{ $prop_global };
                     $motivo{ $prop_global } = $valor_global;
                 }
             }
+            print Dumper(%motivo);
 
             $MOTIVOS{ $mID } = \%motivo;
         }
@@ -109,56 +72,43 @@ foreach ( @configs ){
         $ESTRUCTURAS{ $eID } = \%estructura ;
     }
 
-    dump( %{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a } } );
+    #TEST
+    #dump( %{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a } } );
 
     ########################################
     # Procesar motivos
     # a partir de sus propiedades componer "notas"
     # combinado parametros (altura, duracion, dinamicas, etc)
 
-    #my $this_tonica = %temp{ "tonica" } ? %temp{ "tonica" } : $tonica;
-    #my $this_octava = %temp{ "octava" } ? %temp{ "octava" } : $octava;
+    # my @this_escala;
 
-    #my @this_escala;
-    #if( %temp{ "alturas" } ){
-    #    @this_escala = map {
-    #        eval $_ # así soporta rangos en los yamls
-    #    } @{ %temp{ "alturas" } };
-    #} else {
-    #    @this_escala = @escala;
-    #}
-
-    #my @this_alturas = map { 
-    #    $_ + $this_tonica + ( 12 * $this_octava ) 
-    #} @this_escala;
-
-    ## my @this_duraciones = %temp{ "duraciones"} ? %temp{ "duraciones" } : @duraciones;
-    ## my @this_dinamicas = %temp{ "dinamicas" }  ? %temp{ "dinamicas" } : @dinamicas;
-    ## my $this_piso = %temp{ "piso" } ? %temp{ "piso" } : $piso;
-    ## my $this_variacion = %temp{ "variacion" } ? %temp{ "variacion" } : $variacion;
+    # my @this_alturas = map { 
+    #     $_ + $this_tonica + ( 12 * $this_octava ) 
+    # } @this_escala;
 
     #########################################
-    ## Procesasar y dwdefinir componentes 
-    ## Componentes = "nota" del motivo combinancion entre: orden, altura, duración y dinámica)
-    #my $n = 1;
-    #my @temp_comps = ();
-    #for( @{ %temp{ "progresion" } } ){
+    # Procesasar y dwdefinir componentes 
+    # Componentes = "nota" del motivo combinancion entre: orden, altura, duración y dinámica)
+
+    # my $n = 1;
+    # my @temp_comps = ();
+    # for( @{ %temp{ "progresion" } } ){
     #    my (
     #        $lector_altura, # posicion en las lista de alturas
     #        $transpo,
     #        #$repetir,
     #    ) = split;
 
-    #     my $nota_altura = @this_alturas[ ( $lector_altura - 1 ) % @this_alturas  ] + $transpo;
-    #     # add note repetition suport "while repetir...."
+    #    my $nota_altura = @this_alturas[ ( $lector_altura - 1 ) % @this_alturas  ] + $transpo;
+    #    # add note repetition suport "while repetir...."
 
-    #     #my $duracion   = $tic * @duraciones[ $index % $cantidad_duraciones ];
-    #     #my $dinamica   = 127 * @dinamicas[ $index % $cantidad_dinamicas ];
-    #     # add silense suport
-    #     # my $compresion = $piso + rand ( $variacion );
-    #     #
-    #     #my $inicio = $retraso;
-    #     #my $final  = $duracion;
+    #    #my $duracion   = $tic * @duraciones[ $index % $cantidad_duraciones ];
+    #    #my $dinamica   = 127 * @dinamicas[ $index % $cantidad_dinamicas ];
+    #    # add silense suport
+    #    # my $compresion = $piso + rand ( $variacion );
+    #    #
+    #    #my $inicio = $retraso;
+    #    #my $final  = $duracion;
 
     #     my $componente = { 
     #        indice   => $n,
@@ -235,6 +185,21 @@ foreach ( @configs ){
 # 
 # $opus->write_to_file( 'output/secuencia.mid' );
 
+# SUBS
+
+# Evaluar Operadores de Perl en Hashes
+sub eval_ops{
+    my $H = shift;
+    for my $v( keys %{ $H } ){
+        if( ref( $H->{ $v } ) eq 'ARRAY'){ 
+            my @array_evaluado = map {
+               eval $_ 
+            } @{ $H->{ $v } };
+            $H->{ $v } = \@array_evaluado;
+        }
+    }
+    return %{$H};
+}
 
 __DATA__
 
