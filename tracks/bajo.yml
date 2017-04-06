@@ -21,7 +21,7 @@ ESTRUCTURAS:
       a:
         # progresion de alturas = @alturas[ delta ] 
         # minimo elemento de un motivo
-        progresion : [1,3,(5)x7,("a".."d"),("a"x3),2,4,5,2,6]  
+        progresion : [1,3,(5)x7,2,4,5,2,6]  
         dinamicas  : [.2,.1,.3] 
       b:
         alturas    : [0,2,3,5,7,8,10]

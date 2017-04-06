@@ -42,7 +42,7 @@ foreach ( @configs ){
     # agregar config generales al motivo
 
     my %ESTRUCTURAS = ();
-    for my $eID( 
+    for my $eID(
         keys %{ $config_file->{ ESTRUCTURAS } }
     ){
         my %estructura = %{ $config_file->{ ESTRUCTURAS }{ $eID } };
@@ -63,7 +63,14 @@ foreach ( @configs ){
                     $motivo{ $prop_global } = $valor_global;
                 }
             }
-            print Dumper(%motivo);
+
+            ########################################
+            # Procesar motivos
+            # a partir de sus propiedades componer "notas"
+            # combinado parametros (altura, duracion, dinamicas, etc)
+            my @alturas = map {
+                 $_ + $motivo{ tonica } + ( 12 * $motivo{ octava }  )
+            }  @{ $motivo{ alturas } };
 
             $MOTIVOS{ $mID } = \%motivo;
         }
@@ -75,32 +82,19 @@ foreach ( @configs ){
     #TEST
     #dump( %{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a } } );
 
-    ########################################
-    # Procesar motivos
-    # a partir de sus propiedades componer "notas"
-    # combinado parametros (altura, duracion, dinamicas, etc)
 
-    # my @this_escala;
-
-    # my @this_alturas = map { 
-    #     $_ + $this_tonica + ( 12 * $this_octava ) 
-    # } @this_escala;
 
     #########################################
-    # Procesasar y dwdefinir componentes 
-    # Componentes = "nota" del motivo combinancion entre: orden, altura, duración y dinámica)
+    # Procesasar y dwdefinir componentes
 
     # my $n = 1;
     # my @temp_comps = ();
     # for( @{ %temp{ "progresion" } } ){
     #    my (
     #        $lector_altura, # posicion en las lista de alturas
-    #        $transpo,
-    #        #$repetir,
     #    ) = split;
 
-    #    my $nota_altura = @this_alturas[ ( $lector_altura - 1 ) % @this_alturas  ] + $transpo;
-    #    # add note repetition suport "while repetir...."
+    #    my $nota_altura = @this_alturas[ ( $lector_altura - 1 ) % @this_alturas ];
 
     #    #my $duracion   = $tic * @duraciones[ $index % $cantidad_duraciones ];
     #    #my $dinamica   = 127 * @dinamicas[ $index % $cantidad_dinamicas ];
@@ -123,19 +117,19 @@ foreach ( @configs ){
 
     # my %componentes; 
     # @componentes{ @temp_comps } = @temp_comps;
-    # $motivos{ $motivo_ID}{"componentes"}= \%componentes; 
+    # $motivos{ $motivo_ID}{"componentes"}= \%componentes;
 
 
     ########################################
-    # Secuenciar motivos ( array de motivos ) 
+    # Secuenciar motivos ( array de motivos )
     # nota: Add super especial feture: control de  gap/overlap motivos
     # to do: agregar repticiones de secuencia
 
     # Track setup
     # my @events = (
     #     [ 'set_tempo', 0, $pulso ],
-    #     [ 'text_event', 0, "Track: " . $nombre ], 
-    #     [ 'patch_change', 0, $canal, $programa ], 
+    #     [ 'text_event', 0, "Track: " . $nombre ],
+    #     [ 'patch_change', 0, $canal, $programa ],
     # );
 
     # my $index = 0;
