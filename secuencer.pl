@@ -26,7 +26,7 @@ foreach ( @configs ){
     ########################################
     # Load track from YAML
     my $config_file = LoadFile( $_ );
-    my %defaults = eval_ops( \%{ $config_file->{ global } });
+    my %defaults = prosesar_sets( \%{ $config_file->{ global } });
    # print Dumper( $defaults{ alturas } );
 
 
@@ -53,7 +53,7 @@ foreach ( @configs ){
             keys %{ $estructura{ MOTIVOS } }
         ){
             say "  motivo: " . $mID;
-            my %motivo = eval_ops( \%{ $estructura{ MOTIVOS }{ $mID } } );
+            my %motivo = prosesar_sets( \%{ $estructura{ MOTIVOS }{ $mID } } );
 
             for my $prop_global(
                 keys %defaults
@@ -68,19 +68,20 @@ foreach ( @configs ){
             # Procesar motivos
             # a partir de sus propiedades componer "notas"
             # combinado parametros (altura, duracion, dinamicas, etc)
-            my @alturas = map {
-                 $_ + $motivo{ tonica } + ( 12 * $motivo{ octava }  )
-            }  @{ $motivo{ alturas } };
+            #my @alturas = map {
+            #     $_ + $motivo{ tonica } + ( 12 * $motivo{ octava }  )
+            #}  @{ $motivo{ alturas } };
 
             $MOTIVOS{ $mID } = \%motivo;
         }
         $estructura{ MOTIVOS } = \%MOTIVOS;
 
-        $ESTRUCTURAS{ $eID } = \%estructura ;
+        $ESTRUCTURAS{ $eID } = \%estructura;
     }
 
     #TEST
-    #dump( %{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a } } );
+    print  Dumper %{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ dinamicas} } ;
+    print  Dumper @{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ progresion } } ;
 
 
 
@@ -181,16 +182,35 @@ foreach ( @configs ){
 
 # SUBS
 
-# Evaluar Operadores de Perl en Hashes
-sub eval_ops{
+# Procesar Sets (
+# recorre 1 hash, evalua sets y arrays
+sub prosesar_sets{
     my $H = shift;
     for my $v( keys %{ $H } ){
+        if(
+           ( ref( $H->{ $v } ) eq 'HASH' ) &&
+           ( exists $H->{ $v }{ set } )
+        ){
+            my $grano = $H->{ $v }{ grano } ? $H->{ $v }{ grano } : 1;
+            my $operador = $H->{ $v }{ operador } ?
+                $H->{ $v }{ operador } : '*';
+
+            my @array_evaluado = map {
+               eval $_
+            } @{ $H->{ $v }{ set } };
+            my @array_procesado = map { 
+               eval( $_ . $operador . $grano) 
+            } @array_evaluado;
+            $H->{ $v }{ procedas } = \@array_procesado;
+
+        }
         if( ref( $H->{ $v } ) eq 'ARRAY'){ 
             my @array_evaluado = map {
-               eval $_ 
+               eval $_
             } @{ $H->{ $v } };
             $H->{ $v } = \@array_evaluado;
         }
+
     }
     return %{$H};
 }
