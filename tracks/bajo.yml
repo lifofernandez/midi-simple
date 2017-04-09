@@ -3,6 +3,7 @@
 constantes:
   nombre     : Bajo
   macroforma : [A,B,B]
+  repeticiones: 1
 
 ########################################
 # Cofiguracion de los motivos por defecto
@@ -15,24 +16,26 @@ defactos:
     operador    : '*'
     octava      : -2
     tonica      : 60
-    orden       : reverse
+    orden       : reverse # no implementado todavia
   duraciones:
-    set         : [.75,.25] 
+    #set         : [.75,.25] 
+    set         : [.75,0.25] 
     grano       : 1
     operador    : '*'
-    retraso     : 0
+    retraso     : 0 # no implementado todavia
+    recorte     : 0 # no implementado todavia
+    orden       : reverse # NIT 
   dinamicas:
     set         : [1..9] 
     grano       : '0.1'
     operador    : '*'
-    fluctuacion : .2 
+    fluctuacion : .2  # no implementado todavia
 
 ########################################
 # hash de ESTRUCTURAS > motivos
 ESTRUCTURAS:
   A:
     forma : [a,b,b,a]
-    repeticiones : 1
     MOTIVOS:
       a:
         # microforma = progresion de alturas = @alturas[ delta % alturas ] 
@@ -44,7 +47,6 @@ ESTRUCTURAS:
         microforma : [1,3]
   B:
     forma : [c,d,d] 
-    repeticiones : 2
     MOTIVOS:
       c:
         microforma : [1,3]

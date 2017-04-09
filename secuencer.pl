@@ -33,14 +33,15 @@ foreach ( @configs ){
     my $nombre = $constantes{ nombre };
     say $nombre;
 
+    # Propiedades generales para los motivoos
+    # pueden ser sobreescritas en cada uno de ellos.:W
     my %defactos  = prosesar_sets( \%{ $config_file->{ defactos } });
 
     my $canal = $defactos{ canal };
     my $programa = $defactos{ programa };
 
     ########################################
-    # Cargar Estructuras Motivos
-    # agregar config defactos al motivo
+    # Cargar Estructuras > Motivos
 
     my %ESTRUCTURAS = ();
     for my $eID(
@@ -56,6 +57,7 @@ foreach ( @configs ){
             say "  motivo: " . $mID;
             my %motivo = prosesar_sets( \%{ $estructura{ MOTIVOS }{ $mID } } );
 
+            # Negociar config defactos y propias del motivo
             for my $prop_global(
                 keys %defactos
             ){
@@ -65,17 +67,19 @@ foreach ( @configs ){
                 }
             }
 
+
             ########################################
             # Procesar motivos armar componetes
             # a partir de sus propiedades componer "NOTAS"
             # combinado parametros (altura, duracion, dinamicas, etc)
+
             my @alturas = map {
                   $_ +
                   $motivo{ alturas }{ tonica } +
                   ( 12 * $motivo{ alturas }{ octava } )
             } @{ $motivo{ alturas }{ procesas } };
             my @duraciones =  @{ $motivo{ duraciones }{ procesas } };
-            my @dinamicas =  @{ $motivo{ dinamicas }{ procesas } };
+            my @dinamicas  =  @{ $motivo{ dinamicas }{ procesas } };
 
             #########################################
             # Combinar propiedades del motivo en  componentes
@@ -83,21 +87,18 @@ foreach ( @configs ){
             my $indice = 0;
             my @COMPONENTES = ();
             for( @{ $motivo{ microforma } } ){
-               my (
-                   $cabezal, # posicion en las lista de alturas
-               ) = split;
 
-               my $cabezal = $_; # posicion en las lista de alturas
-               my $altura = @alturas[ ( $cabezal - 1 ) % @alturas ];
+               my $cabezal   = $_; # posicion en las lista de alturas
+               my $altura    = @alturas[ ( $cabezal - 1 ) % scalar @alturas ];
 
-               my $duracion   = $tic * @duraciones[ $cabezal % @duraciones ];
+               my $duracion  = @duraciones[ $indice % scalar @duraciones ];
                #my $inicio = $tic * $retraso;
                #my $final  = $duracion;
 
-               # ACA DEFINR EL RAND apartir del valor relativo (0-1) ACA
+               # ACA DEFINR EL RAND apartir del valor relativo ( 0-1 ) ACA
                # PERO APLICARLO DESPUES en la secuencia
                # my $compresion = $piso + rand ( $variacion );
-               my $dinamica   = 127 * @dinamicas[ $cabezal % @dinamicas ];
+               my $dinamica   = @dinamicas[ $indice % scalar @dinamicas ];
 
                my $componente = {
                   indice   => $indice,
@@ -109,11 +110,9 @@ foreach ( @configs ){
                $indice++;
             }
 
-
             # Paso ARRAY de HASH
             my %temp_comps; 
             @temp_comps{ @COMPONENTES } = @COMPONENTES;
-
             $motivo{ componentes } = \%temp_comps;
 
             $MOTIVOS{ $mID } = \%motivo;
@@ -125,20 +124,16 @@ foreach ( @configs ){
 
     # TESTS
     # print  Dumper %{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ dinamicas} } ;
+    #print  Dumper @{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ duraciones }{ procesas } } ;
     # print  Dumper @{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ microforma } } ;
     # print  Dumper @{ $ESTRUCTURAS{ A }{ forma } } ;
     # print  Dumper %{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{componentes } } ;
-
-
-
-
-
-
     # print Dumper( @{ $constantes{ macroforma } } );
+
+
     ########################################
     # Secuenciar motivos ( array de motivos )
     # nota: Add super especial feture: control de  gap/overlap motivos
-    # to do: agregar repticiones de secuencia
 
     # Track setup
      my @events = (
@@ -150,63 +145,62 @@ foreach ( @configs ){
     # my $index = 0;
     for(
         # reverse
-        @{ $constantes{ macroforma } }
-        # x $constantes->{ repeticiones }
+        ( @{ $constantes{ macroforma } } )
+        x $constantes{ repeticiones }
     ){
           say $_ ;
           my %E =  %{ $ESTRUCTURAS{ $_ } };
           for(
               # reverse
               @{ $E{ forma } }
-              #x $E{ repeticiones }
           ){
              say ' '.$_;
              # my %M =  %{ $E{MOTIVOS}{ $_ } };
              my %NOTAS =  %{ $E{ MOTIVOS }{ $_ }{ componentes } };
 
-         # NOTAS a MIDI::Events
+             # NOTAS a MIDI::Events
+             print ' -';
              for my $nota (
                  sort { $NOTAS{$a}{indice} <=> $NOTAS{$b}{indice} } 
                  keys %NOTAS
              ){
-                 say '   '.$NOTAS{$nota}{indice};
-                 #my $altura = %NOTAS{ $nota }->{ "altura" };
+                 my $altura = $NOTAS{ $nota }{ "altura" };
+                 print ' '. $NOTAS{$nota}{indice};
 
-                 #my $inicio = 0;
-                 #my $final = $tic * %NOTAS{ $nota }->{ "duracion" };
+                 # TODO: agregar retraso y recorte
+                 my $inicio = 0;
+                 my $final = $tic * $NOTAS{ $nota }{ "duracion" };
 
-                 ##my $fluctuacion = ( 1 - %NOTAS{ $nota }->{ "variacion" } ) 
-                 #      #   + rand( $variacion );
-                 #my $dinamica = 127 * %NOTAS{ $nota }->{ "dinamica" } ;
-                 ##APLICAR RANDOM pero definirlo antes
+                 # TODO: APLICAR RANDOM ACA pero definirlo antes
+                 # my $fluctuacion = ( 1 - $NOTAS{ $nota }{ "variacion" } ) 
+                 #    + rand( $variacion );
+                 my $dinamica = 127 * $NOTAS{ $nota }{ "dinamica" } ;
 
-                 #push @events, (
-                 #      [ 'note_on' , $inicio, $canal, $altura, $dinamica ],
-                 #      [ 'note_off', $final,  $canal, $altura, 0 ]
-                 #);
+                 push @events, (
+                       [ 'note_on' , $inicio, $canal, $altura, $dinamica ],
+                       [ 'note_off', $final,  $canal, $altura, 0 ]
+                 );
               }
+              say ' -';
         }
 
     }
 
+    # print Dumper( @events );
+    my $track = MIDI::Track->new({
+        'events' => \@events
+    });
+    push @tracks, $track;
 
-    # print Dumper( @events);
-#     my $track = MIDI::Track->new({
-#         'events' => \@events
-#     });
-#
-#     push @tracks, $track;
-#
 }
 
-#
-# my $opus = MIDI::Opus->new({
-#     'format' => 1, 
-#     'ticks' => $tic,
-#     'tracks' => \@tracks 
-# });
-# 
-# $opus->write_to_file( 'output/secuencia.mid' );
+my $opus = MIDI::Opus->new({
+    'format' => 1,
+    'ticks' => $tic,
+    'tracks' => \@tracks
+});
+
+$opus->write_to_file( 'output/secuencia.mid' );
 
 # SUBS
 
