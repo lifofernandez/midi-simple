@@ -29,12 +29,11 @@ foreach ( @configs ){
     my %constantes = %{ $config_file->{ constantes } };
 
     # Track setup
-
     my $nombre = $constantes{ nombre };
     say $nombre;
 
     # Propiedades generales para los motivoos
-    # pueden ser sobreescritas en cada uno de ellos.:W
+    # pueden ser sobreescritas por las de cada uno de ellos
     my %defactos  = prosesar_sets( \%{ $config_file->{ defactos } });
 
     my $canal = $defactos{ canal };
@@ -95,16 +94,17 @@ foreach ( @configs ){
                #my $inicio = $tic * $retraso;
                #my $final  = $duracion;
 
-               # ACA DEFINR EL RAND apartir del valor relativo ( 0-1 ) ACA
-               # PERO APLICARLO DESPUES en la secuencia
-               #my $compresion = $piso + rand ( $variacion );
+               my $fluctuacion =  $motivo{ dinamicas }{ fluctuacion } ;
                my $dinamica   = @dinamicas[ $indice % scalar @dinamicas ];
 
                my $componente = {
                   indice   => $indice,
                   altura   => $altura,
+
                   duracion => $duracion,
+
                   dinamica => $dinamica,
+                  fluctuacion => $fluctuacion,
                };
                push @COMPONENTES, $componente;
                $indice++;
@@ -122,12 +122,12 @@ foreach ( @configs ){
     }
 
     # TESTS
-    # print  Dumper %{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ dinamicas} } ;
-    # print  Dumper @{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ duraciones }{ procesas } } ;
-    # print  Dumper @{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ microforma } } ;
-    # print  Dumper @{ $ESTRUCTURAS{ A }{ forma } } ;
-    # print  Dumper %{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{componentes } } ;
-    # print Dumper( @{ $constantes{ macroforma } } );
+    # print Dumper %{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ dinamicas} };
+    # print Dumper @{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ duraciones }{ procesas } };
+    # print Dumper @{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ microforma } };
+    # print Dumper @{ $ESTRUCTURAS{ A }{ forma } };
+    # print Dumper %{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{componentes } };
+    # print Dumper @{ $constantes{ macroforma } };
 
 
     ########################################
@@ -135,11 +135,11 @@ foreach ( @configs ){
     # nota: Add super especial feture: control de  gap/overlap motivos
 
     # Track setup
-     my @events = (
-         [ 'set_tempo', 0, $pulso ],
-         [ 'text_event', 0, "Track: " . $nombre ],
-         [ 'patch_change', 0, $canal, $programa ],
-     );
+    my @events = (
+        [ 'set_tempo', 0, $pulso ],
+        [ 'text_event', 0, "Track: " . $nombre ],
+        [ 'patch_change', 0, $canal, $programa ],
+    );
 
     # my $index = 0;
     for(
@@ -154,7 +154,6 @@ foreach ( @configs ){
               @{ $E{ forma } }
           ){
              say ' '.$_;
-             # my %M =  %{ $E{MOTIVOS}{ $_ } };
              my %NOTAS =  %{ $E{ MOTIVOS }{ $_ }{ componentes } };
 
              # NOTAS a MIDI::Events
@@ -168,16 +167,22 @@ foreach ( @configs ){
 
                  # TODO: agregar retraso y recorte
                  my $inicio = 0;
-                 my $final = $tic * $NOTAS{ $nota }{ "duracion" };
+                 my $final = $tic * $NOTAS{ $nota }{ duracion };
 
                  # TODO: APLICAR RANDOM ACA pero definirlo antes
-                 # my $fluctuacion = ( 1 - $NOTAS{ $nota }{ "variacion" } ) 
-                 #    + rand( $variacion );
-                 my $dinamica = 127 * $NOTAS{ $nota }{ "dinamica" } ;
+                 my $fluctuacion = $NOTAS{ $nota }{ fluctuacion };
+                 my $rand = 0;
+                 if ( $fluctuacion ){
+                     my $min  = -$fluctuacion;
+                     my $max  = $fluctuacion;
+                     $rand = $min + rand( $max - $min );
+                 }
+
+                 my $dinamica = int( 127 * ( $NOTAS{ $nota }{ dinamica } + $rand ) );
 
                  push @events, (
-                       [ 'note_on' , $inicio, $canal, $altura, $dinamica ],
-                       [ 'note_off', $final,  $canal, $altura, 0 ]
+                     [ 'note_on' , $inicio, $canal, $altura, $dinamica ],
+                     [ 'note_off', $final,  $canal, $altura, 0 ]
                  );
               }
               say ' -';
@@ -185,7 +190,6 @@ foreach ( @configs ){
 
     }
 
-    # print Dumper( @events );
     my $track = MIDI::Track->new({
         'events' => \@events
     });
@@ -198,7 +202,6 @@ my $opus = MIDI::Opus->new({
     'ticks' => $tic,
     'tracks' => \@tracks
 });
-
 $opus->write_to_file( 'output/secuencia.mid' );
 
 # SUBS
