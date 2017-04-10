@@ -97,7 +97,7 @@ foreach ( @configs ){
 
                # ACA DEFINR EL RAND apartir del valor relativo ( 0-1 ) ACA
                # PERO APLICARLO DESPUES en la secuencia
-               # my $compresion = $piso + rand ( $variacion );
+               #my $compresion = $piso + rand ( $variacion );
                my $dinamica   = @dinamicas[ $indice % scalar @dinamicas ];
 
                my $componente = {
@@ -118,13 +118,12 @@ foreach ( @configs ){
             $MOTIVOS{ $mID } = \%motivo;
         }
         $estructura{ MOTIVOS } = \%MOTIVOS;
-
         $ESTRUCTURAS{ $eID } = \%estructura;
     }
 
     # TESTS
     # print  Dumper %{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ dinamicas} } ;
-    #print  Dumper @{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ duraciones }{ procesas } } ;
+    # print  Dumper @{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ duraciones }{ procesas } } ;
     # print  Dumper @{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ microforma } } ;
     # print  Dumper @{ $ESTRUCTURAS{ A }{ forma } } ;
     # print  Dumper %{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{componentes } } ;
@@ -164,8 +163,8 @@ foreach ( @configs ){
                  sort { $NOTAS{$a}{indice} <=> $NOTAS{$b}{indice} } 
                  keys %NOTAS
              ){
-                 my $altura = $NOTAS{ $nota }{ "altura" };
-                 print ' '. $NOTAS{$nota}{indice};
+                 my $altura = $NOTAS{ $nota }{ altura };
+                 print ' '. $NOTAS{$nota}{ indice };
 
                  # TODO: agregar retraso y recorte
                  my $inicio = 0;
