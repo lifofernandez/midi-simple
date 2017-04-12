@@ -61,21 +61,18 @@ foreach ( @configs ){
             # Motivos que que hereden propiedades de otros
             # a^, a^^, a^^^, etc
             my $pID = $mID;
-            
             my $prima = chop( $pID );
-            #if( $prima eq "^" ){
-            #    say '   hijo_de: ' . $pID;
-            #    my %motivo_padre =  \%{ $ESTRUCTURAS{ $eID }{ MOTIVOS }{ $pID } };
-
-            #    for my $prop_padre(
-            #        keys %motivo_padre
-            #    ){
-            #        if ( !$motivo{ $prop_padre } ){
-            #            my $valor_padre = $motivo_padre{ $prop_padre };
-            #            $motivo{ $prop_padre } = $valor_padre;
-            #        }
-            #    }
-            #}
+            if( $prima eq "^" ){
+                 my %motivo_padre = %{ $MOTIVOS{ $pID } };
+                 for my $prop_padre(
+                     keys %motivo_padre
+                 ){
+                    if ( !$motivo{ $prop_padre } ){
+                        my $valor_padre = $motivo_padre{ $prop_padre };
+                        $motivo{ $prop_padre } = $valor_padre;
+                    }
+               }
+            }
             # Negociar config defactos y propias del motivo
             for my $prop_global(
                 keys %defactos
