@@ -32,8 +32,9 @@ foreach ( @configs ){
     my $nombre = $constantes{ nombre };
     say $nombre;
 
-    # Propiedades generales para los motivoos
-    # pueden ser sobreescritas por las de cada uno de ellos
+    # Propiedades generales que heredan tods los motivos
+    # pueden ser sobreescritas en cada uno de ellos
+    # TODO: generar aca lista defactos independientes del config por si acaso
     my %defactos  = prosesar_sets( \%{ $config_file->{ defactos } });
 
     my $canal = $defactos{ canal };
@@ -83,11 +84,9 @@ foreach ( @configs ){
                 }
             }
 
-
-
             ########################################
             # Procesar motivos armar componetes
-            # a partir de sus propiedades componer "NOTAS"
+            # a partir de multipes propiedades componer secunecia
             # combinado parametros (altura, duracion, dinamicas, etc)
 
             my @alturas = map {
@@ -97,9 +96,6 @@ foreach ( @configs ){
             } @{ $motivo{ alturas }{ procesas } };
             my @duraciones =  @{ $motivo{ duraciones }{ procesas } };
             my @dinamicas  =  @{ $motivo{ dinamicas }{ procesas } };
-
-            #########################################
-            # Combinar propiedades del motivo en  componentes
 
             my $indice = 0;
             my @COMPONENTES = ();
@@ -112,7 +108,6 @@ foreach ( @configs ){
                #my $inicio = $tic * $retraso;
                #my $final  = $duracion;
 
-               my $fluctuacion =  $motivo{ dinamicas }{ fluctuacion } ;
                my $dinamica   = @dinamicas[ $indice % scalar @dinamicas ];
 
                my $componente = {
@@ -122,7 +117,6 @@ foreach ( @configs ){
                   duracion => $duracion,
 
                   dinamica => $dinamica,
-                  fluctuacion => $fluctuacion,
                };
                push @COMPONENTES, $componente;
                $indice++;
@@ -141,6 +135,7 @@ foreach ( @configs ){
 
     # TESTS
     # print Dumper %{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ dinamicas} };
+    # print Dumper %{ $ESTRUCTURAS{ A }{ MOTIVOS }{ "a^" } };
     # print Dumper @{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ duraciones }{ procesas } };
     # print Dumper @{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ microforma } };
     # print Dumper @{ $ESTRUCTURAS{ A }{ forma } };
@@ -149,8 +144,7 @@ foreach ( @configs ){
 
 
     ########################################
-    # Secuenciar motivos ( array de motivos )
-    # nota: Add super especial feture: control de  gap/overlap motivos
+    # SECUENCIAR 
 
     # Track setup
     my @events = (
@@ -172,12 +166,16 @@ foreach ( @configs ){
               @{ $E{ forma } }
           ){
              say ' '.$_;
-             my %NOTAS =  %{ $E{ MOTIVOS }{ $_ }{ componentes } };
+             my %M =  %{ $E{ MOTIVOS }{ $_ } };
+             my %NOTAS =  %{ $M{ componentes } };
+
+             # TODO: si agrego lista de defactos indpendiente del config evito esto
+             my $orden =  $M{ orden } ? $M{ orden } : 'indice';
 
              # NOTAS a MIDI::Events
              print ' -';
              for my $nota (
-                 sort { $NOTAS{$a}{indice} <=> $NOTAS{$b}{indice} } 
+                 sort { $NOTAS{$a}{$orden} <=> $NOTAS{$b}{$orden} } 
                  keys %NOTAS
              ){
                  my $altura = $NOTAS{ $nota }{ altura };
@@ -188,7 +186,7 @@ foreach ( @configs ){
                  my $final = $tic * $NOTAS{ $nota }{ duracion };
 
                  # TODO: APLICAR RANDOM ACA pero definirlo antes
-                 my $fluctuacion = $NOTAS{ $nota }{ fluctuacion };
+                 my $fluctuacion =  $M{ dinamicas }{ fluctuacion };
                  my $rand = 0;
                  if ( $fluctuacion ){
                      my $min  = -$fluctuacion;

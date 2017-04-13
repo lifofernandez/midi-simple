@@ -10,21 +10,27 @@ constantes:
 defactos:
   canal      : 1 
   programa   : 33
+  orden      : indice
   alturas:
     set         : [0..11]
     octava      : -2
     tonica      : 60
-    orden       : reverse # no implementado todavia
+    reverse     : flase # no implementado todavia
+    voces: 
+      cantidad    : 1 
+      diatonicas  : true 
+       
   duraciones:
     set         : [.75,0.25] 
     retraso     : 0 # no implementado todavia
     recorte     : 0 # no implementado todavia
-    orden       : reverse # NIT 
+    reverse     : flase # no implementado todavia
   dinamicas:
     set         : [1..9] 
     operador    : '*'
     grano       : .1
-    fluctuacion : .3  # humanizacion 
+    fluctuacion : .3  # humanizacion cuestionable 
+    reverse     : flase # no implementado todavia
 
 ########################################
 # hash de ESTRUCTURAS > motivos
@@ -33,13 +39,16 @@ ESTRUCTURAS:
     forma: [a,b,b,a^,a^^]
     MOTIVOS:
       a:
+        # TODO: control de  gap/overlap motivos
         # microforma = progresion de alturas 
         # minimo elemento de un motivo
         microforma : [1,3,(5)x3,4,5,2,6]
       a^:
+        orden: altura
         duraciones:
           set      : [1,0.5] 
       a^^:
+        orden: indice
         dinamicas:
           set      : [.5,.4] 
       b:
@@ -50,6 +59,9 @@ ESTRUCTURAS:
     forma : [c,d,d] 
     MOTIVOS:
       c:
-        microforma : [1,3]
+        microforma : [1,3,3,3,5]
+        orden: dinamica
+        dinamicas:
+          set      : [.9,.1] 
       d:
         microforma : [1,3,1,5,2,6]
