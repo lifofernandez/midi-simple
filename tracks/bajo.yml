@@ -16,10 +16,10 @@ defactos:
     octava      : -2
     tonica      : 60
     reverse     : flase # no implementado todavia
-    voces: 
-      cantidad    : 1 
-      diatonicas  : true 
-       
+  voces: 
+    set         : [-5,-10,-12] # semitonos
+    relacion    : diatonica # o paralela
+    # forzar/encajar o no en el set alturas
   duraciones:
     set         : [.75,0.25] 
     retraso     : 0 # no implementado todavia
