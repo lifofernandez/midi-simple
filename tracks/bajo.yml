@@ -10,27 +10,31 @@ constantes:
 defactos:
   canal      : 1 
   programa   : 33
-  orden      : indice
+  orden      : indice # defacto redundante, ya esta en el script
   alturas:
-    set         : [0..11]
+    set         : [0,2,3,5,7,9,10] # dorico
+    # set         : [0,3,5,7,10] # penta
     octava      : -2
     tonica      : 60
-    reverse     : flase # no implementado todavia
+    reverse     : false # no implementado todavia
   voces: 
-    set         : [-5,-10,-12] # semitonos
-    relacion    : diatonica # o paralela
-    # forzar/encajar o no en el set alturas
+    set         : [ 0, -2, -4] # casilleros del set de alturas
+    relacion    : diatonica # NIT
+    # diatonica, las voces recorren el set de alturas en dif casillero
+    # paralela, crea una voz paralela a X semitonos de la original
   duraciones:
     set         : [.75,0.25] 
     retraso     : 0 # no implementado todavia
     recorte     : 0 # no implementado todavia
-    reverse     : flase # no implementado todavia
+    reverse     : false # no implementado todavia
   dinamicas:
     set         : [1..9] 
-    operador    : '*'
-    grano       : .1
+    # TODO: agregar operaciones matematicas mas complejas
+    # TODO: considerar agregar poder cambiar orden op2 ** op1 
+    operador    : '*' # se banca solamente cualquier math op, 
+    grano       : .1 # se puede usar para cualquier set
     fluctuacion : .3  # humanizacion cuestionable 
-    reverse     : flase # no implementado todavia
+    reverse     : false # no implementado todavia
 
 ########################################
 # hash de ESTRUCTURAS > motivos

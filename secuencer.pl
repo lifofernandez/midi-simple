@@ -44,27 +44,27 @@ foreach ( @configs ){
     # Cargar Estructuras > Motivos
 
     my %ESTRUCTURAS = ();
-    for my $eID(
+    for my $estructuraID(
         keys %{ $config_file->{ ESTRUCTURAS } }
     ){
-        my %estructura = %{ $config_file->{ ESTRUCTURAS }{ $eID } };
-        say "estructura: " . $eID;
+        my %estructura = %{ $config_file->{ ESTRUCTURAS }{ $estructuraID } };
+        say "estructura: " . $estructuraID;
 
         my %MOTIVOS = ();
-        for my $mID(
+        for my $motivoID(
             sort
             keys %{ $estructura{ MOTIVOS } }
         ){
-            say "  motivo: " . $mID;
+            say "  motivo: " . $motivoID;
 
-            my %motivo = prosesar_sets( \%{ $estructura{ MOTIVOS }{ $mID } } );
-  
-            # Motivos que que hereden propiedades de otros
+            my %motivo = prosesar_sets( \%{ $estructura{ MOTIVOS }{ $motivoID } } );
+
+            # Motivos que heredan propiedades de otros
             # a^, a^^, a^^^, etc
-            my $pID = $mID;
-            my $prima = chop( $pID );
+            my $padreID = $motivoID;
+            my $prima = chop( $padreID );
             if( $prima eq "^" ){
-                 my %motivo_padre = %{ $MOTIVOS{ $pID } };
+                 my %motivo_padre = %{ $MOTIVOS{ $padreID } };
                  for my $prop_padre(
                      keys %motivo_padre
                  ){
@@ -74,7 +74,7 @@ foreach ( @configs ){
                     }
                }
             }
-            # Negociar config defactos y propias del motivo
+            # Negociar config defactos con las propias 
             for my $prop_global(
                 keys %defactos
             ){
@@ -87,7 +87,7 @@ foreach ( @configs ){
             ########################################
             # Procesar motivos armar componetes
             # a partir de multipes propiedades componer secunecia
-            # combinado parametros (altura, duracion, dinamicas, etc)
+            # combinado parametros ( altura, duracion, dinamicas, etc )
 
             my @alturas = map {
                   $_ +
@@ -99,26 +99,33 @@ foreach ( @configs ){
 
             my $indice = 0;
             my @COMPONENTES = ();
+
             for( @{ $motivo{ microforma } } ){
+               my $cabezal   = $_ - 1; # posicion en las lista de alturas
 
-               my $cabezal   = $_; # posicion en las lista de alturas
-               my $altura    = @alturas[ ( $cabezal - 1 ) % scalar @alturas ];
+               # AGREGANDO SOPORTE PARA VOCES ACA
+               #for( @{ $motivo{ voces }{ procesas }} ){
+               #     my $voz = $_; # corrimiento del cabezal de la voz en cuestion
+               #     $cabezal += $voz; # posicion en las lista de alturas
 
-               my $duracion  = @duraciones[ $indice % scalar @duraciones ];
-               #my $inicio = $tic * $retraso;
-               #my $final  = $duracion;
+                    my $altura    = @alturas[ ( $cabezal ) % scalar @alturas ];
 
-               my $dinamica   = @dinamicas[ $indice % scalar @dinamicas ];
+                    my $duracion  = @duraciones[ $indice % scalar @duraciones ];
+                    #my $inicio = $tic * $retraso;
+                    #my $final  = $duracion;
 
-               my $componente = {
-                  indice   => $indice,
-                  altura   => $altura,
+                    my $dinamica   = @dinamicas[ $indice % scalar @dinamicas ];
 
-                  duracion => $duracion,
+                    my $componente = {
+                       indice   => $indice,
+                       altura   => $altura,
 
-                  dinamica => $dinamica,
-               };
-               push @COMPONENTES, $componente;
+                       duracion => $duracion,
+
+                       dinamica => $dinamica,
+                    };
+                    push @COMPONENTES, $componente;
+               #}
                $indice++;
             }
 
@@ -127,14 +134,15 @@ foreach ( @configs ){
             @temp_comps{ @COMPONENTES } = @COMPONENTES;
             $motivo{ componentes } = \%temp_comps;
 
-            $MOTIVOS{ $mID } = \%motivo;
+            $MOTIVOS{ $motivoID } = \%motivo;
         }
         $estructura{ MOTIVOS } = \%MOTIVOS;
-        $ESTRUCTURAS{ $eID } = \%estructura;
+        $ESTRUCTURAS{ $estructuraID } = \%estructura;
     }
 
     # TESTS
     # print Dumper %{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ dinamicas} };
+    # print Dumper @{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ voces }{procesas} };
     # print Dumper %{ $ESTRUCTURAS{ A }{ MOTIVOS }{ "a^" } };
     # print Dumper @{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ duraciones }{ procesas } };
     # print Dumper @{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ microforma } };
@@ -170,7 +178,7 @@ foreach ( @configs ){
              my %NOTAS =  %{ $M{ componentes } };
 
              # TODO: si agrego lista de defactos indpendiente del config evito esto
-             my $orden =  $M{ orden } ? $M{ orden } : 'indice';
+             my $orden =   $M{ orden } // 'indice';
 
              # NOTAS a MIDI::Events
              print ' -';
@@ -185,7 +193,6 @@ foreach ( @configs ){
                  my $inicio = 0;
                  my $final = $tic * $NOTAS{ $nota }{ duracion };
 
-                 # TODO: APLICAR RANDOM ACA pero definirlo antes
                  my $fluctuacion =  $M{ dinamicas }{ fluctuacion };
                  my $rand = 0;
                  if ( $fluctuacion ){
