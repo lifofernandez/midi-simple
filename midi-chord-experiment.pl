@@ -28,17 +28,26 @@ my @events = (
 );
 
 my $inicio  = 0;
-my $espera   = $tic;
+my $duracion   = $tic;
 
 my $altura  = 60;
 my $dinamica = 127;
 
 push @events, (
      [ 'note_on',   $inicio,    $canal, $altura,     $dinamica ],
-     [ 'note_on',   $inicio,    $canal, $altura + 2, $dinamica ],
-     [ 'note_on',   $inicio,    $canal, $altura + 4, $dinamica ],
+     [ 'note_on',   0,    $canal, $altura + 2, $dinamica ],
+     [ 'note_on',   0,    $canal, $altura + 4, $dinamica ],
 
-     [ 'note_off',  $espera,     $canal, $altura,     0 ],
+     [ 'note_off',  $duracion,     $canal, $altura,     0 ],
+     [ 'note_off',  0,     $canal, $altura + 2, 0 ],
+     [ 'note_off',  0,     $canal, $altura + 4, 0 ],
+
+
+     [ 'note_on',   $duracion * 2 ,    $canal, $altura,     $dinamica ],
+     [ 'note_on',   0,    $canal, $altura + 2, $dinamica ],
+     [ 'note_on',   0,    $canal, $altura + 4, $dinamica ],
+
+     [ 'note_off',  $duracion * 3,     $canal, $altura,     0 ],
      [ 'note_off',  0,     $canal, $altura + 2, 0 ],
      [ 'note_off',  0,     $canal, $altura + 4, 0 ],
 
