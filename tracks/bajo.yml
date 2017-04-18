@@ -3,6 +3,7 @@
 constantes:
   nombre     : Bajo
   macroforma : [A,B,B]
+  #macroforma : [B]
   repeticiones: 1
 
 ########################################

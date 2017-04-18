@@ -7,10 +7,18 @@
 
 use feature 'say';
 use strict;
-#use Data::Dump qw( dump );
+use warnings;
+use Getopt::Std;
 use Data::Dumper;
 use MIDI;
 use YAML::XS 'LoadFile';
+
+########################################
+# ARGUMENTS
+getopts('vf:');
+our($opt_v,$opt_f);
+my $verbose = $opt_v;   
+my $carpeta = $opt_f // 'tracks';
 
 ########################################
 # CONSTANTES
@@ -18,7 +26,7 @@ use YAML::XS 'LoadFile';
 my $pulso = 600_000; # mili
 my $tic = 240; 
 
-my @configs = <./tracks/*>;
+my @configs = <./$carpeta/*>;
 my @tracks;
 
 foreach ( @configs ){
@@ -30,7 +38,8 @@ foreach ( @configs ){
 
     # Track setup
     my $nombre = $constantes{ nombre };
-    say $nombre;
+    say "#" x 40 if $verbose;
+    say $nombre if $verbose;
 
     # Propiedades generales que heredan tods los motivos
     # pueden ser sobreescritas en cada uno de ellos
@@ -41,21 +50,21 @@ foreach ( @configs ){
     my $programa = $defactos{ programa };
 
     ########################################
-    # Cargar Estructuras > Motivos
+    # Preparar Estructuras > Motivos > Componentes
 
     my %ESTRUCTURAS = ();
     for my $estructuraID(
         keys %{ $config_file->{ ESTRUCTURAS } }
     ){
         my %estructura = %{ $config_file->{ ESTRUCTURAS }{ $estructuraID } };
-        say "estructura: " . $estructuraID;
+        say "estructura: " . $estructuraID if $verbose;
 
         my %MOTIVOS = ();
         for my $motivoID(
             sort
             keys %{ $estructura{ MOTIVOS } }
         ){
-            say "  motivo: " . $motivoID;
+            say "  motivo: " . $motivoID if $verbose;
 
             my %motivo = prosesar_sets( \%{ $estructura{ MOTIVOS }{ $motivoID } } );
 
@@ -128,6 +137,9 @@ foreach ( @configs ){
                };
                push @COMPONENTES, $componente;
                $indice++;
+
+               #verbosidad
+               say '   '.$indice if $verbose;
             }
 
             # Paso AoH a HoH
@@ -169,31 +181,32 @@ foreach ( @configs ){
         ( @{ $constantes{ macroforma } } )
         x $constantes{ repeticiones }
     ){
-          say $_ ;
           my %E =  %{ $ESTRUCTURAS{ $_ } };
           for(
               # reverse
               @{ $E{ forma } }
           ){
-             say ' '.$_;
              my %M =  %{ $E{ MOTIVOS }{ $_ } };
              my %C =  %{ $M{ COMPONENTES } };
 
              # TODO: si agrego lista de defactos indpendiente del config evito esto
-             my $orden =   $M{ orden } // 'indice';
+             my $orden = $M{ orden } // 'indice';
+             # to avoid "Use uninitialized value..."
+             my @compIDs = grep defined $C{ $_ }{ $orden }, keys %C;
 
-             # C a MIDI::Events
-             print ' -';
+             # Componentes a MIDI::Events
+             #print ' -';
              for my $componenteID (
                  sort { $C{ $a }{ $orden } <=> $C{ $b }{ $orden } } 
-                 keys %C
+                 # keys %C
+                 @compIDs
              ){
                  # my $altura = $C{ $componenteID }{ altura };
 
                  # TODO: ESTOY EN ESTO AHORAAA:!:!:!
                  my @V = @{ $C{ $componenteID }{ voces } };
 
-                 print ' '. $C{ $componenteID }{ indice };
+                 #print ' '. $C{ $componenteID }{ indice };
 
                  # TODO: agregar retraso y recorte
                  my $inicio = 0;
@@ -225,7 +238,6 @@ foreach ( @configs ){
                      $final = 0;
                  }
               }
-              say ' -';
         }
 
     }
