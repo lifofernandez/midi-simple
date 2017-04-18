@@ -107,7 +107,7 @@ foreach ( @configs ){
                my @VOCES = ();
                for( @{ $motivo{ voces }{ procesas } } ){
                     # pos. en las lista de alturas para la voz actual
-                    my $cabezal_voz =$cabezal + $_;
+                    my $cabezal_voz = $cabezal + $_;
                     my $voz = @alturas[ ( $cabezal_voz ) % scalar @alturas ];
                     push @VOCES, $voz;
                }
@@ -192,9 +192,7 @@ foreach ( @configs ){
 
                  # TODO: ESTOY EN ESTO AHORAAA:!:!:!
                  my @V = @{ $C{ $componenteID }{ voces } };
-                 #print Dumper (@V);
 
-                 my $altura = 60;
                  print ' '. $C{ $componenteID }{ indice };
 
                  # TODO: agregar retraso y recorte
@@ -209,12 +207,23 @@ foreach ( @configs ){
                      $rand = $min + rand( $max - $min );
                  }
 
-                 my $dinamica = int( 127 * ( $C{ $componenteID }{ dinamica } + $rand ) );
-
-                 push @events, (
-                     [ 'note_on' , $inicio, $canal, $altura, $dinamica ],
-                     [ 'note_off', $final,  $canal, $altura, 0 ],
+                 my $dinamica = int( 
+                     127 * ( $C{ $componenteID }{ dinamica } + $rand ) 
                  );
+
+                 for( @V ){
+                     my $altura = $_;
+                     push @events, (
+                         [ 'note_on' , $inicio, $canal, $altura, $dinamica ],
+                     );
+                 }
+                 for( @V ){
+                     my $altura = $_;
+                     push @events, (
+                         [ 'note_off', $final,  $canal, $altura, 0 ],
+                     );
+                     $final = 0;
+                 }
               }
               say ' -';
         }
@@ -237,8 +246,8 @@ $opus->write_to_file( 'output/secuencia.mid' );
 
 # SUBS
 
-# Procesar Sets (
-# recorre 1 hash, evalua sets y arrays
+# Procesar Sets 
+# recorre 1 HASH, evalua sets y arrays
 sub prosesar_sets{
     my $H = shift;
     for my $v( keys %{ $H } ){
@@ -246,15 +255,14 @@ sub prosesar_sets{
            ( ref( $H->{ $v } ) eq 'HASH' ) &&
            ( exists $H->{ $v }{ set } )
         ){
-            my $grano = $H->{ $v }{ grano } ? $H->{ $v }{ grano } : 1;
-            my $operador = $H->{ $v }{ operador } ?
-                $H->{ $v }{ operador } : '*';
+            my $grano = $H->{ $v }{ grano } // 1;
+            my $operador = $H->{ $v }{ operador } // '*';
 
             my @array_evaluado = map {
                eval $_
             } @{ $H->{ $v }{ set } };
             my @array_procesado = map { 
-               eval( $_ . $operador . $grano) 
+               eval( $_ . $operador . $grano ) 
             } @array_evaluado;
             $H->{ $v }{ procesas } = \@array_procesado;
 
@@ -272,18 +280,3 @@ sub prosesar_sets{
 }
 
 __DATA__
-
-pruebas:
- uno:
-  elemento1: 123123
-  elemento2: 222222
- dos:
-  elemento1: 333333
-  elemento2: 44444
-
-for my $m ( keys
-    %{ $config_file->{ pruebas } }
-){
-    dump($m);
-    dump( $config_file->{ pruebas }{$m} )
-}
