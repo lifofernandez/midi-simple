@@ -38,7 +38,7 @@ foreach ( @configs ){
 
     # Track setup
     my $nombre = $constantes{ nombre };
-    say "#" x 40 if $verbose;
+    say "\n"."#" x 40 if $verbose;
     say $nombre if $verbose;
 
     # Propiedades generales que heredan tods los motivos
@@ -106,20 +106,35 @@ foreach ( @configs ){
             my @duraciones = @{ $motivo{ duraciones }{ procesas } };
             my @dinamicas  = @{ $motivo{ dinamicas }{ procesas } };
 
+
+            my $indice_st = "\t" . "indices: ";
+            my $cabeza_st = "\t" . "cabezal: ";
+            my $voces_st  = "\t" . "  voces: ";
+
             my $indice = 0;
             my @COMPONENTES = ();
 
+            my $nota_n = 1;
             for( @{ $motivo{ microforma } } ){
                my $cabezal = $_ - 1; # posicion en las lista de alturas
 
+               my $nota_st = '';
                # AGREGANDO SOPORTE PARA VOCES ACA
                my @VOCES = ();
-               for( @{ $motivo{ voces }{ procesas } } ){
+               for( 
+                   sort
+                   @{ $motivo{ voces }{ procesas } } 
+               ){
                     # pos. en las lista de alturas para la voz actual
                     my $cabezal_voz = $cabezal + $_;
                     my $voz = @alturas[ ( $cabezal_voz ) % scalar @alturas ];
                     push @VOCES, $voz;
+
+                    $nota_st  = $nota_st . $voz. " ";
                }
+               $voces_st=  "notas" . $nota_n . ": " . $nota_st  if $verbose;
+               $nota_n++;
+
                my $duracion  = @duraciones[ $indice % scalar @duraciones ];
                #my $inicio = $tic * $retraso;
                #my $final  = $duracion;
@@ -128,7 +143,7 @@ foreach ( @configs ){
 
                my $componente = {
                   indice   => $indice,
-                  #altura  => $altura,
+                  # altura  => $altura,
                   voces    => \@VOCES,
 
                   duracion => $duracion,
@@ -138,8 +153,10 @@ foreach ( @configs ){
                push @COMPONENTES, $componente;
                $indice++;
 
-               #verbosidad
-               say '   '.$indice if $verbose;
+               # verbosidad
+               my $indice_st = "indice: " . $indice;
+               my $cabeza_st = "cabezal: " . $cabezal ;
+               say "\t".$indice_st ." ". $cabeza_st ." ".  $voces_st if $verbose;
             }
 
             # Paso AoH a HoH

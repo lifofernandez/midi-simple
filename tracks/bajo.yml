@@ -13,7 +13,7 @@ defactos:
   programa   : 33
   orden      : indice # defacto redundante, ya esta en el script
   alturas:
-    set         : [0,2,3,5,7,9,10] # dorico
+    set         : [0,2,3,5,7,9,10,12] # dorico 6M 7m abajo
     # set         : [0,3,5,7,10] # penta
     octava      : 0
     tonica      : 60
