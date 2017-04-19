@@ -38,16 +38,25 @@ foreach ( @configs ){
 
     # Track setup
     my $nombre = $constantes{ nombre };
-    say "\n"."#" x 40 if $verbose;
-    say $nombre if $verbose;
+    say "\n"."#" x 80 if $verbose;
+    say "TRACK: ".$nombre if $verbose;
 
     # Propiedades generales que heredan tods los motivos
     # pueden ser sobreescritas en cada uno de ellos
-    # TODO: generar aca lista defactos independientes del config por si acaso
+    # TODO: generar aca lista defactos independientes del config
     my %defactos  = prosesar_sets( \%{ $config_file->{ defactos } });
 
     my $canal = $defactos{ canal };
+    say "CANAL: ".$canal if $verbose;
+
     my $programa = $defactos{ programa };
+    say "PROGRAMA: ".$programa if $verbose;
+
+    print "MACROFORMA: " if $verbose;
+    print  "@{ $constantes{ macroforma } }\n";
+
+    my $repeticiones = $constantes{ repeticiones };
+    say "REPETICIONES: " . $repeticiones if $verbose;
 
     ########################################
     # Preparar Estructuras > Motivos > Componentes
@@ -56,17 +65,23 @@ foreach ( @configs ){
     for my $estructuraID(
         keys %{ $config_file->{ ESTRUCTURAS } }
     ){
+        print "\n";
+        say "ESTRUCTURA: " . $estructuraID if $verbose;
         my %estructura = %{ $config_file->{ ESTRUCTURAS }{ $estructuraID } };
-        say "estructura: " . $estructuraID if $verbose;
+        print "  FORMA: " if $verbose;
+        print "@{ $estructura{ forma } }\n" if $verbose;
+              
 
         my %MOTIVOS = ();
         for my $motivoID(
             sort
             keys %{ $estructura{ MOTIVOS } }
         ){
-            say "  motivo: " . $motivoID if $verbose;
+            say "  MOTIVO: " . $motivoID if $verbose;
 
-            my %motivo = prosesar_sets( \%{ $estructura{ MOTIVOS }{ $motivoID } } );
+            my %motivo = prosesar_sets( 
+                \%{ $estructura{ MOTIVOS }{ $motivoID } } 
+            );
 
             # Motivos que heredan propiedades de otros
             # a^, a^^, a^^^, etc
@@ -106,23 +121,28 @@ foreach ( @configs ){
             my @duraciones = @{ $motivo{ duraciones }{ procesas } };
             my @dinamicas  = @{ $motivo{ dinamicas }{ procesas } };
 
+            print "   ALTURAS: " if $verbose;
+            print "@alturas\n" if $verbose;
 
-            my $indice_st = "\t" . "indices: ";
-            my $cabeza_st = "\t" . "cabezal: ";
-            my $voces_st  = "\t" . "  voces: ";
+            my @microforma =  @{ $motivo{ microforma } } ;
+            print "   MICROFORMA: " if $verbose;
+            print "@microforma\n" if $verbose;
+
+            print "   ORDEN: " .$motivo{orden}."\n" if $verbose;
+
 
             my $indice = 0;
             my @COMPONENTES = ();
+            say "   COMPONENTES" if $verbose;
 
-            my $nota_n = 1;
-            for( @{ $motivo{ microforma } } ){
+            for( @microforma  ){
                my $cabezal = $_ - 1; # posicion en las lista de alturas
+               my $altura = @alturas[ ( $cabezal ) % scalar @alturas ];
 
                my $nota_st = '';
                # AGREGANDO SOPORTE PARA VOCES ACA
                my @VOCES = ();
                for( 
-                   sort
                    @{ $motivo{ voces }{ procesas } } 
                ){
                     # pos. en las lista de alturas para la voz actual
@@ -130,10 +150,9 @@ foreach ( @configs ){
                     my $voz = @alturas[ ( $cabezal_voz ) % scalar @alturas ];
                     push @VOCES, $voz;
 
-                    $nota_st  = $nota_st . $voz. " ";
+                    $nota_st  = $nota_st . $voz  . " ";
                }
-               $voces_st=  "notas" . $nota_n . ": " . $nota_st  if $verbose;
-               $nota_n++;
+               my $voces_st=  "NOTAS: " . $nota_st  if $verbose;
 
                my $duracion  = @duraciones[ $indice % scalar @duraciones ];
                #my $inicio = $tic * $retraso;
@@ -143,20 +162,21 @@ foreach ( @configs ){
 
                my $componente = {
                   indice   => $indice,
-                  # altura  => $altura,
+                  altura   => $altura,
                   voces    => \@VOCES,
-
                   duracion => $duracion,
-
                   dinamica => $dinamica,
                };
                push @COMPONENTES, $componente;
                $indice++;
 
                # verbosidad
-               my $indice_st = "indice: " . $indice;
-               my $cabeza_st = "cabezal: " . $cabezal ;
-               say "\t".$indice_st ." ". $cabeza_st ." ".  $voces_st if $verbose;
+               print "    ";
+               print "INDICE: " . $indice . " " if $verbose;
+               print "\tCABEZAL: " . ( $cabezal + 1) . " " if $verbose;
+               print "\tDURACION: " . $duracion . "qn" if $verbose;
+               print "\tDINAMICA: " . int( $dinamica * 127 ) if $verbose;
+               print "\t".$voces_st."\n" if $verbose;
             }
 
             # Paso AoH a HoH
@@ -175,10 +195,9 @@ foreach ( @configs ){
     # print Dumper %{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ dinamicas} };
     # print Dumper @{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ voces }{procesas} };
     # print Dumper %{ $ESTRUCTURAS{ A }{ MOTIVOS }{ "a^" } };
-    # print Dumper @{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ duraciones }{ procesas } };
     # print Dumper @{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ microforma } };
     # print Dumper @{ $ESTRUCTURAS{ A }{ forma } };
-    #print Dumper %{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{componentes } };
+    # print Dumper %{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{componentes } };
     # print Dumper @{ $constantes{ macroforma } };
 
 
@@ -196,7 +215,7 @@ foreach ( @configs ){
     for(
         # reverse
         ( @{ $constantes{ macroforma } } )
-        x $constantes{ repeticiones }
+        x $repeticiones
     ){
           my %E =  %{ $ESTRUCTURAS{ $_ } };
           for(
@@ -206,26 +225,21 @@ foreach ( @configs ){
              my %M =  %{ $E{ MOTIVOS }{ $_ } };
              my %C =  %{ $M{ COMPONENTES } };
 
-             # TODO: si agrego lista de defactos indpendiente del config evito esto
              my $orden = $M{ orden } // 'indice';
+             
              # to avoid "Use uninitialized value..."
              my @compIDs = grep defined $C{ $_ }{ $orden }, keys %C;
 
              # Componentes a MIDI::Events
-             #print ' -';
              for my $componenteID (
                  sort { $C{ $a }{ $orden } <=> $C{ $b }{ $orden } } 
                  # keys %C
                  @compIDs
              ){
-                 # my $altura = $C{ $componenteID }{ altura };
 
                  # TODO: ESTOY EN ESTO AHORAAA:!:!:!
                  my @V = @{ $C{ $componenteID }{ voces } };
 
-                 #print ' '. $C{ $componenteID }{ indice };
-
-                 # TODO: agregar retraso y recorte
                  my $inicio = 0;
                  my $final = $tic * $C{ $componenteID }{ duracion };
 
@@ -300,7 +314,6 @@ sub prosesar_sets{
             my @array_evaluado = map {
                eval $_
             } @{ $H->{ $v } };
-            # print ( @array_evaluado );
             $H->{ $v } = \@array_evaluado;
         }
 
