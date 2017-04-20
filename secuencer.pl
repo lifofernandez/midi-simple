@@ -15,45 +15,49 @@ use YAML::XS 'LoadFile';
 
 ########################################
 # ARGUMENTS
-getopts('vf:');
-our($opt_v,$opt_f);
-my $verbose = $opt_v;   
-my $carpeta = $opt_f // 'tracks';
+getopts('vi:o:p:');
+our(
+    $opt_v,
+    $opt_i,
+    $opt_o,
+    $opt_p
+);
+my $verbose = $opt_v;
+my $inputs  = $opt_i // 'tracks';
+my $salida  = $opt_o // 'sequencia.mid.';
+my $pulso = $opt_p // 1000; # mili
 
 ########################################
 # CONSTANTES
 
-my $pulso = 600_000; # mili
 my $tic = 240; 
+my @configs = <./$inputs/*>;
 
-my @configs = <./$carpeta/*>;
 my @tracks;
-
 foreach ( @configs ){
 
-    ########################################
-    # Load track from YAML
     my $config_file = LoadFile( $_ );
     my %constantes = %{ $config_file->{ constantes } };
 
     # Track setup
     my $nombre = $constantes{ nombre };
-    say "\n"."#" x 80 if $verbose;
-    say "TRACK: ".$nombre if $verbose;
+    say "\n" . "#" x 80 if $verbose;
+    say "TRACK: ".$nombre;
 
-    # Propiedades generales que heredan tods los motivos
-    # pueden ser sobreescritas en cada uno de ellos
-    # TODO: generar aca lista defactos independientes del config
-    my %defactos  = prosesar_sets( \%{ $config_file->{ defactos } });
+    # Propiedades generales que heredan todos los motivos
+    # pueden ser sobreescritas en c/u-
+    my %defacto  = prosesar_sets( \%{ $config_file->{ defacto } });
+    # TODO: generar aca lista defacto independientes del config
 
-    my $canal = $defactos{ canal };
+    my $canal = $defacto{ canal };
     say "CANAL: ".$canal if $verbose;
 
-    my $programa = $defactos{ programa };
+    my $programa = $defacto{ programa };
     say "PROGRAMA: ".$programa if $verbose;
 
+    my @macroforma = @{ $constantes{ macroforma } };
     print "MACROFORMA: " if $verbose;
-    print  "@{ $constantes{ macroforma } }\n";
+    print  "@macroforma\n" if $verbose;
 
     my $repeticiones = $constantes{ repeticiones };
     say "REPETICIONES: " . $repeticiones if $verbose;
@@ -70,7 +74,6 @@ foreach ( @configs ){
         my %estructura = %{ $config_file->{ ESTRUCTURAS }{ $estructuraID } };
         print "  FORMA: " if $verbose;
         print "@{ $estructura{ forma } }\n" if $verbose;
-              
 
         my %MOTIVOS = ();
         for my $motivoID(
@@ -78,7 +81,6 @@ foreach ( @configs ){
             keys %{ $estructura{ MOTIVOS } }
         ){
             say "  MOTIVO: " . $motivoID if $verbose;
-
             my %motivo = prosesar_sets( 
                 \%{ $estructura{ MOTIVOS }{ $motivoID } } 
             );
@@ -98,12 +100,12 @@ foreach ( @configs ){
                     }
                }
             }
-            # Negociar config defactos con las propias 
+            # Negociar config defacto con las propias 
             for my $prop_global(
-                keys %defactos
+                keys %defacto
             ){
                 if ( !$motivo{ $prop_global } ){
-                    my $valor_global = $defactos{ $prop_global };
+                    my $valor_global = $defacto{ $prop_global };
                     $motivo{ $prop_global } = $valor_global;
                 }
             }
@@ -140,7 +142,7 @@ foreach ( @configs ){
                my $altura = @alturas[ ( $cabezal ) % scalar @alturas ];
 
                my $nota_st = '';
-               # AGREGANDO SOPORTE PARA VOCES ACA
+
                my @VOCES = ();
                for( 
                    @{ $motivo{ voces }{ procesas } } 
@@ -171,7 +173,7 @@ foreach ( @configs ){
                $indice++;
 
                # verbosidad
-               print "    ";
+               print "    " if $verbose;
                print "INDICE: " . $indice . " " if $verbose;
                print "\tCABEZAL: " . ( $cabezal + 1) . " " if $verbose;
                print "\tDURACION: " . $duracion . "qn" if $verbose;
@@ -206,7 +208,7 @@ foreach ( @configs ){
 
     # Track setup
     my @events = (
-        [ 'set_tempo', 0, $pulso ],
+        [ 'set_tempo', 0, $pulso . '_000'],
         [ 'text_event', 0, "Track: " . $nombre ],
         [ 'patch_change', 0, $canal, $programa ],
     );
@@ -214,7 +216,7 @@ foreach ( @configs ){
     # my $index = 0;
     for(
         # reverse
-        ( @{ $constantes{ macroforma } } )
+        ( @macroforma )
         x $repeticiones
     ){
           my %E =  %{ $ESTRUCTURAS{ $_ } };
@@ -226,24 +228,27 @@ foreach ( @configs ){
              my %C =  %{ $M{ COMPONENTES } };
 
              my $orden = $M{ orden } // 'indice';
-             
+
              # to avoid "Use uninitialized value..."
              my @compIDs = grep defined $C{ $_ }{ $orden }, keys %C;
 
              # Componentes a MIDI::Events
+             my $inicio = 0;
              for my $componenteID (
                  sort { $C{ $a }{ $orden } <=> $C{ $b }{ $orden } } 
-                 # keys %C
-                 @compIDs
+                 @compIDs # keys %C
              ){
 
-                 # TODO: ESTOY EN ESTO AHORAAA:!:!:!
                  my @V = @{ $C{ $componenteID }{ voces } };
 
-                 my $inicio = 0;
-                 my $final = $tic * $C{ $componenteID }{ duracion };
+                 my $retraso =  $tic * $M{ duraciones }{ retraso } // 0;
 
-                 my $fluctuacion =  $M{ dinamicas }{ fluctuacion };
+                 $inicio = $inicio + $retraso; 
+                 my $final = $tic * $C{ $componenteID }{ duracion };
+                 my $recorte =  $tic * $M{ duraciones }{ recorte } // 0;
+
+                 $final = $final - $recorte - $retraso;
+                 my $fluctuacion = $M{ dinamicas }{ fluctuacion };
                  my $rand = 0;
                  if ( $fluctuacion ){
                      my $min  = -$fluctuacion;
@@ -260,7 +265,9 @@ foreach ( @configs ){
                      push @events, (
                          [ 'note_on' , $inicio, $canal, $altura, $dinamica ],
                      );
+                     $inicio = 0;
                  }
+                 $inicio = $inicio + $recorte  ; 
                  for( @V ){
                      my $altura = $_;
                      push @events, (
@@ -285,7 +292,7 @@ my $opus = MIDI::Opus->new({
     'ticks' => $tic,
     'tracks' => \@tracks
 });
-$opus->write_to_file( 'output/secuencia.mid' );
+$opus->write_to_file( $salida );
 
 # SUBS
 

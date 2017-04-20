@@ -7,7 +7,7 @@ constantes:
 
 ########################################
 # Cofiguracion de los motivos por defecto
-defactos:
+defacto:
   canal      : 1 
   programa   : 1
   orden      : indice # redundante, defacto en script
@@ -24,10 +24,10 @@ defactos:
     # diatonica, las voces recorren el set de alturas en dif casillero
     # paralela,  a X semitonos de la original
   duraciones:
-    set         : [2] 
+    set         : [ 1 ] 
     # TODO: control de gap/overlap notas
-    retraso     : 0 # no implementado todavia
-    recorte     : 0 # no implementado todavia
+    retraso     : .5
+    recorte     : 0 
     reverse     : false # no implementado todavia
   dinamicas:
     set         : [1..9] 

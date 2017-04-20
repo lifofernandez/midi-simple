@@ -3,12 +3,11 @@
 constantes:
   nombre     : Bajo
   macroforma : [A,B,B]
-  #macroforma : [B]
   repeticiones: 1
 
 ########################################
 # Cofiguracion de los motivos por defecto
-defactos:
+defacto:
   canal      : 2 
   programa   : 33
   orden      : indice # defacto redundante, ya esta en el script
@@ -24,9 +23,9 @@ defactos:
     # diatonica, las voces recorren el set de alturas en dif casillero
     # paralela, crea una voz paralela a X semitonos de la original
   duraciones:
-    set         : [2] 
-    retraso     : 0 # no implementado todavia
-    recorte     : 0 # no implementado todavia
+    set         : [1] 
+    retraso     : 0
+    recorte     : .25 
     reverse     : false # no implementado todavia
   dinamicas:
     set         : [1..9] 
