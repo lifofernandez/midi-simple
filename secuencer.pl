@@ -23,15 +23,15 @@ our(
     $opt_p
 );
 my $verbose = $opt_v;
-my $inputs  = $opt_i // 'tracks';
-my $salida  = $opt_o // 'sequencia.mid.';
+my $yamls = $opt_i // 'tracks';
+my $salida  = $opt_o // 'sequencia.mid';
 my $pulso = $opt_p // 1000; # mili
 
 ########################################
 # CONSTANTES
 
 my $tic = 240; 
-my @configs = <./$inputs/*>;
+my @configs = <./$yamls/*>;
 
 my @tracks;
 foreach ( @configs ){
@@ -47,7 +47,7 @@ foreach ( @configs ){
     # Propiedades generales que heredan todos los motivos
     # pueden ser sobreescritas en c/u-
     my %defacto  = prosesar_sets( \%{ $config_file->{ defacto } });
-    # TODO: generar aca lista defacto independientes del config
+    # TODO: lista defacto general e para todos los tracks/configs
 
     my $canal = $defacto{ canal };
     say "CANAL: ".$canal if $verbose;
@@ -130,7 +130,7 @@ foreach ( @configs ){
             print "   MICROFORMA: " if $verbose;
             print "@microforma\n" if $verbose;
 
-            print "   ORDEN: " .$motivo{orden}."\n" if $verbose;
+            print "   ORDENADOR: " .$motivo{ ordenador }."\n" if $verbose;
 
 
             my $indice = 0;
@@ -138,11 +138,11 @@ foreach ( @configs ){
             say "   COMPONENTES" if $verbose;
 
             for( @microforma  ){
+
                my $cabezal = $_ - 1; # posicion en las lista de alturas
                my $altura = @alturas[ ( $cabezal ) % scalar @alturas ];
 
                my $nota_st = '';
-
                my @VOCES = ();
                for( 
                    @{ $motivo{ voces }{ procesas } } 
@@ -154,13 +154,17 @@ foreach ( @configs ){
 
                     $nota_st  = $nota_st . $voz  . " ";
                }
-               my $voces_st=  "NOTAS: " . $nota_st  if $verbose;
+               my $voces_st=  "ALTURAS: " . $nota_st;
 
                my $duracion  = @duraciones[ $indice % scalar @duraciones ];
-               #my $inicio = $tic * $retraso;
-               #my $final  = $duracion;
-
                my $dinamica   = @dinamicas[ $indice % scalar @dinamicas ];
+
+               if ( $_ eq 0 ){
+                   $altura = 0;
+                   $dinamica = 0;
+                   splice( @VOCES );
+                   $voces_st=  "SILENCIO";
+               }
 
                my $componente = {
                   indice   => $indice,
@@ -178,7 +182,7 @@ foreach ( @configs ){
                print "\tCABEZAL: " . ( $cabezal + 1) . " " if $verbose;
                print "\tDURACION: " . $duracion . "qn" if $verbose;
                print "\tDINAMICA: " . int( $dinamica * 127 ) if $verbose;
-               print "\t".$voces_st."\n" if $verbose;
+               print "\t" . $voces_st . "\n" if $verbose;
             }
 
             # Paso AoH a HoH
@@ -227,26 +231,39 @@ foreach ( @configs ){
              my %M =  %{ $E{ MOTIVOS }{ $_ } };
              my %C =  %{ $M{ COMPONENTES } };
 
-             my $orden = $M{ orden } // 'indice';
+             my $orden = $M{ ordenador } // 'indice';
 
              # to avoid "Use uninitialized value..."
              my @compIDs = grep defined $C{ $_ }{ $orden }, keys %C;
 
              # Componentes a MIDI::Events
              my $inicio = 0;
+             # TODO REVISAR INICIO/RETRASO cambio de motivo
              for my $componenteID (
                  sort { $C{ $a }{ $orden } <=> $C{ $b }{ $orden } } 
                  @compIDs # keys %C
              ){
 
                  my @V = @{ $C{ $componenteID }{ voces } };
+                  
 
-                 my $retraso =  $tic * $M{ duraciones }{ retraso } // 0;
-
-                 $inicio = $inicio + $retraso; 
+                 # TODO REVISAR INICIO/RETRASO cambio de motivo
                  my $final = $tic * $C{ $componenteID }{ duracion };
+                 my $retraso =  $tic * $M{ duraciones }{ retraso } // 0;
                  my $recorte =  $tic * $M{ duraciones }{ recorte } // 0;
 
+                 if ( 
+                      !@V  
+                 ){
+                     # Sin Voces, SILENCIO
+                     $inicio = $recorte + $final; 
+                     next;
+                 }
+
+                 
+
+
+                 $inicio = $inicio + $retraso; 
                  $final = $final - $recorte - $retraso;
                  my $fluctuacion = $M{ dinamicas }{ fluctuacion };
                  my $rand = 0;
@@ -267,7 +284,6 @@ foreach ( @configs ){
                      );
                      $inicio = 0;
                  }
-                 $inicio = $inicio + $recorte  ; 
                  for( @V ){
                      my $altura = $_;
                      push @events, (
@@ -275,6 +291,8 @@ foreach ( @configs ){
                      );
                      $final = 0;
                  }
+
+                 $inicio = $inicio + $recorte; 
               }
         }
 
@@ -314,6 +332,10 @@ sub prosesar_sets{
             my @array_procesado = map { 
                eval( $_ . $operador . $grano ) 
             } @array_evaluado;
+
+            my $reverse = $H->{ $v }{ reverse } // 0;
+            @array_procesado = reverse @array_procesado if $reverse;
+
             $H->{ $v }{ procesas } = \@array_procesado;
 
         }
@@ -325,7 +347,7 @@ sub prosesar_sets{
         }
 
     }
-    return %{$H};
+    return %{ $H };
 }
 
 __DATA__
