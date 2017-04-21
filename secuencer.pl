@@ -25,7 +25,7 @@ our(
 my $verbose = $opt_v;
 my $yamls = $opt_i // 'tracks';
 my $salida  = $opt_o // 'sequencia.mid';
-my $pulso = $opt_p // 1000; # mili
+my $pulso = ( $opt_p // '1000' ) . '_000'; # mili
 
 ########################################
 # CONSTANTES
@@ -157,7 +157,7 @@ foreach ( @configs ){
                my $voces_st=  "ALTURAS: " . $nota_st;
 
                my $duracion  = @duraciones[ $indice % scalar @duraciones ];
-               my $dinamica   = @dinamicas[ $indice % scalar @dinamicas ];
+               my $dinamica  = @dinamicas[ $indice % scalar @dinamicas ];
 
                if ( $_ eq 0 ){
                    $altura = 0;
@@ -212,7 +212,8 @@ foreach ( @configs ){
 
     # Track setup
     my @events = (
-        [ 'set_tempo', 0, $pulso . '_000'],
+        #TODO: pulso no esta funcionando bien
+        [ 'set_tempo', 0, $pulso ],
         [ 'text_event', 0, "Track: " . $nombre ],
         [ 'patch_change', 0, $canal, $programa ],
     );
@@ -245,23 +246,23 @@ foreach ( @configs ){
              ){
 
                  my @V = @{ $C{ $componenteID }{ voces } };
-                  
+
 
                  # TODO REVISAR INICIO/RETRASO cambio de motivo
                  my $final = $tic * $C{ $componenteID }{ duracion };
-                 my $retraso =  $tic * $M{ duraciones }{ retraso } // 0;
-                 my $recorte =  $tic * $M{ duraciones }{ recorte } // 0;
+                 my $retraso =  int( $tic * ( $M{ duraciones }{ retraso } // 0 ) );
+                 my $recorte =  int( $tic * ( $M{ duraciones }{ recorte } // 0 ) );
+                 say $retraso;
+                 say $recorte;
 
-                 if ( 
-                      !@V  
+                 if (
+                      !@V
                  ){
                      # Sin Voces, SILENCIO
-                     $inicio = $recorte + $final; 
+                     # $inicio = $final;
+                     $inicio = $final; 
                      next;
                  }
-
-                 
-
 
                  $inicio = $inicio + $retraso; 
                  $final = $final - $recorte - $retraso;
