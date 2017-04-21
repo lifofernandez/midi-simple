@@ -1,16 +1,17 @@
 ########################################
-# general Track Configs
+# General Track Configs
 constantes:
   nombre     : Bajo
   macroforma : [A,B,B]
   repeticiones: 1
 
 ########################################
-# Cofiguracion de los motivos por defecto
+# Configuracion por defecto de los motivos
 defacto:
   canal      : 2 
   programa   : 33
-  ordenador  : indice # defacto 
+  ordenador  : indice # ordenador de componentes (notas) 
+  # puede ser reordenadas x altura, dinamica o duracion
   alturas:
     set         : [0,2,3,5,7,9,10,12] # dorico 
     # set         : [0,3,5,7,10] # penta
@@ -18,10 +19,10 @@ defacto:
     octava      : 0
     tonica      : 60
   voces: 
-    set         : [ 0 ] # una voz sola ;) 
-    relacion    : diatonica # NIT
-    # diatonica, las voces recorren el set de alturas en dif casillero
-    # paralela, crea una voz paralela a X semitonos de la original
+    set         : [ 0 ] # una voz sola ;)
+    # set       : [ 0,2,5 ] # triada :)
+    # relacion    : paralela # todavia no implementado
+    # x ahora las voces recorren el set de alturas en dif casillero
   duraciones:
     set         : [1] 
     reverse     : false 
@@ -32,12 +33,12 @@ defacto:
     # TODO: agregar operaciones matematicas mas complejas
     # TODO: considerar poder cambiar orden op2 ** op1 
     operador    : '*' # se banca otros math op, 
-    grano       : .1 # se puede usar para cualquier set
+    grano       : .1  # se puede usar para cualquier set
     reverse     : true
-    fluctuacion : .3  # humanizacion cuestionable 
+    fluctuacion : .3  # humanizacion, opcional y cuestionable 
 
 ########################################
-# hash de ESTRUCTURAS > motivos
+# ESTRUCTURAS > motivos
 ESTRUCTURAS:
   A:
     forma: [a,b,b,a^,a^^]

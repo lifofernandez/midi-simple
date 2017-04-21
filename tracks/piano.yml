@@ -29,7 +29,7 @@ defacto:
     operador    : '*' 
     grano       : .1 
     reverse     : true
-    fluctuacion : .3  # humanizacion, opcional y cuestionable 
+    fluctuacion : .3  
 
 ########################################
 # hash de ESTRUCTURAS > motivos
