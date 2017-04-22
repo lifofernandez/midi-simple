@@ -46,7 +46,7 @@ foreach ( @configs ){
 
     # Propiedades generales que heredan todos los motivos
     # pueden ser sobreescritas en c/u-
-    my %defacto  = prosesar_sets( \%{ $config_file->{ defacto } });
+    my %defacto  = prosesar_sets( \%{ $config_file->{ defacto } } );
     # TODO: lista defacto general e para todos los tracks/configs
 
     my $canal = $defacto{ canal };
@@ -100,13 +100,17 @@ foreach ( @configs ){
                     }
                }
             }
+            # ENCAPSULAR
             # Negociar config defacto con las propias 
             for my $prop_global(
                 keys %defacto
             ){
+                my $valor_global = $defacto{ $prop_global };
                 if ( !$motivo{ $prop_global } ){
-                    my $valor_global = $defacto{ $prop_global };
                     $motivo{ $prop_global } = $valor_global;
+                }elsif( ref( $valor_global ) eq 'HASH' ){ 
+                    # agregar recursion.....
+                    say "RECURSOION EN >". $valor_global;
                 }
             }
 
@@ -180,9 +184,10 @@ foreach ( @configs ){
                print "    " if $verbose;
                print "INDICE: " . $indice . " " if $verbose;
                print "\tCABEZAL: " . ( $cabezal + 1) . " " if $verbose;
-               print "\tDURACION: " . $duracion . "qn" if $verbose;
                print "\tDINAMICA: " . int( $dinamica * 127 ) if $verbose;
-               print "\t" . $voces_st . "\n" if $verbose;
+               print "\t" . $voces_st  if $verbose;
+               print "\tDURACION: " . $duracion . "qn" if $verbose;
+               print "\n" if $verbose;
             }
 
             # Paso AoH a HoH
@@ -219,6 +224,7 @@ foreach ( @configs ){
     );
 
     # my $index = 0;
+    my $momento = 0;
     for(
         # reverse
         ( @macroforma )
@@ -238,7 +244,11 @@ foreach ( @configs ){
              my @compIDs = grep defined $C{ $_ }{ $orden }, keys %C;
 
              # Componentes a MIDI::Events
-             my $inicio = 0;
+             my $retraso =  int( $tic * ( $M{ duraciones }{ retraso } // 0 ) );
+             my $recorte =  int( $tic * ( $M{ duraciones }{ recorte } // 0 ) );
+
+             my $fluctuacion = $M{ dinamicas }{ fluctuacion };
+
              # TODO REVISAR INICIO/RETRASO cambio de motivo
              for my $componenteID (
                  sort { $C{ $a }{ $orden } <=> $C{ $b }{ $orden } } 
@@ -247,26 +257,20 @@ foreach ( @configs ){
 
                  my @V = @{ $C{ $componenteID }{ voces } };
 
-
                  # TODO REVISAR INICIO/RETRASO cambio de motivo
                  my $final = $tic * $C{ $componenteID }{ duracion };
-                 my $retraso =  int( $tic * ( $M{ duraciones }{ retraso } // 0 ) );
-                 my $recorte =  int( $tic * ( $M{ duraciones }{ recorte } // 0 ) );
-                 say $retraso;
-                 say $recorte;
 
                  if (
                       !@V
                  ){
                      # Sin Voces, SILENCIO
-                     # $inicio = $final;
-                     $inicio = $final; 
+                     # $momento = $final;
+                     $momento = $momento + $final;
                      next;
                  }
 
-                 $inicio = $inicio + $retraso; 
+                 $momento = $momento + $retraso; 
                  $final = $final - $recorte - $retraso;
-                 my $fluctuacion = $M{ dinamicas }{ fluctuacion };
                  my $rand = 0;
                  if ( $fluctuacion ){
                      my $min  = -$fluctuacion;
@@ -281,10 +285,11 @@ foreach ( @configs ){
                  for( @V ){
                      my $altura = $_;
                      push @events, (
-                         [ 'note_on' , $inicio, $canal, $altura, $dinamica ],
+                         [ 'note_on' , $momento, $canal, $altura, $dinamica ],
                      );
-                     $inicio = 0;
+                     $momento = 0;
                  }
+                 $momento = $momento + $recorte; 
                  for( @V ){
                      my $altura = $_;
                      push @events, (
@@ -293,7 +298,6 @@ foreach ( @configs ){
                      $final = 0;
                  }
 
-                 $inicio = $inicio + $recorte; 
               }
         }
 
