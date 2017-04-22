@@ -90,29 +90,29 @@ foreach ( @configs ){
             my $padreID = $motivoID;
             my $prima = chop( $padreID );
             if( $prima eq "^" ){
-                 my %motivo_padre = %{ $MOTIVOS{ $padreID } };
-                 for my $prop_padre(
-                     keys %motivo_padre
-                 ){
-                    if ( !$motivo{ $prop_padre } ){
-                        my $valor_padre = $motivo_padre{ $prop_padre };
-                        $motivo{ $prop_padre } = $valor_padre;
-                    }
-               }
+                 my %prima = %{ $MOTIVOS{ $padreID } };
+                 %motivo = heredar( \%prima, \%motivo);
+              #   for my $prop_padre(
+              #       keys %motivo_padre
+              #   ){
+              #      if ( !$motivo{ $prop_padre } ){
+              #          my $valor_padre = $motivo_padre{ $prop_padre };
+              #          $motivo{ $prop_padre } = $valor_padre;
+              #      }
+              # }
             }
-            # ENCAPSULAR
             # Negociar config defacto con las propias 
-            for my $prop_global(
-                keys %defacto
-            ){
-                my $valor_global = $defacto{ $prop_global };
-                if ( !$motivo{ $prop_global } ){
-                    $motivo{ $prop_global } = $valor_global;
-                }elsif( ref( $valor_global ) eq 'HASH' ){ 
-                    # agregar recursion.....
-                    say "RECURSOION EN >". $valor_global;
-                }
-            }
+           %motivo = heredar( \%defacto, \%motivo);
+
+            #for my $prop_global(
+            #    keys %defacto
+            #){
+            #    my $valor_global = $defacto{ $prop_global };
+            #    if ( !$motivo{ $prop_global } ){
+            #        $motivo{ $prop_global } = $valor_global;
+            #        # agregar recursion.....
+            #    }
+            #}
 
             ########################################
             # Procesar motivos armar componetes
@@ -263,8 +263,7 @@ foreach ( @configs ){
                  if (
                       !@V
                  ){
-                     # Sin Voces, SILENCIO
-                     # $momento = $final;
+                     # Sin Voces = SILENCIO
                      $momento = $momento + $final;
                      next;
                  }
@@ -278,7 +277,7 @@ foreach ( @configs ){
                      $rand = $min + rand( $max - $min );
                  }
 
-                 my $dinamica = int( 
+                 my $dinamica = int(
                      127 * ( $C{ $componenteID }{ dinamica } + $rand ) 
                  );
 
@@ -319,8 +318,7 @@ $opus->write_to_file( $salida );
 
 # SUBS
 
-# Procesar Sets 
-# recorre 1 HASH, evalua sets y arrays
+# Reecorre 1 HASH, evalua sets y arrays
 sub prosesar_sets{
     my $H = shift;
     for my $v( keys %{ $H } ){
@@ -355,4 +353,22 @@ sub prosesar_sets{
     return %{ $H };
 }
 
-__DATA__
+# Pasar propiedades faltantes de %Ha > %Hb 
+sub heredar{
+    my( $padre, $hijo ) = @_;
+
+    for my $propiedad(
+        keys %{ $padre }
+    ){
+        if( !$hijo->{ $propiedad } ){
+             $hijo->{ $propiedad } = $padre->{ $propiedad };
+        }elsif( ref( $hijo->{ $propiedad } ) eq 'HASH' ){ 
+            my %nieto = heredar( 
+                 \%{ $padre->{ $propiedad } },
+                 \%{ $hijo->{ $propiedad } }
+            );
+            $hijo->{ $propiedad } = \%nieto; 
+        }
+    }
+    return %{ $hijo } 
+}
