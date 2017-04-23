@@ -45,7 +45,7 @@ foreach ( @configs ){
     say "TRACK: ".$nombre;
 
     # Propiedades generales que heredan todos los motivos
-    # pueden ser sobreescritas en c/u-
+    #  que pueden ser sobreescritas en c/u-
     my %defacto  = prosesar_sets( \%{ $config_file->{ defacto } } );
     # TODO: lista defacto general e para todos los tracks/configs
 
@@ -92,27 +92,9 @@ foreach ( @configs ){
             if( $prima eq "^" ){
                  my %prima = %{ $MOTIVOS{ $padreID } };
                  %motivo = heredar( \%prima, \%motivo);
-              #   for my $prop_padre(
-              #       keys %motivo_padre
-              #   ){
-              #      if ( !$motivo{ $prop_padre } ){
-              #          my $valor_padre = $motivo_padre{ $prop_padre };
-              #          $motivo{ $prop_padre } = $valor_padre;
-              #      }
-              # }
             }
-            # Negociar config defacto con las propias 
-           %motivo = heredar( \%defacto, \%motivo);
-
-            #for my $prop_global(
-            #    keys %defacto
-            #){
-            #    my $valor_global = $defacto{ $prop_global };
-            #    if ( !$motivo{ $prop_global } ){
-            #        $motivo{ $prop_global } = $valor_global;
-            #        # agregar recursion.....
-            #    }
-            #}
+            # Sucesion de bienes...
+            %motivo = heredar( \%defacto, \%motivo);
 
             ########################################
             # Procesar motivos armar componetes
@@ -153,7 +135,7 @@ foreach ( @configs ){
                ){
                     # pos. en las lista de alturas para la voz actual
                     my $cabezal_voz = $cabezal + $_;
-                    my $voz = @alturas[ ( $cabezal_voz ) % scalar @alturas ];
+                    my $voz = @alturas[ $cabezal_voz % scalar @alturas ];
                     push @VOCES, $voz;
 
                     $nota_st  = $nota_st . $voz  . " ";

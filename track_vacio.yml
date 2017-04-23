@@ -1,0 +1,31 @@
+########################################
+# Cofiguraciones generales del Track
+constantes:
+  nombre     : Vacio
+  macroforma : [A]
+  repeticiones: 1
+
+########################################
+# Cofiguracion de los motivos por defecto
+defacto:
+  canal      : 1 
+  programa   : 1
+  ordenador  : indice 
+  alturas:
+    set         : [0,2,4,5,7,9,11,12] # Diatonica Mayor 
+    octava      : 0  # central 
+    tonica      : 60 # C
+  voces:
+    set         : [ 0 ] 
+  duraciones:
+    set         : [ 1 ] 
+  dinamicas:
+    set         : [1] 
+    fluctuacion : .2  
+
+ESTRUCTURAS:
+  A:
+    forma: [a]
+    MOTIVOS:
+      a:
+        microforma : [1] 
