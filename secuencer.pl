@@ -16,17 +16,16 @@ use POSIX qw(log10);
 
 ########################################
 # ARGUMENTS
-getopts('vi:o:p:m:');
+getopts('vi:o:p:');
 our(
     $opt_v,
     $opt_i,
     $opt_o,
     $opt_p,
-    $opt_m,
 );
 my $verbose = $opt_v;
 my $yamls = $opt_i // 'tracks';
-my $salida  = $opt_o // 'sequencia.mid';
+my $salida  = $opt_o // 'secuencia.mid';
 my $pulso = ( $opt_p // '1000' ) . '_000'; # mili
 
 
@@ -42,7 +41,6 @@ foreach ( @configs ){
     my $config_file = LoadFile( $_ );
     my %constantes = %{ $config_file->{ constantes } };
 
-    my $metro = $opt_m // '4/4' ; # mili
     my $metro = $constantes{ metro } // '4/4';
     # The denominator is a negative power of two: log10( X ) / log10( 2 ) 
     # 2 represents a quarter-note, 3 represents an eighth-note, etc.
@@ -147,7 +145,7 @@ foreach ( @configs ){
                    @{ $motivo{ voces }{ procesas } } 
                ){
                     # pos. en las lista de alturas para la voz actual
-                    my $cabezal_voz = $cabezal + $_;
+                    my $cabezal_voz = ( $cabezal + $_ )- 1;
                     my $voz = @alturas[ $cabezal_voz % scalar @alturas ];
                     push @VOCES, $voz;
 
