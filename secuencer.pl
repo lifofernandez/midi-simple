@@ -12,20 +12,23 @@ use Getopt::Std;
 use Data::Dumper;
 use MIDI;
 use YAML::XS 'LoadFile';
+use POSIX qw(log10);
 
 ########################################
 # ARGUMENTS
-getopts('vi:o:p:');
+getopts('vi:o:p:m:');
 our(
     $opt_v,
     $opt_i,
     $opt_o,
-    $opt_p
+    $opt_p,
+    $opt_m,
 );
 my $verbose = $opt_v;
 my $yamls = $opt_i // 'tracks';
 my $salida  = $opt_o // 'sequencia.mid';
 my $pulso = ( $opt_p // '1000' ) . '_000'; # mili
+
 
 ########################################
 # CONSTANTES
@@ -38,6 +41,16 @@ foreach ( @configs ){
 
     my $config_file = LoadFile( $_ );
     my %constantes = %{ $config_file->{ constantes } };
+
+    my $metro = $opt_m // '4/4' ; # mili
+    my $metro = $constantes{ metro } // '4/4';
+    # The denominator is a negative power of two: log10( X ) / log10( 2 ) 
+    # 2 represents a quarter-note, 3 represents an eighth-note, etc.
+    my (
+        $numerador,
+        $denominador,
+    ) = split '/', $metro;
+    $denominador = log10( $denominador ) / log10( 2 );
 
     # Track setup
     my $nombre = $constantes{ nombre };
@@ -201,6 +214,7 @@ foreach ( @configs ){
     my @events = (
         #TODO: pulso no esta funcionando bien
         [ 'set_tempo', 0, $pulso ],
+        [ 'time_signature', 0, $numerador, $denominador, 24, 8],
         [ 'text_event', 0, "Track: " . $nombre ],
         [ 'patch_change', 0, $canal, $programa ],
     );
