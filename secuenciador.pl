@@ -2,38 +2,58 @@
 
 ########################################
 # Secuenciador Motivocentrico 
-
 # Lisandro Fernández ( Febrero 2017 )
 
 use feature 'say';
 use strict;
 use warnings;
-use Getopt::Std;
-use Data::Dumper;
+use Pod::Usage;
+use Getopt::Long;
+
 use MIDI;
 use YAML::XS 'LoadFile';
 use POSIX qw(log10);
+# use Data::Dumper;
 
 ########################################
 # ARGUMENTS
-getopts('vi:o:p:');
-our(
-    $opt_v,
-    $opt_i,
-    $opt_o,
-    $opt_p,
+my $secuenciador_VER = '0.00.01';
+my $site        = 'http://www.github.com/lifofernandez';
+my (
+    $help, 
+    $verbose,
+    $man,
+    $info
 );
-my $verbose = $opt_v;
-my $yamls = $opt_i // 'tracks';
-my $salida  = $opt_o // 'secuencia.mid';
-my $pulso = ( $opt_p // '1000' ) . '_000'; # mili
+my $entrada = 'tracks';
+my $salida  = 'secuencia.mid';
+my $bpm = '60';
+GetOptions(
+     # GetOptions ("library=s" => \@libfiles);
+     # GetOptions ("library=s@" => \$libfiles);
+    'entrada=s'  => \$entrada, 
+    'salida=s'   => \$salida, 
+    'bpm=i'      => \$bpm, 
 
+    'verbose+'   => \$verbose, 
+    'help!'      => \$help, 
+    'man!'       => \$man,
+    'info!' => \$info,
+);
+# pod2usage(-verbose => 1) && exit if ($opt_debug !~ /^[01]$/);
+pod2usage(-verbose => 1) && exit if defined $help;
+pod2usage(-verbose => 2) && exit if defined $man;
 
 ########################################
 # CONSTANTES
 
 my $tic = 240; 
-my @configs = <./$yamls/*>;
+
+my @configs = <./$entrada/*>;
+if( -f $entrada ){
+  @configs[0] = $entrada;
+}
+my $pulso = int( ( 60 / $bpm ) * 1000 ) . '_000';
 
 my @tracks;
 foreach ( @configs ){
@@ -42,12 +62,12 @@ foreach ( @configs ){
     my %constantes = %{ $config_file->{ constantes } };
 
     my $metro = $constantes{ metro } // '4/4';
-    # The denominator is a negative power of two: log10( X ) / log10( 2 ) 
-    # 2 represents a quarter-note, 3 represents an eighth-note, etc.
     my (
         $numerador,
         $denominador,
     ) = split '/', $metro;
+    # The denominator is a negative power of two: log10( X ) / log10( 2 ) 
+    # 2 represents a quarter-note, 3 represents an eighth-note, etc.
     $denominador = log10( $denominador ) / log10( 2 );
 
     # Track setup
@@ -109,7 +129,6 @@ foreach ( @configs ){
 
             ########################################
             # Procesar motivos armar componetes
-            # a partir de multipes propiedades componer secunecia
             # combinado parametros ( altura, duracion, dinamicas, etc )
 
             my @alturas = map {
@@ -117,9 +136,6 @@ foreach ( @configs ){
                   $motivo{ alturas }{ tonica } +
                   ( 12 * $motivo{ alturas }{ octava } )
             } @{ $motivo{ alturas }{ procesas } };
-            my @duraciones = @{ $motivo{ duraciones }{ procesas } };
-            my @dinamicas  = @{ $motivo{ dinamicas }{ procesas } };
-
             print "   ALTURAS: " if $verbose;
             print "@alturas\n" if $verbose;
 
@@ -129,11 +145,12 @@ foreach ( @configs ){
 
             print "   ORDENADOR: " .$motivo{ ordenador }."\n" if $verbose;
 
+            my @duraciones = @{ $motivo{ duraciones }{ procesas } };
+            my @dinamicas  = @{ $motivo{ dinamicas }{ procesas } };
 
             my $indice = 0;
             my @COMPONENTES = ();
             say "   COMPONENTES" if $verbose;
-
             for( @microforma  ){
 
                my $cabezal = $_ - 1; # posicion en las lista de alturas
@@ -144,14 +161,17 @@ foreach ( @configs ){
                for( 
                    @{ $motivo{ voces }{ procesas } } 
                ){
-                    # pos. en las lista de alturas para la voz actual
-                    my $cabezal_voz = ( $cabezal + $_ )- 1;
-                    my $voz = @alturas[ $cabezal_voz % scalar @alturas ];
-                    push @VOCES, $voz;
+                    #TODO revisar/usar voz relacion = 0
+                    if ( $_ ne 0 ){
+                        # pos. en las lista de alturas para la voz actual
+                        my $cabezal_voz = ( $cabezal + $_ ) - 1;
+                        my $voz = @alturas[ $cabezal_voz % scalar @alturas ];
+                        push @VOCES, $voz;
 
-                    $nota_st  = $nota_st . $voz  . " ";
+                        $nota_st  = $nota_st . $voz  . " ";
+                    }
                }
-               my $voces_st=  "ALTURAS: " . $nota_st;
+               my $voces_st =  "ALTURAS: " . $nota_st;
 
                my $duracion  = @duraciones[ $indice % scalar @duraciones ];
                my $dinamica  = @dinamicas[ $indice % scalar @dinamicas ];
@@ -210,14 +230,13 @@ foreach ( @configs ){
 
     # Track setup
     my @events = (
-        #TODO: pulso no esta funcionando bien
+        #TODO: pulso no esta funcionando bien en ableton :S
         [ 'set_tempo', 0, $pulso ],
         [ 'time_signature', 0, $numerador, $denominador, 24, 8],
-        [ 'text_event', 0, "Track: " . $nombre ],
+        [ 'text_event', 0, "TRACK: " . $nombre ],
         [ 'patch_change', 0, $canal, $programa ],
     );
 
-    # my $index = 0;
     my $momento = 0;
     for(
         # reverse
@@ -234,36 +253,29 @@ foreach ( @configs ){
 
              my $orden = $M{ ordenador } // 'indice';
 
-             # to avoid "Use uninitialized value..."
-             my @compIDs = grep defined $C{ $_ }{ $orden }, keys %C;
 
-             # Componentes a MIDI::Events
              my $retraso =  int( $tic * ( $M{ duraciones }{ retraso } // 0 ) );
              my $recorte =  int( $tic * ( $M{ duraciones }{ recorte } // 0 ) );
 
              my $fluctuacion = $M{ dinamicas }{ fluctuacion };
 
-             # TODO REVISAR INICIO/RETRASO cambio de motivo
+             my @compIDs = grep defined $C{ $_ }{ $orden }, keys %C;
              for my $componenteID (
                  sort { $C{ $a }{ $orden } <=> $C{ $b }{ $orden } } 
                  @compIDs # keys %C
              ){
-
-                 my @V = @{ $C{ $componenteID }{ voces } };
-
-                 # TODO REVISAR INICIO/RETRASO cambio de motivo
                  my $final = $tic * $C{ $componenteID }{ duracion };
 
-                 if (
-                      !@V
-                 ){
-                     # Sin Voces = SILENCIO
+                 my @V = @{ $C{ $componenteID }{ voces } };
+                 # Sin Voces = SILENCIO
+                 if ( !@V ){
                      $momento = $momento + $final;
                      next;
                  }
 
                  $momento = $momento + $retraso; 
                  $final = $final - $recorte - $retraso;
+
                  my $rand = 0;
                  if ( $fluctuacion ){
                      my $min  = -$fluctuacion;
@@ -290,10 +302,8 @@ foreach ( @configs ){
                      );
                      $final = 0;
                  }
-
-              }
+            }
         }
-
     }
 
     my $track = MIDI::Track->new({
@@ -312,7 +322,7 @@ $opus->write_to_file( $salida );
 
 # SUBS
 
-# Reecorre 1 HASH, evalua sets y arrays
+# Reecorre 1 HASH, evalua custom sets y arrays regulares
 sub prosesar_sets{
     my $H = shift;
     for my $v( keys %{ $H } ){
@@ -366,3 +376,95 @@ sub heredar{
     }
     return %{ $hijo } 
 }
+
+
+
+END{
+  if(defined $info){
+    print
+      "\nModules, Perl, OS, Program info:\n",
+      "  Pod::Usage            $Pod::Usage::VERSION\n",
+      "  Getopt::Long          $Getopt::Long::VERSION\n",
+      "  MIDI                  $MIDI::VERSION\n",
+      "  YAML::XS              $YAML::XS::VERSION\n",
+      "  POSIX                 $POSIX::VERSION \n",
+      "  strict                $strict::VERSION\n",
+      "  Perl                  $]\n",
+      "  OS                    $^O\n",
+      "  secuenciador.pl       $secuenciador_VER\n",
+      "  $0\n",
+      "  $site\n",
+      "\n\n";
+  }
+}
+
+
+=head1 NAME
+
+ secuenciador.pl
+
+=head1 SYNOPSIS
+
+ secuenciador.pl Buenos Aires, Argentina. 
+
+=head1 DESCRIPTION
+
+ Generar una secuencia MIDI a partir de hojas de analisis 
+
+ Los argumentos pueden declararse tanto en forma larga como corta.
+ ejemplo:
+   secuenciador.pl --help
+   secuenciador.pl -h
+
+=head1 ARGUMENTS
+
+ --help      Imprimir esta ayuda en vez de generar secuencia MIDI 
+ --man       Print complete man page instead of fetching weather data
+
+ Mas inforamcion en las configuraciones de track proveidas como ejemplo.
+
+=head1 OPTIONS
+
+ --info       print Modules, Perl, OS, Program info
+ --verbose    print debugging information
+
+=head1 AUTHOR
+
+ Lisandro Fernandez
+
+=head1 CREDITS
+
+
+=head1 TESTED
+ Pod::Usage            1.68
+ Getopt::Long          2.48
+ strict                1.11
+ Perl                  5.024001
+ OS                    linux
+ secuenciador.pl       0.00.01
+
+=head1 BUGS
+
+ None that I know of.
+
+=head1 TODO
+
+ Terminar esta documnetacion
+ Test on ActivePerl
+ Print modules... info on error
+
+
+=head1 UPDATES
+
+ 2002-03-29   17:30 CST
+   Replace 'unless defined(@places)' with 'unless(@places)'
+    to avoid warning on 5.6.1
+   Perlish idiom instead of looping through hash twice
+   Post to PerlMonks
+
+ 2002-03-29   12:05 CST
+   Initial working code
+
+=cut
+
+
