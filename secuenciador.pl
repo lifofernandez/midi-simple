@@ -13,7 +13,7 @@ use Getopt::Long;
 use MIDI;
 use YAML::XS 'LoadFile';
 use POSIX qw(log10);
-# use Data::Dumper;
+ use Data::Dumper;
 
 ########################################
 # ARGUMENTS
@@ -25,21 +25,23 @@ my (
     $man,
     $info
 );
-my $entrada = 'tracks';
 my $salida  = 'secuencia.mid';
 my $bpm = '60';
+
+my @entradas = ();
+my $entrada = ('tracks');
+
 GetOptions(
-     # GetOptions ("library=s" => \@libfiles);
-     # GetOptions ("library=s@" => \$libfiles);
-    'entrada=s'  => \$entrada, 
+    'entradas=s' => \@entradas,
     'salida=s'   => \$salida, 
     'bpm=i'      => \$bpm, 
 
     'verbose+'   => \$verbose, 
     'help!'      => \$help, 
     'man!'       => \$man,
-    'info!' => \$info,
+    'info!'      => \$info,
 );
+print Dumper (@entradas);
 # pod2usage(-verbose => 1) && exit if ($opt_debug !~ /^[01]$/);
 pod2usage(-verbose => 1) && exit if defined $help;
 pod2usage(-verbose => 2) && exit if defined $man;
@@ -48,15 +50,24 @@ pod2usage(-verbose => 2) && exit if defined $man;
 # CONSTANTES
 
 my $tic = 240; 
-
-my @configs = <./$entrada/*>;
-if( -f $entrada ){
-  @configs[0] = $entrada;
-}
 my $pulso = int( ( 60 / $bpm ) * 1000 ) . '_000';
+my $simbolo_prima = "^";
+
+my @CONFIGS = ();
+for( @entradas ){
+    if( -f $_ ){
+      push @CONFIGS, $_;
+    }
+    if( -d $_ ){
+      my @dir = <./$_/*>;
+      push @CONFIGS, @dir;
+    }
+}
+print Dumper (@CONFIGS);
+
 
 my @tracks;
-foreach ( @configs ){
+for( @CONFIGS ){
 
     my $config_file = LoadFile( $_ );
     my %constantes = %{ $config_file->{ constantes } };
@@ -78,7 +89,6 @@ foreach ( @configs ){
     # Propiedades generales que heredan todos los motivos
     #  que pueden ser sobreescritas en c/u-
     my %defacto  = prosesar_sets( \%{ $config_file->{ defacto } } );
-    # TODO: lista defacto general e para todos los tracks/configs
 
     my $canal = $defacto{ canal };
     say "CANAL: ".$canal if $verbose;
@@ -120,12 +130,12 @@ foreach ( @configs ){
             # a^, a^^, a^^^, etc
             my $padreID = $motivoID;
             my $prima = chop( $padreID );
-            if( $prima eq "^" ){
+            if( $prima eq $simbolo_prima ){
                  my %prima = %{ $MOTIVOS{ $padreID } };
-                 %motivo = heredar( \%prima, \%motivo);
+                 %motivo = heredar( \%prima, \%motivo );
             }
             # Sucesion de bienes...
-            %motivo = heredar( \%defacto, \%motivo);
+            %motivo = heredar( \%defacto, \%motivo );
 
             ########################################
             # Procesar motivos armar componetes
@@ -143,7 +153,7 @@ foreach ( @configs ){
             print "   MICROFORMA: " if $verbose;
             print "@microforma\n" if $verbose;
 
-            print "   ORDENADOR: " .$motivo{ ordenador }."\n" if $verbose;
+            print "   ORDENADOR: " . $motivo{ ordenador }. "\n" if $verbose;
 
             my @duraciones = @{ $motivo{ duraciones }{ procesas } };
             my @dinamicas  = @{ $motivo{ dinamicas }{ procesas } };
@@ -163,7 +173,7 @@ foreach ( @configs ){
                ){
                     #TODO revisar/usar voz relacion = 0
                     if ( $_ ne 0 ){
-                        # pos. en las lista de alturas para la voz actual
+                        # pos. en las lista de alturas para la esta voz 
                         my $cabezal_voz = ( $cabezal + $_ ) - 1;
                         my $voz = @alturas[ $cabezal_voz % scalar @alturas ];
                         push @VOCES, $voz;
@@ -230,7 +240,6 @@ foreach ( @configs ){
 
     # Track setup
     my @events = (
-        #TODO: pulso no esta funcionando bien en ableton :S
         [ 'set_tempo', 0, $pulso ],
         [ 'time_signature', 0, $numerador, $denominador, 24, 8],
         [ 'text_event', 0, "TRACK: " . $nombre ],
@@ -252,7 +261,6 @@ foreach ( @configs ){
              my %C =  %{ $M{ COMPONENTES } };
 
              my $orden = $M{ ordenador } // 'indice';
-
 
              my $retraso =  int( $tic * ( $M{ duraciones }{ retraso } // 0 ) );
              my $recorte =  int( $tic * ( $M{ duraciones }{ recorte } // 0 ) );
@@ -321,7 +329,6 @@ my $opus = MIDI::Opus->new({
 $opus->write_to_file( $salida );
 
 # SUBS
-
 # Reecorre 1 HASH, evalua custom sets y arrays regulares
 sub prosesar_sets{
     my $H = shift;
@@ -407,26 +414,52 @@ END{
 
  secuenciador.pl Buenos Aires, Argentina. 
 
+ Generar secuencia MIDI a partir de hojas de analisis serializadas
+ en sintaxis YAML. 
+ 
+ NOTA: 
+ Tanto el codigo, como tambien esta documentacion, fue realizada lo maximo 
+ posible en espaniol (debemos presindir de carateres latinos) para en un 
+ principio favorecer y atraer a usuarios que no leen ingles.
+ No se descarta la posibilidad de futuras traducciones.
+
+
 =head1 DESCRIPTION
 
- Generar una secuencia MIDI a partir de hojas de analisis 
+ Cada track MIDI es representado por una hoja de analisis con las 
+ configuraciones necesarias para obtener una progresion musical.
+
+ La organizacion interna de estas configuraciones de track trata de 
+ representar una hoja de analisis musical estandar jerarquizada en 
+ Estrcucturas que continenen Motivos. 
+
+ A su vez, se propone acercar a la flexibilidad fomentada por el entorno de
+ programacion Perl y su ecosistema.
+
+ Los Motivos pueden heredar propiedades tanto de configuraciones generales
+ (defactos) asi como tambien de otros motivos "primos".
+ 
+ Todos los Sets (alturas, duraciones, dinamicas, etc) soportan rangos 
+ y operaciones matematicas.
+
+ Mas inforamcion en los ejemplos
 
  Los argumentos pueden declararse tanto en forma larga como corta.
  ejemplo:
    secuenciador.pl --help
    secuenciador.pl -h
 
+ 
 =head1 ARGUMENTS
 
- --help      Imprimir esta ayuda en vez de generar secuencia MIDI 
- --man       Print complete man page instead of fetching weather data
+ --help       Imprime esta ayuda en vez de generar secuencia MIDI.
+ --man        Imprime la pagina man completa en vez de generar MIDI.
 
- Mas inforamcion en las configuraciones de track proveidas como ejemplo.
 
 =head1 OPTIONS
 
- --info       print Modules, Perl, OS, Program info
- --verbose    print debugging information
+ --info       Informacion sobre, modulos, entorno y programa.
+ --verbose    Expone los elementos musicales previamente a secuenciarlos. 
 
 =head1 AUTHOR
 
@@ -436,35 +469,42 @@ END{
 
 
 =head1 TESTED
+
  Pod::Usage            1.68
  Getopt::Long          2.48
+ MIDI                  0.83
+ YAML::XS              0.63
+ POSIX                 1.65 
  strict                1.11
  Perl                  5.024001
  OS                    linux
  secuenciador.pl       0.00.01
+ ./secuenciador.pl
 
 =head1 BUGS
-
- None that I know of.
-
+ 
+ El pulso no esta funcionando bien en Live, corroborar si esto es asi 
+ en otro software.
+ 
 =head1 TODO
 
- Terminar esta documnetacion
+ Lista defacto general para todos los tracks/configs.
+ Extender herencia a Estructuras.
+ Control de superposicion o separacion entre estructuras, motivos 
+ y componentes.
+ Terminar esta documnetacion.
  Test on ActivePerl
- Print modules... info on error
-
+ Agregar informacion de debbugeo en errores
 
 =head1 UPDATES
 
- 2002-03-29   17:30 CST
-   Replace 'unless defined(@places)' with 'unless(@places)'
-    to avoid warning on 5.6.1
-   Perlish idiom instead of looping through hash twice
-   Post to PerlMonks
-
- 2002-03-29   12:05 CST
-   Initial working code
+ 2017-04-23   12:00 GTM+3
+   Feliz Cumpleanios Complete, es capaz de secuenciar la melodia
+   desde la hoja de analisis.
 
 =cut
+
+
+
 
 
