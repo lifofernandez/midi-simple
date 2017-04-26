@@ -3,7 +3,7 @@
 constantes:
   nombre       : FelizCumple,  melodia
   metro        : 9/8
-  macroforma   : [  A  ]
+  macroforma   : [ A ]
   repeticiones : 1
 
 ########################################
@@ -44,3 +44,5 @@ ESTRUCTURAS:
         microforma : [ 8, 7 ]
       b^:
         microforma : [ 9, 8 ]
+  A^:
+    forma: [ a^, a^^, a^^^, b^ ]

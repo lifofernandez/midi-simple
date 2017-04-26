@@ -107,11 +107,23 @@ for( @CONFIGS ){
 
     my %ESTRUCTURAS = ();
     for my $estructuraID(
+        sort
         keys %{ $config_file->{ ESTRUCTURAS } }
     ){
         print "\n";
         say "ESTRUCTURA: " . $estructuraID if $verbose;
         my %estructura = %{ $config_file->{ ESTRUCTURAS }{ $estructuraID } };
+
+
+            # Motivos que heredan propiedades de otros
+            # a^^ hereda de a^ que hereda de a.
+        my $madreID = $estructuraID;
+        my $prima = chop( $madreID );
+        if( $prima eq $simbolo_prima ){
+             my %prima = %{ $config_file->{ ESTRUCTURAS }{ $madreID } };
+             %estructura = heredar( \%prima, \%estructura);
+        }
+
         print "  FORMA: " if $verbose;
         print "@{ $estructura{ forma } }\n" if $verbose;
 
@@ -128,10 +140,10 @@ for( @CONFIGS ){
             # Motivos que heredan propiedades de otros
             # a^^ hereda de a^ que hereda de a.
             my $padreID = $motivoID;
-            my $prima = chop( $padreID );
-            if( $prima eq $simbolo_prima ){
-                 my %prima = %{ $MOTIVOS{ $padreID } };
-                 %motivo = heredar( \%prima, \%motivo );
+            my $primo = chop( $padreID );
+            if( $primo eq $simbolo_prima ){
+                 my %primo = %{ $MOTIVOS{ $padreID } };
+                 %motivo = heredar( \%primo, \%motivo );
             }
             # Sucesion de bienes...
             %motivo = heredar( \%defacto, \%motivo );
@@ -358,8 +370,6 @@ sub prosesar_sets{
             $H->{ $v }{ procesas } = \@array_procesado;
 
         }
-        # Si vuelo esto, puedo agregar soporte para herencia entre 
-        # estructuras facilmente, sino medio que hace cagar los array alfabeticos.
         if( ref( $H->{ $v } ) eq 'ARRAY'){ 
             my @array_evaluado = map {
                eval $_
@@ -394,7 +404,7 @@ sub heredar{
 
 
 END{
-  if(defined $info){
+  if( defined $info ){
     print
       "\nModules, Perl, OS, Program info:\n",
       "  Pod::Usage            $Pod::Usage::VERSION\n",
@@ -422,15 +432,15 @@ END{
  Generar secuencia MIDI a partir de multiples hojas de analisis 
  serializadas en sintaxis YAML. 
 
-
-
-=head1 DESCRIPTION
-
  NOTA:
  Tanto el codigo, como tambien esta documentacion, esta escrito lo maximo 
  posible en espaniol (se presinde de carateres latinos) para en un 
  principio favorecer y atraer a usuarios que no leen ingles.
  No se descarta la posibilidad de futuras traducciones.
+
+
+=head1 DESCRIPTION
+
 
  Cada track MIDI es representado por una hoja de analisis con las 
  configuraciones necesarias para obtener una progresion musical.
@@ -438,17 +448,16 @@ END{
  La organizacion interna de estas configuraciones de track trata de 
  ser lo mas autodescriptiva posible y representar una hoja de analisis 
  musical jerarquizada en Estrcucturas que continenen Motivos.
-
- A su vez, se propone acercar a la flexibilidad caracteristica del entorno de
+ A su vez, intenta acercarse a la flexibilidad caracteristica del entorno de
  programacion Perl y su ecosistema.
 
- Los Motivos pueden heredar propiedades tanto de configuraciones generales
- (defactos) asi como tambien de otros motivos "primos".
+ Los Motivos heredan propiedades de configuraciones generales
+ (defacto) asi como tambien de otros motivos "primos".
 
  Todos los Sets (alturas, duraciones, dinamicas, etc) soportan rangos 
- y operaciones matematicas.
+ y operaciones matematicas (necesita explicacion).
 
- Una configuracion de track mininma puede ser algo como esto:
+ Un ejemplo de configuracion de track mininma puede ser algo como esto:
 
  ########################################
  # Cofiguraciones generales del Track
@@ -459,7 +468,7 @@ END{
    repeticiones : 1
  
  ########################################
- # Cofiguracion de los motivos por defecto
+ # Cofiguraciones Generales 
  defacto:
    canal      : 1 
    programa   : 1
@@ -467,8 +476,8 @@ END{
    alturas:
      set         : [ 0, 2, 4, 5, 7, 9, 11,
                     12, 2+12, 4+12, 5+12, 7+12, 9+12, 11+12 ] # Diatonica Mayor 
-     octava      : 0  # central 
-     tonica      : 60 # C
+     octava      : 0  
+     tonica      : 60 # C central
    voces:
      set         : [ 1 ] 
    duraciones:
@@ -496,15 +505,11 @@ END{
        b^:
          microforma : [ 9, 8 ]
 
- Esta no es la unica manera de represantar la misma melodia y existen mas opciones 
- diponibles que a las expuestas.
+ Esta no es la unica manera de represantar la misma melodia y 
+ existen mas opciones diponibles que a las expuestas.
 
  Mas inforamcion en los ejemplos.
 
- Los argumentos pueden declararse tanto en forma larga como corta.
- Por ejemplo:
-   secuenciador.pl --entradas ejemplos
-   secuenciador.pl -e ejemplos -e feliz_cumpleanios/melodia.yml
 
 =head1 ARGUMENTS
 
@@ -513,6 +518,11 @@ END{
  --bpm        Pulsos por minuto para la secuencia.
  --help       Imprime esta ayuda en vez de generar secuencia MIDI.
  --man        Imprime la pagina man completa en vez de generar MIDI.
+
+ Los argumentos pueden declararse tanto en forma larga como corta.
+ Por ejemplo:
+   secuenciador.pl --entradas ejemplos
+   secuenciador.pl -e ejemplos -e feliz_cumpleanios/melodia.yml
 
 =head1 OPTIONS
 
@@ -561,6 +571,3 @@ END{
    a partir de la hoja de analisis.
 
 =cut
-
-
-
