@@ -19,7 +19,7 @@ defacto:
     octava      : 0
     tonica      : 60
   voces: 
-    set         : [ 0 ] # una voz sola ;)
+    set         : [ 1 ] # una voz sola ;)
     # set       : [ 0,2,5 ] # triada :)
     # relacion    : paralela # todavia no implementado
     # x ahora las voces recorren el set de alturas en dif casillero

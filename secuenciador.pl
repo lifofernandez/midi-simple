@@ -12,24 +12,23 @@ use Getopt::Long;
 
 use MIDI;
 use YAML::XS 'LoadFile';
-use POSIX qw(log10);
+use POSIX qw( log10 );
  use Data::Dumper;
 
 ########################################
 # ARGUMENTS
-my $secuenciador_VER = '0.00.01';
-my $site        = 'http://www.github.com/lifofernandez';
+my $version = '0.01.00';
+my $site    = 'http://www.github.com/lifofernandez';
 my (
-    $help, 
+    $salida,
+    $help,
     $verbose,
     $man,
     $info
 );
-my $salida  = 'secuencia.mid';
 my $bpm = '60';
 
 my @entradas = ();
-my $entrada = ('tracks');
 
 GetOptions(
     'entradas=s' => \@entradas,
@@ -41,10 +40,9 @@ GetOptions(
     'man!'       => \$man,
     'info!'      => \$info,
 );
-print Dumper (@entradas);
 # pod2usage(-verbose => 1) && exit if ($opt_debug !~ /^[01]$/);
-pod2usage(-verbose => 1) && exit if defined $help;
-pod2usage(-verbose => 2) && exit if defined $man;
+pod2usage( -verbose => 1 ) && exit if defined $help;
+pod2usage( -verbose => 2 ) && exit if defined $man;
 
 ########################################
 # CONSTANTES
@@ -63,7 +61,6 @@ for( @entradas ){
       push @CONFIGS, @dir;
     }
 }
-print Dumper (@CONFIGS);
 
 
 my @tracks;
@@ -77,6 +74,8 @@ for( @CONFIGS ){
         $numerador,
         $denominador,
     ) = split '/', $metro;
+    # rpm.pbone.net/index.php3/stat/45/idpl/2395553/numer/3/nazwa/MIDI::Filespec
+    # Time Signature event
     # The denominator is a negative power of two: log10( X ) / log10( 2 ) 
     # 2 represents a quarter-note, 3 represents an eighth-note, etc.
     $denominador = log10( $denominador ) / log10( 2 );
@@ -87,7 +86,7 @@ for( @CONFIGS ){
     say "TRACK: ".$nombre;
 
     # Propiedades generales que heredan todos los motivos
-    #  que pueden ser sobreescritas en c/u-
+    # y que pueden ser sobreescritas en c/u.
     my %defacto  = prosesar_sets( \%{ $config_file->{ defacto } } );
 
     my $canal = $defacto{ canal };
@@ -127,7 +126,7 @@ for( @CONFIGS ){
             );
 
             # Motivos que heredan propiedades de otros
-            # a^, a^^, a^^^, etc
+            # a^^ hereda de a^ que hereda de a.
             my $padreID = $motivoID;
             my $prima = chop( $padreID );
             if( $prima eq $simbolo_prima ){
@@ -163,7 +162,13 @@ for( @CONFIGS ){
             say "   COMPONENTES" if $verbose;
             for( @microforma  ){
 
-               my $cabezal = $_ - 1; # posicion en las lista de alturas
+               # posicion en set de alturas
+               my $cabezal = $_ - 1; 
+               # No usar 0 como primer posicion del set esta justificada
+               # a la necesidad de reservar un elemento para representar  
+               # el silencio
+
+               # TODO Revisar ordenador 'alturas' y  propiedad altura de los componentes
                my $altura = @alturas[ ( $cabezal ) % scalar @alturas ];
 
                my $nota_st = '';
@@ -171,9 +176,9 @@ for( @CONFIGS ){
                for( 
                    @{ $motivo{ voces }{ procesas } } 
                ){
-                    #TODO revisar/usar voz relacion = 0
+                    #TODO reconsiderar si usar o no voz relacion = 0 para la 
                     if ( $_ ne 0 ){
-                        # pos. en las lista de alturas para la esta voz 
+                        # posicion en en set de alturas para la esta voz 
                         my $cabezal_voz = ( $cabezal + $_ ) - 1;
                         my $voz = @alturas[ $cabezal_voz % scalar @alturas ];
                         push @VOCES, $voz;
@@ -353,6 +358,8 @@ sub prosesar_sets{
             $H->{ $v }{ procesas } = \@array_procesado;
 
         }
+        # Si vuelo esto, puedo agregar soporte para herencia entre 
+        # estructuras facilmente, sino medio que hace cagar los array alfabeticos.
         if( ref( $H->{ $v } ) eq 'ARRAY'){ 
             my @array_evaluado = map {
                eval $_
@@ -398,7 +405,7 @@ END{
       "  strict                $strict::VERSION\n",
       "  Perl                  $]\n",
       "  OS                    $^O\n",
-      "  secuenciador.pl       $secuenciador_VER\n",
+      "  secuenciador.pl       $version\n",
       "  $0\n",
       "  $site\n",
       "\n\n";
@@ -412,49 +419,100 @@ END{
 
 =head1 SYNOPSIS
 
- secuenciador.pl Buenos Aires, Argentina. 
+ Generar secuencia MIDI a partir de multiples hojas de analisis 
+ serializadas en sintaxis YAML. 
 
- Generar secuencia MIDI a partir de hojas de analisis serializadas
- en sintaxis YAML. 
- 
- NOTA: 
- Tanto el codigo, como tambien esta documentacion, fue realizada lo maximo 
- posible en espaniol (debemos presindir de carateres latinos) para en un 
- principio favorecer y atraer a usuarios que no leen ingles.
- No se descarta la posibilidad de futuras traducciones.
 
 
 =head1 DESCRIPTION
+
+ NOTA:
+ Tanto el codigo, como tambien esta documentacion, esta escrito lo maximo 
+ posible en espaniol (se presinde de carateres latinos) para en un 
+ principio favorecer y atraer a usuarios que no leen ingles.
+ No se descarta la posibilidad de futuras traducciones.
 
  Cada track MIDI es representado por una hoja de analisis con las 
  configuraciones necesarias para obtener una progresion musical.
 
  La organizacion interna de estas configuraciones de track trata de 
- representar una hoja de analisis musical estandar jerarquizada en 
- Estrcucturas que continenen Motivos. 
+ ser lo mas autodescriptiva posible y representar una hoja de analisis 
+ musical jerarquizada en Estrcucturas que continenen Motivos.
 
- A su vez, se propone acercar a la flexibilidad fomentada por el entorno de
+ A su vez, se propone acercar a la flexibilidad caracteristica del entorno de
  programacion Perl y su ecosistema.
 
  Los Motivos pueden heredar propiedades tanto de configuraciones generales
  (defactos) asi como tambien de otros motivos "primos".
- 
+
  Todos los Sets (alturas, duraciones, dinamicas, etc) soportan rangos 
  y operaciones matematicas.
 
- Mas inforamcion en los ejemplos
+ Una configuracion de track mininma puede ser algo como esto:
+
+ ########################################
+ # Cofiguraciones generales del Track
+ constantes:
+   nombre       : Feliz Cumpleanios,  melodia
+   metro        : 9/8
+   macroforma   : [ A ]
+   repeticiones : 1
+ 
+ ########################################
+ # Cofiguracion de los motivos por defecto
+ defacto:
+   canal      : 1 
+   programa   : 1
+   ordenador  : indice
+   alturas:
+     set         : [ 0, 2, 4, 5, 7, 9, 11,
+                    12, 2+12, 4+12, 5+12, 7+12, 9+12, 11+12 ] # Diatonica Mayor 
+     octava      : 0  # central 
+     tonica      : 60 # C
+   voces:
+     set         : [ 1 ] 
+   duraciones:
+     set         : [ 1,.5,(1.5)x2 ]
+   dinamicas:
+     set         : [ .8 ] 
+     fluctuacion : .1
+ 
+ ESTRUCTURAS:
+   A:
+     forma: [ a, b, a, b^, a^, a^^, a^^^, b^ ]
+     MOTIVOS:
+       a:
+         microforma : [ 5, 5, 6, 5 ]
+       a^:
+         microforma : [ 5, 5, 12, 10 ]
+       a^^:
+         microforma : [ 8, 8, 7, 6 ]
+       a^^^:
+         microforma : [ 11, 11, 10, 8 ]
+       b:
+         duraciones:
+           set        : [ 1.5, 3 ]
+         microforma : [ 8, 7 ]
+       b^:
+         microforma : [ 9, 8 ]
+
+ Esta no es la unica manera de represantar la misma melodia y existen mas opciones 
+ diponibles que a las expuestas.
+
+ Mas inforamcion en los ejemplos.
 
  Los argumentos pueden declararse tanto en forma larga como corta.
- ejemplo:
-   secuenciador.pl --help
-   secuenciador.pl -h
+ Por ejemplo:
+   secuenciador.pl --entradas ejemplos
+   secuenciador.pl -e ejemplos -e feliz_cumpleanios/melodia.yml
 
- 
 =head1 ARGUMENTS
 
+ --entradas   Multiples Tracks en formato YAML acepta archivos o carpetas.
+ --salida     Archivo .mid a generar.
+ --bpm        Pulsos por minuto para la secuencia.
  --help       Imprime esta ayuda en vez de generar secuencia MIDI.
  --man        Imprime la pagina man completa en vez de generar MIDI.
-
 
 =head1 OPTIONS
 
@@ -477,21 +535,21 @@ END{
  POSIX                 1.65 
  strict                1.11
  Perl                  5.024001
- OS                    linux
+ OS                    linux & darwin
  secuenciador.pl       0.00.01
- ./secuenciador.pl
 
 =head1 BUGS
- 
- El pulso no esta funcionando bien en Live, corroborar si esto es asi 
- en otro software.
- 
+
+ Por lo menos Ableton Live no esta reconociendo bien el tempo (descartar si este problema 
+ persiste en otra plataforma)
+
 =head1 TODO
 
- Lista defacto general para todos los tracks/configs.
+ Revisar ordenador 'alturas' y  propiedad altura de los componentes
+ agregar Reverse, Macroforma, forma y microforma
  Extender herencia a Estructuras.
- Control de superposicion o separacion entre estructuras, motivos 
- y componentes.
+ Control de superposicion o separacion entre Estructuras, Motivos y Componentes.
+ Lista defacto general para todos los tracks/configs.
  Terminar esta documnetacion.
  Test on ActivePerl
  Agregar informacion de debbugeo en errores
@@ -499,12 +557,10 @@ END{
 =head1 UPDATES
 
  2017-04-23   12:00 GTM+3
-   Feliz Cumpleanios Complete, es capaz de secuenciar la melodia
-   desde la hoja de analisis.
+   Feliz Cumpleanios Complete; es capaz de genrar esta melodia
+   a partir de la hoja de analisis.
 
 =cut
-
-
 
 
 
