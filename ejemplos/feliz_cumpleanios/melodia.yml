@@ -44,5 +44,3 @@ ESTRUCTURAS:
         microforma : [ 8, 7 ]
       b^:
         microforma : [ 9, 8 ]
-  A^:
-    forma: [ a, b, a, b^, a^, a^^, a^^^, b^ ]
