@@ -9,11 +9,10 @@ use strict;
 use warnings;
 use Pod::Usage;
 use Getopt::Long;
-
 use MIDI;
 use YAML::XS 'LoadFile';
 use POSIX qw( log10 );
- use Data::Dumper;
+use Data::Dumper;
 
 ########################################
 # ARGUMENTS
@@ -27,9 +26,7 @@ my (
     $info
 );
 my $bpm = '60';
-
 my @entradas = ();
-
 GetOptions(
     'entradas=s' => \@entradas,
     'salida=s'   => \$salida, 
@@ -46,11 +43,12 @@ pod2usage( -verbose => 2 ) && exit if defined $man;
 
 ########################################
 # CONSTANTES
-
 my $tic = 240; 
 my $pulso = int( ( 60 / $bpm ) * 1000 ) . '_000';
 my $simbolo_prima = "^";
 
+########################################
+# PREPROCESO DE ELEMENTOS
 my @CONFIGS = ();
 for( @entradas ){
     if( -f $_ ){
@@ -62,13 +60,10 @@ for( @entradas ){
     }
 }
 
-
 my @tracks;
 for( @CONFIGS ){
-
     my $config_file = LoadFile( $_ );
     my %constantes = %{ $config_file->{ constantes } };
-
     my $metro = $constantes{ metro } // '4/4';
     my (
         $numerador,
@@ -84,46 +79,38 @@ for( @CONFIGS ){
     my $nombre = $constantes{ nombre };
     say "\n" . "#" x 80 if $verbose;
     say "TRACK: ".$nombre;
-
     # Propiedades generales que heredan todos los motivos
     # y que pueden ser sobreescritas en c/u.
     my %defacto  = prosesar_sets( \%{ $config_file->{ defacto } } );
-
     my $canal = $defacto{ canal };
     say "CANAL: ".$canal if $verbose;
-
     my $programa = $defacto{ programa };
     say "PROGRAMA: ".$programa if $verbose;
-
     my @macroforma = @{ $constantes{ macroforma } };
+    @macroforma = reverse @macroforma if $constantes{ revertir };
     print "MACROFORMA: " if $verbose;
     print  "@macroforma\n" if $verbose;
-
-    my $repeticiones = $constantes{ repeticiones };
-    say "REPETICIONES: " . $repeticiones if $verbose;
+    my $repetir = $constantes{ repetir } // 1;
+    say "repetir: " . $repetir if $verbose;
 
     ########################################
     # Preparar Estructuras > Motivos > Componentes
-
-    my %ESTRUCTURAS = ();
+    my %ESTRUCTURAS = %{ $config_file->{ ESTRUCTURAS } };
     for my $estructuraID(
         sort
-        keys %{ $config_file->{ ESTRUCTURAS } }
+        keys %ESTRUCTURAS 
     ){
         print "\n";
         say "ESTRUCTURA: " . $estructuraID if $verbose;
-        my %estructura = %{ $config_file->{ ESTRUCTURAS }{ $estructuraID } };
-
-
-            # Motivos que heredan propiedades de otros
-            # a^^ hereda de a^ que hereda de a.
+        my %estructura = %{ $ESTRUCTURAS{ $estructuraID } };
+        # Estructuras que heredan propiedades de otros
+        # A^^ hereda de A^ que hereda de A.
         my $madreID = $estructuraID;
         my $prima = chop( $madreID );
         if( $prima eq $simbolo_prima ){
-             my %prima = %{ $config_file->{ ESTRUCTURAS }{ $madreID } };
+             my %prima = %{ $ESTRUCTURAS{ $madreID } };
              %estructura = heredar( \%prima, \%estructura);
         }
-
         print "  FORMA: " if $verbose;
         print "@{ $estructura{ forma } }\n" if $verbose;
 
@@ -133,10 +120,8 @@ for( @CONFIGS ){
             keys %{ $estructura{ MOTIVOS } }
         ){
             say "  MOTIVO: " . $motivoID if $verbose;
-            my %motivo = prosesar_sets( 
-                \%{ $estructura{ MOTIVOS }{ $motivoID } } 
-            );
-
+            #TODO posible BUG, esto deberia estar despues de sucesion
+            my %motivo = %{ $estructura{ MOTIVOS }{ $motivoID } };
             # Motivos que heredan propiedades de otros
             # a^^ hereda de a^ que hereda de a.
             my $padreID = $motivoID;
@@ -145,13 +130,13 @@ for( @CONFIGS ){
                  my %primo = %{ $MOTIVOS{ $padreID } };
                  %motivo = heredar( \%primo, \%motivo );
             }
-            # Sucesion de bienes...
+            # Carga configuraciones generales 
             %motivo = heredar( \%defacto, \%motivo );
-
+            # Custos set preproceso
+            %motivo = prosesar_sets( \%motivo );
             ########################################
             # Procesar motivos armar componetes
             # combinado parametros ( altura, duracion, dinamicas, etc )
-
             my @alturas = map {
                   $_ +
                   $motivo{ alturas }{ tonica } +
@@ -159,57 +144,47 @@ for( @CONFIGS ){
             } @{ $motivo{ alturas }{ procesas } };
             print "   ALTURAS: " if $verbose;
             print "@alturas\n" if $verbose;
-
             my @microforma =  @{ $motivo{ microforma } } ;
+            @microforma = reverse @microforma if $motivo{ revertir };
+            my $repetir_motivo =   $motivo{ repetir } // 1;
             print "   MICROFORMA: " if $verbose;
             print "@microforma\n" if $verbose;
-
             print "   ORDENADOR: " . $motivo{ ordenador }. "\n" if $verbose;
-
             my @duraciones = @{ $motivo{ duraciones }{ procesas } };
             my @dinamicas  = @{ $motivo{ dinamicas }{ procesas } };
-
             my $indice = 0;
             my @COMPONENTES = ();
             say "   COMPONENTES" if $verbose;
-            for( @microforma  ){
-
+            for( ( @microforma ) x $repetir_motivo ){
                # posicion en set de alturas
                my $cabezal = $_ - 1; 
                # No usar 0 como primer posicion del set esta justificada
                # a la necesidad de reservar un elemento para representar  
                # el silencio
-
                # TODO Revisar ordenador 'alturas' y  propiedad altura de los componentes
                my $altura = @alturas[ ( $cabezal ) % scalar @alturas ];
-
                my $nota_st = '';
                my @VOCES = ();
-               for( 
-                   @{ $motivo{ voces }{ procesas } } 
-               ){
+
+               for( @{ $motivo{ voces }{ procesas } } ){
                     #TODO reconsiderar si usar o no voz relacion = 0 para la 
                     if ( $_ ne 0 ){
                         # posicion en en set de alturas para la esta voz 
                         my $cabezal_voz = ( $cabezal + $_ ) - 1;
                         my $voz = @alturas[ $cabezal_voz % scalar @alturas ];
                         push @VOCES, $voz;
-
                         $nota_st  = $nota_st . $voz  . " ";
                     }
                }
                my $voces_st =  "ALTURAS: " . $nota_st;
-
                my $duracion  = @duraciones[ $indice % scalar @duraciones ];
                my $dinamica  = @dinamicas[ $indice % scalar @dinamicas ];
-
                if ( $_ eq 0 ){
                    $altura = 0;
                    $dinamica = 0;
                    splice( @VOCES );
                    $voces_st=  "SILENCIO";
                }
-
                my $componente = {
                   indice   => $indice,
                   altura   => $altura,
@@ -219,7 +194,6 @@ for( @CONFIGS ){
                };
                push @COMPONENTES, $componente;
                $indice++;
-
                # verbosidad
                print "    " if $verbose;
                print "INDICE: " . $indice . " " if $verbose;
@@ -229,13 +203,10 @@ for( @CONFIGS ){
                print "\tDURACION: " . $duracion . "qn" if $verbose;
                print "\n" if $verbose;
             }
-
             # Paso AoH a HoH
             my %temp_comps; 
             @temp_comps{ @COMPONENTES } = @COMPONENTES;
-
             $motivo{ COMPONENTES } = \%temp_comps;
-
             $MOTIVOS{ $motivoID } = \%motivo;
         }
         $estructura{ MOTIVOS } = \%MOTIVOS;
@@ -254,7 +225,6 @@ for( @CONFIGS ){
 
     ########################################
     # SECUENCIAR 
-
     # Track setup
     my @events = (
         [ 'set_tempo', 0, $pulso ],
@@ -262,56 +232,43 @@ for( @CONFIGS ){
         [ 'text_event', 0, "TRACK: " . $nombre ],
         [ 'patch_change', 0, $canal, $programa ],
     );
-
     my $momento = 0;
-    for(
-        # reverse
-        ( @macroforma )
-        x $repeticiones
-    ){
+    for( ( @macroforma ) x $repetir ){
           my %E =  %{ $ESTRUCTURAS{ $_ } };
-          for(
-              # reverse
-              @{ $E{ forma } }
-          ){
+
+          my @forma = @{ $E{ forma } };
+          my $repetir_estructura = $E{ repetir } // 1;
+          @forma = reverse @forma if $E{ revertir };
+          for( ( @forma ) x $repetir_estructura ){
              my %M =  %{ $E{ MOTIVOS }{ $_ } };
              my %C =  %{ $M{ COMPONENTES } };
-
              my $orden = $M{ ordenador } // 'indice';
-
              my $retraso =  int( $tic * ( $M{ duraciones }{ retraso } // 0 ) );
              my $recorte =  int( $tic * ( $M{ duraciones }{ recorte } // 0 ) );
-
              my $fluctuacion = $M{ dinamicas }{ fluctuacion };
-
              my @compIDs = grep defined $C{ $_ }{ $orden }, keys %C;
              for my $componenteID (
                  sort { $C{ $a }{ $orden } <=> $C{ $b }{ $orden } } 
                  @compIDs # keys %C
              ){
                  my $final = $tic * $C{ $componenteID }{ duracion };
-
                  my @V = @{ $C{ $componenteID }{ voces } };
                  # Sin Voces = SILENCIO
                  if ( !@V ){
                      $momento = $momento + $final;
                      next;
                  }
-
                  $momento = $momento + $retraso; 
                  $final = $final - $recorte - $retraso;
-
                  my $rand = 0;
                  if ( $fluctuacion ){
                      my $min  = -$fluctuacion;
                      my $max  = $fluctuacion;
                      $rand = $min + rand( $max - $min );
                  }
-
                  my $dinamica = int(
                      127 * ( $C{ $componenteID }{ dinamica } + $rand ) 
                  );
-
                  for( @V ){
                      my $altura = $_;
                      push @events, (
@@ -335,7 +292,6 @@ for( @CONFIGS ){
         'events' => \@events
     });
     push @tracks, $track;
-
 }
 
 my $opus = MIDI::Opus->new({
@@ -356,27 +312,23 @@ sub prosesar_sets{
         ){
             my $grano = $H->{ $v }{ grano } // 1;
             my $operador = $H->{ $v }{ operador } // '*';
-
             my @array_evaluado = map {
                eval $_
             } @{ $H->{ $v }{ set } };
             my @array_procesado = map { 
                eval( $_ . $operador . $grano ) 
             } @array_evaluado;
-
-            my $reverse = $H->{ $v }{ reverse } // 0;
+            my $reverse = $H->{ $v }{ revertir } // 0;
             @array_procesado = reverse @array_procesado if $reverse;
-
             $H->{ $v }{ procesas } = \@array_procesado;
-
         }
+        # microforma range suport
         if( ref( $H->{ $v } ) eq 'ARRAY'){ 
             my @array_evaluado = map {
                eval $_
             } @{ $H->{ $v } };
             $H->{ $v } = \@array_evaluado;
         }
-
     }
     return %{ $H };
 }
@@ -384,13 +336,16 @@ sub prosesar_sets{
 # Pasar propiedades faltantes de %Ha > %Hb 
 sub heredar{
     my( $padre, $hijo ) = @_;
-
+    my $c = 1;
     for my $propiedad(
         keys %{ $padre }
     ){
         if( !$hijo->{ $propiedad } ){
              $hijo->{ $propiedad } = $padre->{ $propiedad };
-        }elsif( ref( $hijo->{ $propiedad } ) eq 'HASH' ){ 
+        }elsif(
+            ( ref( $hijo->{ $propiedad } ) eq 'HASH' ) &&
+            ( $propiedad ne "COMPONENTES" ) 
+        ){
             my %nieto = heredar( 
                  \%{ $padre->{ $propiedad } },
                  \%{ $hijo->{ $propiedad } }
@@ -465,7 +420,7 @@ END{
    nombre       : Feliz Cumpleanios,  melodia
    metro        : 9/8
    macroforma   : [ A ]
-   repeticiones : 1
+   repetir : 1
  
  ########################################
  # Cofiguraciones Generales 
@@ -529,6 +484,27 @@ END{
  --info       Informacion sobre, modulos, entorno y programa.
  --verbose    Expone los elementos musicales previamente a secuenciarlos. 
 
+=head1 FEATURES
+
+=head2 Herencia
+
+  Estructuras y Motivos pueden compartir propiedades vinculandose mediante 
+  el simbolo "^" final del nombre d ela estructura
+
+=head2 Repetir
+
+ Todas las listas de elemenots formales (Macroforma, Forma y Microforma) pueden
+ ser repetidas N veces segun el el valor declarado en la propiedad "repetir".
+
+=head2 Revertir
+
+ Todos los Sets listas de elementos formales pueden ser revertidos  
+ con la propiedad "revertir" con valor true  
+
+=head2 Custom Sets
+
+ Explicar preprocesos realizados sobre los set, mapeo de valores y uso de diferentes math ops
+
 =head1 AUTHOR
 
  Lisandro Fernandez
@@ -550,14 +526,13 @@ END{
 
 =head1 BUGS
 
- Por lo menos Ableton Live no esta reconociendo bien el tempo (descartar si este problema 
- persiste en otra plataforma)
+ tempo/bpm problem...
+ REVISAR, herencia entre Estructuras.
 
 =head1 TODO
-
+ revisar linea 123
+ Agregar soporte para metro, chanel, program change entre MOTIVOS
  Revisar ordenador 'alturas' y  propiedad altura de los componentes
- agregar Reverse, Macroforma, forma y microforma
- Extender herencia a Estructuras.
  Control de superposicion o separacion entre Estructuras, Motivos y Componentes.
  Lista defacto general para todos los tracks/configs.
  Terminar esta documnetacion.

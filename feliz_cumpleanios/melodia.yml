@@ -45,4 +45,4 @@ ESTRUCTURAS:
       b^:
         microforma : [ 9, 8 ]
   A^:
-    forma: [ a^, a^^, a^^^, b^ ]
+    forma: [ a, b, a, b^, a^, a^^, a^^^, b^ ]
