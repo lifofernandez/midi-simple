@@ -14,6 +14,17 @@ use YAML::XS 'LoadFile';
 use POSIX qw( log10 );
 use Data::Dumper;
 
+=head1 NAME
+
+ secuenciador.pl
+
+=head1 SYNOPSIS
+
+ Generar secuencia MIDI a partir de multiples hojas de analisis 
+ serializadas en sintaxis YAML. 
+
+=cut 
+
 ########################################
 # ARGUMENTS
 my $version = '0.01.00';
@@ -378,22 +389,6 @@ END{
 }
 
 
-=head1 NAME
-
- secuenciador.pl
-
-=head1 SYNOPSIS
-
- Generar secuencia MIDI a partir de multiples hojas de analisis 
- serializadas en sintaxis YAML. 
-
- NOTA:
- Tanto el codigo, como tambien esta documentacion, esta escrito lo maximo 
- posible en espaniol (se presinde de carateres latinos) para en un 
- principio favorecer y atraer a usuarios que no leen ingles.
- No se descarta la posibilidad de futuras traducciones.
-
-
 =head1 DESCRIPTION
 
 
@@ -403,8 +398,6 @@ END{
  La organizacion interna de estas configuraciones de track trata de 
  ser lo mas autodescriptiva posible y representar una hoja de analisis 
  musical jerarquizada en Estrcucturas que continenen Motivos.
- A su vez, intenta acercarse a la flexibilidad caracteristica del entorno de
- programacion Perl y su ecosistema.
 
  Los Motivos heredan propiedades de configuraciones generales
  (defacto) asi como tambien de otros motivos "primos".
@@ -412,7 +405,7 @@ END{
  Todos los Sets (alturas, duraciones, dinamicas, etc) soportan rangos 
  y operaciones matematicas (necesita explicacion).
 
- Un ejemplo de configuracion de track mininma puede ser algo como esto:
+ Un ejemplo de configuracion de track basica puede ser algo como esto:
 
  ########################################
  # Cofiguraciones generales del Track
@@ -435,8 +428,9 @@ END{
      tonica      : 60 # C central
    voces:
      set         : [ 1 ] 
+     # set         : [ 5,8,10 ]  # armonizacion diatonica 6/4 
    duraciones:
-     set         : [ 1,.5,(1.5)x2 ]
+     set         : [ 1,.5, (1.5)x2 ]
    dinamicas:
      set         : [ .8 ] 
      fluctuacion : .1
@@ -460,7 +454,7 @@ END{
        b^:
          microforma : [ 9, 8 ]
 
- Esta no es la unica manera de represantar la misma melodia y 
+ Esta no es la unica manera de represantar esta melodia y 
  existen mas opciones diponibles que a las expuestas.
 
  Mas inforamcion en los ejemplos.
@@ -484,7 +478,11 @@ END{
  --info       Informacion sobre, modulos, entorno y programa.
  --verbose    Expone los elementos musicales previamente a secuenciarlos. 
 
-=head1 FEATURES
+=head1 Utilidades
+
+=head2 Polifonia
+
+ Explicar
 
 =head2 Herencia
 
@@ -493,13 +491,13 @@ END{
 
 =head2 Repetir
 
- Todas las listas de elemenots formales (Macroforma, Forma y Microforma) pueden
- ser repetidas N veces segun el el valor declarado en la propiedad "repetir".
+ Todas las listas formales de elementos (Macroforma, Forma y Microforma) pueden
+ ser repetidas N veces segun el el valor declarado.
 
 =head2 Revertir
 
  Todos los Sets listas de elementos formales pueden ser revertidos  
- con la propiedad "revertir" con valor true  
+ con la propiedad "revertir" con un valor como true o 1 
 
 =head2 Custom Sets
 
