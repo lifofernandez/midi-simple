@@ -42,7 +42,6 @@ GetOptions(
     'entradas=s' => \@entradas,
     'salida=s'   => \$salida, 
     'bpm=i'      => \$bpm, 
-
     'verbose+'   => \$verbose, 
     'help!'      => \$help, 
     'man!'       => \$man,
@@ -55,11 +54,9 @@ pod2usage( -verbose => 2 ) && exit if defined $man;
 ########################################
 # CONSTANTES
 my $tic = 240; 
-my $pulso = int( ( 60 / $bpm ) * 1000 ) . '_000';
+my $pulso = int( ( 60 / $bpm ) * 1000000 );
 my $simbolo_prima = "^";
-
-########################################
-# PREPROCESO DE ELEMENTOS
+# Carga de archivos o carpetas
 my @CONFIGS = ();
 for( @entradas ){
     if( -f $_ ){
@@ -71,6 +68,8 @@ for( @entradas ){
     }
 }
 
+########################################
+# PREPROCESO DE ELEMENTOS
 my @tracks;
 for( @CONFIGS ){
     my $config_file = LoadFile( $_ );
@@ -80,8 +79,8 @@ for( @CONFIGS ){
         $numerador,
         $denominador,
     ) = split '/', $metro;
-    # rpm.pbone.net/index.php3/stat/45/idpl/2395553/numer/3/nazwa/MIDI::Filespec
     # Time Signature event
+    # rpm.pbone.net/index.php3/stat/45/idpl/2395553/numer/3/nazwa/MIDI::Filespec
     # The denominator is a negative power of two: log10( X ) / log10( 2 ) 
     # 2 represents a quarter-note, 3 represents an eighth-note, etc.
     $denominador = log10( $denominador ) / log10( 2 );
@@ -131,7 +130,6 @@ for( @CONFIGS ){
             keys %{ $estructura{ MOTIVOS } }
         ){
             say "  MOTIVO: " . $motivoID if $verbose;
-            #TODO posible BUG, esto deberia estar despues de sucesion
             my %motivo = %{ $estructura{ MOTIVOS }{ $motivoID } };
             # Motivos que heredan propiedades de otros
             # a^^ hereda de a^ que hereda de a.
@@ -172,7 +170,7 @@ for( @CONFIGS ){
                # No usar 0 como primer posicion del set esta justificada
                # a la necesidad de reservar un elemento para representar  
                # el silencio
-               # TODO Revisar ordenador 'alturas' y  propiedad altura de los componentes
+               # TODO Revisar ordenador y propiedad 'alturas'   
                my $altura = @alturas[ ( $cabezal ) % scalar @alturas ];
                my $nota_st = '';
                my @VOCES = ();
@@ -391,7 +389,6 @@ END{
 
 =head1 DESCRIPTION
 
-
  Cada track MIDI es representado por una hoja de analisis con las 
  configuraciones necesarias para obtener una progresion musical.
 
@@ -501,7 +498,8 @@ END{
 
 =head2 Custom Sets
 
- Explicar preprocesos realizados sobre los set, mapeo de valores y uso de diferentes math ops
+ TODO Explicar preprocesos realizados sobre los set, mapeo de valores y el 
+ uso de diferentes math ops
 
 =head1 AUTHOR
 
@@ -524,11 +522,12 @@ END{
 
 =head1 BUGS
 
- tempo/bpm problem...
- REVISAR, herencia entre Estructuras.
 
 =head1 TODO
- revisar linea 123
+
+ RESUELTO (revisar) tempo/bpm problem... 
+ REVISAR, herencia entre Estructuras.
+
  Agregar soporte para metro, chanel, program change entre MOTIVOS
  Revisar ordenador 'alturas' y  propiedad altura de los componentes
  Control de superposicion o separacion entre Estructuras, Motivos y Componentes.
