@@ -23,10 +23,25 @@ use Data::Dumper;
  Generar secuencia MIDI a partir de multiples hojas de analisis 
  serializadas en sintaxis YAML. 
 
-=cut 
+=head1 ARGUMENTS
 
-########################################
-# ARGUMENTS
+ --entradas   Multiples Tracks en formato YAML acepta archivos o carpetas.
+ --salida     Archivo .mid a generar.
+ --bpm        Pulsos por minuto para la secuencia.
+ --help       Imprime esta ayuda en vez de generar secuencia MIDI.
+ --man        Imprime la pagina man completa en vez de generar MIDI.
+
+ Los argumentos pueden declararse tanto en forma larga como corta.
+ Por ejemplo:
+   secuenciador.pl --entradas ejemplos
+   secuenciador.pl -e ejemplos -e feliz_cumpleanios/melodia.yml
+
+=head1 OPTIONS
+
+ --info       Informacion sobre, modulos, entorno y programa.
+ --verbose    Expone los elementos musicales previamente a secuenciarlos. 
+=cut
+
 my $version = '0.01.00';
 my $site    = 'http://www.github.com/lifofernandez';
 my (
@@ -84,14 +99,13 @@ for( @CONFIGS ){
     # The denominator is a negative power of two: log10( X ) / log10( 2 ) 
     # 2 represents a quarter-note, 3 represents an eighth-note, etc.
     $denominador = log10( $denominador ) / log10( 2 );
-
     # Track setup
     my $nombre = $constantes{ nombre };
     say "\n" . "#" x 80 if $verbose;
     say "TRACK: ".$nombre;
     # Propiedades generales que heredan todos los motivos
     # y que pueden ser sobreescritas en c/u.
-    my %defacto  = prosesar_sets( \%{ $config_file->{ defacto } } );
+    my %defacto  = %{ $config_file->{ defacto } };
     my $canal = $defacto{ canal };
     say "CANAL: ".$canal if $verbose;
     my $programa = $defacto{ programa };
@@ -141,7 +155,7 @@ for( @CONFIGS ){
             }
             # Carga configuraciones generales 
             %motivo = heredar( \%defacto, \%motivo );
-            # Custos set preproceso
+            # Procesar Custom Sets 
             %motivo = prosesar_sets( \%motivo );
             ########################################
             # Procesar motivos armar componetes
@@ -154,7 +168,7 @@ for( @CONFIGS ){
             print "   ALTURAS: " if $verbose;
             print "@alturas\n" if $verbose;
             my @microforma =  @{ $motivo{ microforma } } ;
-            @microforma = reverse @microforma if $motivo{ revertir };
+            @microforma = reverse @microforma if $motivo{ revertir_microforma };
             my $repetir_motivo =   $motivo{ repetir } // 1;
             print "   MICROFORMA: " if $verbose;
             print "@microforma\n" if $verbose;
@@ -167,16 +181,16 @@ for( @CONFIGS ){
             for( ( @microforma ) x $repetir_motivo ){
                # posicion en set de alturas
                my $cabezal = $_ - 1; 
-               # No usar 0 como primer posicion del set esta justificada
-               # a la necesidad de reservar un elemento para representar  
-               # el silencio
-               # TODO Revisar ordenador y propiedad 'alturas'   
+               # Usar 1 como primer posicion del set esta justificada
+               # por la necesidad de reservar un elemento (0) para representar
+               # el silencio.
+               # Por ahora solo, usamos esto para poder ordenar los componentes
+               # las alturas salen de las voces en realidad  
                my $altura = @alturas[ ( $cabezal ) % scalar @alturas ];
                my $nota_st = '';
                my @VOCES = ();
 
                for( @{ $motivo{ voces }{ procesas } } ){
-                    #TODO reconsiderar si usar o no voz relacion = 0 para la 
                     if ( $_ ne 0 ){
                         # posicion en en set de alturas para la esta voz 
                         my $cabezal_voz = ( $cabezal + $_ ) - 1;
@@ -255,11 +269,11 @@ for( @CONFIGS ){
              my $retraso =  int( $tic * ( $M{ duraciones }{ retraso } // 0 ) );
              my $recorte =  int( $tic * ( $M{ duraciones }{ recorte } // 0 ) );
              my $fluctuacion = $M{ dinamicas }{ fluctuacion };
-             my @compIDs = grep defined $C{ $_ }{ $orden }, keys %C;
-             for my $componenteID (
+             my @compIDs = grep { defined $C{ $_ } }
                  sort { $C{ $a }{ $orden } <=> $C{ $b }{ $orden } } 
-                 @compIDs # keys %C
-             ){
+                 keys %C;
+             @compIDs = reverse @compIDs if $M{ revertir};
+             for my $componenteID ( @compIDs ){
                  my $final = $tic * $C{ $componenteID }{ duracion };
                  my @V = @{ $C{ $componenteID }{ voces } };
                  # Sin Voces = SILENCIO
@@ -270,7 +284,7 @@ for( @CONFIGS ){
                  $momento = $momento + $retraso; 
                  $final = $final - $recorte - $retraso;
                  my $rand = 0;
-                 if ( $fluctuacion ){
+                 if( $fluctuacion ){
                      my $min  = -$fluctuacion;
                      my $max  = $fluctuacion;
                      $rand = $min + rand( $max - $min );
@@ -342,7 +356,7 @@ sub prosesar_sets{
     return %{ $H };
 }
 
-# Pasar propiedades faltantes de %Ha > %Hb 
+# Pasar propiedades ausentes de %Ha > %Hb 
 sub heredar{
     my( $padre, $hijo ) = @_;
     my $c = 1;
@@ -386,7 +400,6 @@ END{
   }
 }
 
-
 =head1 DESCRIPTION
 
  Cada track MIDI es representado por una hoja de analisis con las 
@@ -399,8 +412,19 @@ END{
  Los Motivos heredan propiedades de configuraciones generales
  (defacto) asi como tambien de otros motivos "primos".
 
- Todos los Sets (alturas, duraciones, dinamicas, etc) soportan rangos 
- y operaciones matematicas (necesita explicacion).
+ Los elementos principales de los motivos (Alturtas, Voces, Duraciones y Dinamicas)
+ tienen ciertas propiedades que son tratadas iguales en todos: set, operador, grano y
+ revertir) nos referimos a estos como Customs Sets
+ Ciertas propiedades que son particulares de elemento:
+ Para las alturas la referencia al centro tonal esta declarada con la propiedad "tonica" y
+ y podemos mover todo el set con la propiedad octava.
+ Las duraciones pueden ser acotadas usando las propiedades recorte y retraso   
+ Las dinamicas pueden ser "humanizadas" usando la propiedad fluctuacion.
+
+ Los Custom Sets soportan rangos y operaciones matematicas (necesita explicacion)
+ 
+ Explicar Componentes (combinacion de las propidades principales i
+ (altura, duraciones, voces y dinamicas)
 
  Un ejemplo de configuracion de track basica puede ser algo como esto:
 
@@ -456,25 +480,6 @@ END{
 
  Mas inforamcion en los ejemplos.
 
-
-=head1 ARGUMENTS
-
- --entradas   Multiples Tracks en formato YAML acepta archivos o carpetas.
- --salida     Archivo .mid a generar.
- --bpm        Pulsos por minuto para la secuencia.
- --help       Imprime esta ayuda en vez de generar secuencia MIDI.
- --man        Imprime la pagina man completa en vez de generar MIDI.
-
- Los argumentos pueden declararse tanto en forma larga como corta.
- Por ejemplo:
-   secuenciador.pl --entradas ejemplos
-   secuenciador.pl -e ejemplos -e feliz_cumpleanios/melodia.yml
-
-=head1 OPTIONS
-
- --info       Informacion sobre, modulos, entorno y programa.
- --verbose    Expone los elementos musicales previamente a secuenciarlos. 
-
 =head1 Utilidades
 
 =head2 Polifonia
@@ -495,6 +500,9 @@ END{
 
  Todos los Sets listas de elementos formales pueden ser revertidos  
  con la propiedad "revertir" con un valor como true o 1 
+ En el caso de los motivos, se revierte el orden de los componentes. 
+ Para revertir la microforma en si, el orden de la lista de posiciones en el set
+ de alturas, usar la propiedad revertir_microforma;
 
 =head2 Custom Sets
 
