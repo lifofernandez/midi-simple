@@ -39,7 +39,7 @@ use Data::Dumper;
 =head1 OPTIONS
 
  --info       Informacion sobre, modulos, entorno y programa.
- --verbose    Expone los elementos musicales previamente a secuenciarlos. 
+ --verbose    Expone los elementos previo a secuenciarlos. 
 =cut
 
 my $version = '0.01.00';
@@ -157,6 +157,7 @@ for( @CONFIGS ){
             %motivo = heredar( \%defacto, \%motivo );
             # Procesar Custom Sets 
             %motivo = prosesar_sets( \%motivo );
+
             ########################################
             # Procesar motivos armar componetes
             # combinado parametros ( altura, duracion, dinamicas, etc )
@@ -173,6 +174,7 @@ for( @CONFIGS ){
             print "   MICROFORMA: " if $verbose;
             print "@microforma\n" if $verbose;
             print "   ORDENADOR: " . $motivo{ ordenador }. "\n" if $verbose;
+            print "   REVERTIR: " . $motivo{ revertir }. "\n" if $verbose && $motivo{ revertir };
             my @duraciones = @{ $motivo{ duraciones }{ procesas } };
             my @dinamicas  = @{ $motivo{ dinamicas }{ procesas } };
             my $indice = 0;
@@ -181,15 +183,11 @@ for( @CONFIGS ){
             for( ( @microforma ) x $repetir_motivo ){
                # posicion en set de alturas
                my $cabezal = $_ - 1; 
-               # Usar 1 como primer posicion del set esta justificada
-               # por la necesidad de reservar un elemento (0) para representar
-               # el silencio.
-               # Por ahora solo, usamos esto para poder ordenar los componentes
-               # las alturas salen de las voces en realidad  
+               # reservar un elemento ( 0 ) para representar  silencio.
+               # esto es solo para poder ordenar por altura, 
                my $altura = @alturas[ ( $cabezal ) % scalar @alturas ];
                my $nota_st = '';
                my @VOCES = ();
-
                for( @{ $motivo{ voces }{ procesas } } ){
                     if ( $_ ne 0 ){
                         # posicion en en set de alturas para la esta voz 
@@ -202,6 +200,7 @@ for( @CONFIGS ){
                my $voces_st =  "ALTURAS: " . $nota_st;
                my $duracion  = @duraciones[ $indice % scalar @duraciones ];
                my $dinamica  = @dinamicas[ $indice % scalar @dinamicas ];
+               # Esto es inecesario, ya que dinamica 0 = silencio...
                if ( $_ eq 0 ){
                    $altura = 0;
                    $dinamica = 0;
@@ -269,11 +268,13 @@ for( @CONFIGS ){
              my $retraso =  int( $tic * ( $M{ duraciones }{ retraso } // 0 ) );
              my $recorte =  int( $tic * ( $M{ duraciones }{ recorte } // 0 ) );
              my $fluctuacion = $M{ dinamicas }{ fluctuacion };
-             my @compIDs = grep { defined $C{ $_ } }
-                 sort { $C{ $a }{ $orden } <=> $C{ $b }{ $orden } } 
-                 keys %C;
-             @compIDs = reverse @compIDs if $M{ revertir};
-             for my $componenteID ( @compIDs ){
+
+             my $revertir = $M{ revertir};
+             for my $componenteID ( 
+                 $revertir ? 
+                 reverse sort { $C{ $a }{ $orden } <=> $C{ $b }{ $orden } } keys %C:
+                 sort { $C{ $a }{ $orden } <=> $C{ $b }{ $orden } } keys %C
+             ){
                  my $final = $tic * $C{ $componenteID }{ duracion };
                  my @V = @{ $C{ $componenteID }{ voces } };
                  # Sin Voces = SILENCIO
@@ -292,6 +293,7 @@ for( @CONFIGS ){
                  my $dinamica = int(
                      127 * ( $C{ $componenteID }{ dinamica } + $rand ) 
                  );
+                 # Polifonia 
                  for( @V ){
                      my $altura = $_;
                      push @events, (
@@ -414,16 +416,14 @@ END{
 
  Los elementos principales de los motivos (Alturtas, Voces, Duraciones y Dinamicas)
  tienen ciertas propiedades que son tratadas iguales en todos: set, operador, grano y
- revertir) nos referimos a estos como Customs Sets
- Ciertas propiedades que son particulares de elemento:
- Para las alturas la referencia al centro tonal esta declarada con la propiedad "tonica" y
+ revertir). Soportan rangos y operaciones matematicas (necesita explicacion)
+ Ciertas propiedades son particulares de cada elemento:
+ Para las alturas, la referencia al centro tonal esta declarada con la propiedad "tonica" y
  y podemos mover todo el set con la propiedad octava.
  Las duraciones pueden ser acotadas usando las propiedades recorte y retraso   
  Las dinamicas pueden ser "humanizadas" usando la propiedad fluctuacion.
 
- Los Custom Sets soportan rangos y operaciones matematicas (necesita explicacion)
- 
- Explicar Componentes (combinacion de las propidades principales i
+ Explicar Componentes (combinacion de las propidades principales
  (altura, duraciones, voces y dinamicas)
 
  Un ejemplo de configuracion de track basica puede ser algo como esto:
@@ -449,7 +449,7 @@ END{
      tonica      : 60 # C central
    voces:
      set         : [ 1 ] 
-     # set         : [ 5,8,10 ]  # armonizacion diatonica 6/4 
+     # set         : [ 5, 8, 10 ]  # armonizacion diatonica 6/4 
    duraciones:
      set         : [ 1,.5, (1.5)x2 ]
    dinamicas:
@@ -504,11 +504,6 @@ END{
  Para revertir la microforma en si, el orden de la lista de posiciones en el set
  de alturas, usar la propiedad revertir_microforma;
 
-=head2 Custom Sets
-
- TODO Explicar preprocesos realizados sobre los set, mapeo de valores y el 
- uso de diferentes math ops
-
 =head1 AUTHOR
 
  Lisandro Fernandez
@@ -533,10 +528,7 @@ END{
 
 =head1 TODO
 
- RESUELTO (revisar) tempo/bpm problem... 
- REVISAR, herencia entre Estructuras.
-
- Agregar soporte para metro, chanel, program change entre MOTIVOS
+ Agregar soporte para cambio de:  metro, chanel y programa entre MOTIVOS
  Revisar ordenador 'alturas' y  propiedad altura de los componentes
  Control de superposicion o separacion entre Estructuras, Motivos y Componentes.
  Lista defacto general para todos los tracks/configs.
