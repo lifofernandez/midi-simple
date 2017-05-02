@@ -1,3 +1,5 @@
 
-fluidsynth  -v -a alsa -m alsa_seq -l -i -g 0.8 -C 0 -R 0 --load-config=.fsrc /usr/share/soundfonts/FluidR3_GM.sf2 $1
-
+# Linux
+# fluidsynth  -v -a alsa -m alsa_seq -l -i -g 0.8 -C 0 -R 0 --load-config=.fsrc /usr/share/soundfonts/FluidR3_GM.sf2 $1
+# OSx
+fluidsynth  -v -i -g 0.8 -C 0 -R 0 --load-config=.fsrc ~/Library/Audio/Sounds/Banks/fluid_r3_gm.sf2 $1
