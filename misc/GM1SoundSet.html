@@ -1,0 +1,1894 @@
+<!DOCTYPE HTML>
+<html lang="en-gb" dir="ltr"  data-config='{"twitter":0,"plusone":0,"facebook":0,"style":"default"}'>
+
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<base href="https://www.midi.org/specifications/item/gm-level-1-sound-set" />
+	<meta name="author" content="MMA" />
+	<meta name="generator" content="Joomla! - Open Source Content Management" />
+	<title>GM 1 Sound Set</title>
+	<link href="http://www.midi.org/specifications/item/gm-level-1-sound-set" rel="canonical" />
+	<link href="https://www.midi.org/component/search/?Itemid=273&amp;task=item&amp;item_id=72&amp;format=opensearch" rel="search" title="Search The MIDI Association" type="application/opensearchdescription+xml" />
+	<link href="/templates/yoo_sun/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
+	<link href="/media/system/css/modal.css?825c3a32bbc75b881a02aeeec8dd012b" rel="stylesheet" type="text/css" />
+	<link href="https://www.midi.org/media/com_easydiscuss/themes/wireframe/css/style.min.css" rel="stylesheet" type="text/css" />
+	<link href="/templates/yoo_sun/widgetkit/widgets/tabs-sun/style/tab.css" rel="stylesheet" type="text/css" id="tabs-widget-css" />
+	<script src="/media/jui/js/jquery.min.js?825c3a32bbc75b881a02aeeec8dd012b" type="text/javascript"></script>
+	<script src="/media/jui/js/jquery-noconflict.js?825c3a32bbc75b881a02aeeec8dd012b" type="text/javascript"></script>
+	<script src="/media/jui/js/jquery-migrate.min.js?825c3a32bbc75b881a02aeeec8dd012b" type="text/javascript"></script>
+	<script src="/media/zoo/assets/js/responsive.js?ver=20170407" type="text/javascript"></script>
+	<script src="/components/com_zoo/assets/js/default.js?ver=20170407" type="text/javascript"></script>
+	<script src="/media/jui/js/bootstrap.min.js?825c3a32bbc75b881a02aeeec8dd012b" type="text/javascript"></script>
+	<script src="/media/system/js/mootools-core.js?825c3a32bbc75b881a02aeeec8dd012b" type="text/javascript"></script>
+	<script src="/media/system/js/core.js?825c3a32bbc75b881a02aeeec8dd012b" type="text/javascript"></script>
+	<script src="/media/system/js/mootools-more.js?825c3a32bbc75b881a02aeeec8dd012b" type="text/javascript"></script>
+	<script src="/media/system/js/modal.js?825c3a32bbc75b881a02aeeec8dd012b" type="text/javascript"></script>
+	<script src="/modules/mod_improved_ajax_login/script/improved_ajax_login.js" type="text/javascript"></script>
+	<script src="/modules/mod_improved_ajax_login/themes/flat/theme.js" type="text/javascript"></script>
+	<script src="/cache/widgetkit/uikit-80925a5a.js" type="text/javascript"></script>
+	<script src="/cache/widgetkit/wk-scripts-e68dfda6.js" type="text/javascript"></script>
+	<script type="text/javascript">
+
+		jQuery(function($) {
+			SqueezeBox.initialize({});
+			SqueezeBox.assign($('a.modal').get(), {
+				parse: 'rel'
+			});
+		});
+
+		window.jModalClose = function () {
+			SqueezeBox.close();
+		};
+		
+		// Add extra modal close functionality for tinyMCE-based editors
+		document.onreadystatechange = function () {
+			if (document.readyState == 'interactive' && typeof tinyMCE != 'undefined' && tinyMCE)
+			{
+				if (typeof window.jModalClose_no_tinyMCE === 'undefined')
+				{	
+					window.jModalClose_no_tinyMCE = typeof(jModalClose) == 'function'  ?  jModalClose  :  false;
+					
+					jModalClose = function () {
+						if (window.jModalClose_no_tinyMCE) window.jModalClose_no_tinyMCE.apply(this, arguments);
+						tinyMCE.activeEditor.windowManager.close();
+					};
+				}
+		
+				if (typeof window.SqueezeBoxClose_no_tinyMCE === 'undefined')
+				{
+					if (typeof(SqueezeBox) == 'undefined')  SqueezeBox = {};
+					window.SqueezeBoxClose_no_tinyMCE = typeof(SqueezeBox.close) == 'function'  ?  SqueezeBox.close  :  false;
+		
+					SqueezeBox.close = function () {
+						if (window.SqueezeBoxClose_no_tinyMCE)  window.SqueezeBoxClose_no_tinyMCE.apply(this, arguments);
+						tinyMCE.activeEditor.windowManager.close();
+					};
+				}
+			}
+		};
+		
+	</script>
+	<link rel="stylesheet" href="/modules/mod_improved_ajax_login/cache/267/d5daf7a62ae1b6b54a1dc1bc8384ef45.css" type="text/css" />
+	<script>
+document[(_el=document.addEventListener)?'addEventListener':'attachEvent'](_el?'DOMContentLoaded':'onreadystatechange',function(){
+  if (!_el && document.readyState != 'complete') return;
+  new ImprovedAJAXLogin({
+    id: 267,
+    isGuest: 1,
+    oauth: {"facebook":"https:\/\/www.facebook.com\/dialog\/oauth?scope=email&response_type=code&display=popup&client_id=195598937444996&redirect_uri=https%3A%2F%2Fwww.midi.org%2Findex.php%3Foption%3Dcom_improved_ajax_login%26task%3Dfacebook"},
+    jversion: 25,
+    bgOpacity: 0.4,
+    returnUrl: 'https://www.midi.org/specifications/item/gm-level-1-sound-set',
+    border: parseInt('ffffff|*|3|*|4b6bb5|*|7|*|1|*|'.split('|*|')[1]),
+    padding: 4,
+    useAJAX: 0,
+    openEvent: 'onclick',
+    wndCenter: 1,
+    regPopup: 1,
+    dur: 300,
+    timeout: 0,
+    base: '/',
+    theme: 'flat',
+    socialProfile: '',
+    socialType: 'socialIco',
+    cssPath: '/modules/mod_improved_ajax_login/cache/267/d5daf7a62ae1b6b54a1dc1bc8384ef45.css',
+    regPage: 'joomla',
+    captcha: '',
+    captchaVer: '',
+    showHint: 0,
+    geolocation: true,
+    windowAnim: '1'
+  });
+});
+</script>
+	<script src="https://www.midi.org/media/com_easydiscuss/scripts/site/easydiscuss-4.0.11.js"></script>
+
+<link rel="apple-touch-icon-precomposed" href="/templates/yoo_sun/apple_touch_icon.png">
+<link rel="stylesheet" href="/templates/yoo_sun/css/bootstrap.css">
+<link rel="stylesheet" href="/templates/yoo_sun/css/theme.css">
+<link rel="stylesheet" href="/templates/yoo_sun/css/custom.css">
+<script src="/templates/yoo_sun/warp/vendor/uikit/js/uikit.js"></script>
+<script src="/templates/yoo_sun/warp/vendor/uikit/js/components/autocomplete.js"></script>
+<script src="/templates/yoo_sun/warp/vendor/uikit/js/components/search.js"></script>
+<script src="/templates/yoo_sun/warp/vendor/uikit/js/components/tooltip.js"></script>
+<script src="/templates/yoo_sun/warp/js/social.js"></script>
+<script src="/templates/yoo_sun/js/theme.js"></script>
+<script src="/templates/yoo_sun/js/simpleWeather.js"></script>
+</head>
+
+<body class="tm-sidebar-a-right tm-sidebars-1 tm-noblog  tm-body-background">
+
+    <div class="tm-page">
+
+                    <div class="uk-container uk-container-center tm-container-large">
+                <div id="tm-toolbar" class="tm-toolbar uk-clearfix">
+
+                    
+                                            <div class="uk-float-right"><div class="uk-panel"><div id="mod_improved_ajax_login-267">
+
+                <a class="logBtn selectBtn" onclick="return false" href="/change-username-password?view=login">
+        <span class="loginBtn">Log in</span>
+      </a>
+    	<div class="ial-window">
+        <div class="loginWndInside">
+    			<span class="ial-close"></span>
+          
+
+
+<form action="/specifications" method="post" name="ialLogin" class="ial-login ">
+    <div class="gi-elem gi-wide">
+    <h3 class="loginH3">Login to your account</h3>
+  </div>
+  
+  <div class="gi-elem">
+        <div class="gi-field-out"><div class="gi-field-icon gi-user"><div class="gi-field-icon-hover gi-user"></div></div></div>
+    <input id="userTxt" class="loginTxt" name="username" type="text" placeholder="Username" autocomplete="off" />
+  </div>
+  <div class="gi-elem">
+    <div class="gi-field-out"><div class="gi-field-icon gi-passw"><div class="gi-field-icon-hover gi-passw"></div></div></div>
+    <input id="passTxt" class="loginTxt" name="password" type="password" placeholder="Password" autocomplete="off" />
+  </div>
+    <div class="gi-elem">
+    <button class="loginBtn ial-submit" id="submitBtn"><span><i class="ial-load"></i>Log in</span></button>
+  </div>
+  <div class="gi-elem">
+          <label class="ial-check-lbl smallTxt" for="keepSigned">
+  		  <input id="keepSigned" name="remember" type="checkbox" class="ial-checkbox"  />
+  			Remember Me  		</label>
+  	  	<div class="forgetDiv">
+        		<a class="forgetLnk" href="/change-username-password?view=reset">Forgot your password?</a>
+            <br />
+        	</div>
+  </div>
+  <br style="clear:both" />
+	<input type="hidden" name="option" value="com_users" />
+	<input type="hidden" name="task" value="user.login" />
+	<input type="hidden" name="return" value="aHR0cHM6Ly93d3cubWlkaS5vcmcvc3BlY2lmaWNhdGlvbnMvaXRlbS9nbS1sZXZlbC0xLXNvdW5kLXNldA==" />
+	<input type="hidden" name="f2c17db6932cfbaf0e903ab340d0a8f1" value="1" /></form>
+<form name="saved" style="display:none">
+  <input type="text" name="username" />
+  <input type="password" name="password" />
+</form>
+
+
+
+  <div style="text-align:center; *display:inline; margin: 10px 0;">
+        <div class="socialIco" data-oauth="facebook" title="Use Facebook account">
+      <div class="socialImg facebookImg"><div class="socialImgHover facebookImg"></div></div>
+    </div>
+      </div>
+
+        </div>
+    	</div>
+      
+	      	  <a class="regBtn selectBtn  " href="/midi-signup">
+        <span class="loginBtn">Register</span>
+  		</a>
+      
+
+	<div class="ial-window">
+    <div class="loginWndInside">
+			<span class="ial-close loginBtn"></span>
+      
+
+
+<script>var ialFields = {"page":[{"elem":{"LM5416e3590b599":{"jform[elem_type]":{"value":"header","predefined":"title","readonly":true,"button":"Title","icon":"icon-quote icon-font"},"jform[elem_wide]":{"checked":true,"value":true},"jform[elem_class]":{"value":""},"jform[elem_label]":{"value":"Please fill out the following fields to join."},"jform[elem_subtitle]":{"value":"<strong class=\"red\">*<\/strong> Required field"}},"LM5416e3590b59c":{"jform[elem_type]":{"value":"textfield","defaultValue":"text","predefined":"name","readonly":true,"button":"Name","icon":"icon-user"},"jform[elem_required]":{"checked":true,"disabled":false},"jform[elem_wide]":{"checked":false},"jform[elem_class]":{"value":"ial-name"},"jform[elem_name]":{"value":"name","readonly":true,"prefix":"jform["},"jform[elem_prefix]":{"value":"jform"},"jform[elem_label]":{"value":"First Name"},"jform[elem_placeholder]":{"value":""},"jform[elem_title]":{"value":"Enter your full name."},"jform[elem_pattern]":{"value":".+","placeholder":".+"},"jform[elem_error]":{"value":"Invalid field: "},"jform[elem_id]":{"value":"ial-name"}},"LM58d834433d8d0":{"jform[elem_type]":{"profile":1,"value":"textfield","defaultValue":"text","readonly":true,"button":"Textfield","icon":"icon-pencil"},"jform[elem_required]":{"checked":true,"disabled":false,"value":true},"jform[elem_wide]":{"checked":false},"jform[elem_class]":{"value":""},"jform[elem_name]":{"value":"last_name","readonly":false},"jform[elem_prefix]":{"value":"jform[improved]"},"jform[elem_label]":{"value":"Last Name"},"jform[elem_value]":{"value":""},"jform[elem_placeholder]":{"value":""},"jform[elem_title]":{"value":""},"jform[elem_error]":{"value":"Invalid field: "},"jform[elem_pattern]":{"value":""}},"LM5416e3590b59e":{"jform[elem_type]":{"value":"textfield","defaultValue":"text","predefined":"username","readonly":true,"button":"Username","icon":"icon-user"},"jform[elem_required]":{"checked":true,"disabled":true,"value":true},"jform[elem_wide]":{"checked":false},"jform[elem_class]":{"value":"ial-username"},"jform[elem_name]":{"value":"username","readonly":true,"prefix":"jform["},"jform[elem_prefix]":{"value":"jform"},"jform[elem_label]":{"value":"Username"},"jform[elem_placeholder]":{"value":""},"jform[elem_title]":{"value":"Enter your desired username."},"jform[elem_error]":{"value":"Please enter a valid username. No space at beginning or end, at least 0 characters and must <strong>not<\/strong> contain the following characters: < > \\ &quot; ' &#37; ; ( ) &."},"jform[elem_pattern]":{"value":"^[^\\\\&%'\";\\(\\)]{2,}$","placeholder":"^[^\\\\&%'\";\\(\\)]{2,}$"},"jform[elem_ajax]":"username","jform[elem_id]":{"value":"ial-username"}},"LM5416e3590b5a1":{"jform[elem_type]":{"value":"textfield","defaultValue":"text","predefined":"email","readonly":true,"button":"Email","icon":"icon-mail-2 icon-envelope"},"jform[elem_required]":{"checked":true,"disabled":true,"value":true},"jform[elem_wide]":{"checked":false},"jform[elem_class]":{"value":"ial-email1"},"jform[elem_name]":{"value":"email1","readonly":true,"prefix":"jform["},"jform[elem_prefix]":{"value":"jform"},"jform[elem_label]":{"value":"Email Address"},"jform[elem_placeholder]":{"value":""},"jform[elem_title]":{"value":"Enter your email address."},"jform[elem_error]":{"value":"Invalid email address"},"jform[elem_pattern]":{"value":"^([\\w0-9\\.\\-])+\\@(([a-zA-Z0-9\\-])+\\.)+[a-zA-Z]{2,4}$","placeholder":"^([\\w0-9\\.\\-])+\\@(([a-zA-Z0-9\\-])+\\.)+[a-zA-Z]{2,4}$"},"jform[elem_ajax]":"email","jform[elem_id]":{"value":"ial-email1"}},"LM5416e3590b5a2":{"jform[elem_type]":{"value":"textfield","defaultValue":"text","predefined":"email2","readonly":true,"button":"Email again","icon":"icon-mail-2 icon-envelope"},"jform[elem_required]":{"checked":true,"disabled":true,"value":true},"jform[elem_wide]":{"checked":false},"jform[elem_class]":{"value":"ial-email2"},"jform[elem_name]":{"value":"email2","readonly":true,"prefix":"jform["},"jform[elem_prefix]":{"value":"jform"},"jform[elem_label]":{"value":"Confirm Email Address"},"jform[elem_placeholder]":{"value":""},"jform[elem_title]":{"value":"Confirm your email address."},"jform[elem_error]":{"value":"The email addresses you entered do not match. Please enter your email address in the email address field and confirm your entry by entering it in the confirm email address field."},"jform[elem_id]":{"value":"ial-email2"}},"LM5658c7d05fcd0":{"jform[elem_type]":{"value":"password1","defaultValue":"password","predefined":"password1","readonly":true,"button":"Password","icon":"icon-lock"},"jform[elem_required]":{"checked":true,"disabled":true,"value":true},"jform[elem_wide]":{"checked":false},"jform[elem_class]":{"value":"ial-password1"},"jform[elem_name]":{"value":"password1","readonly":true},"jform[elem_prefix]":{"value":"jform"},"jform[elem_label]":{"value":"Password"},"jform[elem_placeholder]":{"value":""},"jform[elem_title]":{"value":"Enter your desired password."},"jform[elem_error]":{"value":"Invalid field: "}},"LM5416e3590b59f":{"jform[elem_type]":{"value":"password2","defaultValue":"password","predefined":"password2","readonly":true,"button":"Password again","icon":"icon-lock"},"jform[elem_required]":{"checked":true,"disabled":true,"value":true},"jform[elem_wide]":{"checked":false},"jform[elem_class]":{"value":"ial-password2"},"jform[elem_name]":{"value":"password2","readonly":true,"prefix":"jform["},"jform[elem_prefix]":{"value":"jform"},"jform[elem_label]":{"value":"Confirm Password"},"jform[elem_placeholder]":{"value":""},"jform[elem_title]":{"value":"Confirm your password."},"jform[elem_error]":{"value":"The passwords you entered do not match. Please enter your desired password in the password field and confirm your entry by entering it in the confirm password field."},"jform[elem_id]":{"value":"ial-password2"}},"LM5658c7d05fcd1":{"jform[elem_type]":{"profile":1,"value":"select","readonly":true,"button":"Select","icon":"icon-chevron-down"},"jform[elem_required]":{"checked":false,"disabled":false},"jform[elem_wide]":{"checked":true,"value":true},"jform[elem_class]":{"value":""},"jform[elem_name]":{"value":"midi_experience","readonly":false},"jform[elem_prefix]":{"value":"jform[improved]"},"jform[elem_label]":{"value":"MIDI Experience"},"jform[elem_select]":{"value":"<option value=\"Please select one\" selected=\"selected\">Please select one<\/option><option value=\"Newbie (Less than a year)\">Newbie (Less than a year)<\/option><option value=\"Moderate (1-2 years)\">Moderate (1-2 years)<\/option><option value=\"Advanced (2-5 years\">Advanced (2-5 years<\/option><option value=\"Expert (+5 years)\">Expert (+5 years)<\/option>"},"jform[elem_title]":{"value":""}},"LM58dac287411dd":{"jform[elem_type]":{"profile":1,"value":"select","readonly":true,"button":"Select","icon":"icon-chevron-down"},"jform[elem_required]":{"checked":false,"disabled":false},"jform[elem_wide]":{"checked":true,"value":true},"jform[elem_class]":{"value":""},"jform[elem_name]":{"value":"what_best_describes_your_primary_use_of_midi","readonly":false},"jform[elem_prefix]":{"value":"jform[improved]"},"jform[elem_label]":{"value":"What best describes your *primary* use of MIDI?"},"jform[elem_select]":{"value":"<option value=\"Please select one\" selected=\"selected\">Please select one<\/option><option value=\"I have fun playing with MIDI just for my own personal enjoyment\">I have fun playing with MIDI just for my own personal enjoyment<\/option><option value=\"I'm a developer of MIDI hardware or software\">I'm a developer of MIDI hardware or software<\/option><option value=\"I'm a music educator and use MIDI in the classroom\">I'm a music educator and use MIDI in the classroom<\/option><option value=\"I'm a student and I am studying MIDI at school\">I'm a student and I am studying MIDI at school<\/option><option value=\"I'm a musician who uses MIDI to write music\">I'm a musician who uses MIDI to write music<\/option><option value=\"I'm a musician who uses MIDI to perform live\">I'm a musician who uses MIDI to perform live<\/option>"},"jform[elem_title]":{"value":""}},"LM58e3baa44a6c5":{"jform[elem_type]":{"profile":1,"value":"checkbox","readonly":true,"button":"Checkbox","icon":"icon-checkbox icon-ok-circle"},"jform[elem_required]":{"checked":false,"disabled":false},"jform[elem_checked]":{"checked":true,"disabled":false,"value":true},"jform[elem_wide]":{"checked":true,"value":true},"jform[elem_class]":{"value":"checkbox"},"jform[elem_value]":{"defaultValue":"JYes","placeholder":"Yes","value":""},"jform[elem_name]":{"value":"id_like_to_receive_communications_from_midiorg_about_new_content_downloads_and_more","readonly":false},"jform[elem_prefix]":{"value":"jform[improved]"},"jform[elem_label]":{"value":"I'd like to receive communications from midi.org about new content, downloads, and more."},"jform[elem_title]":{"value":""}},"LM5416e3590b5a4":{"jform[elem_type]":{"value":"button","predefined":"submit","readonly":true,"button":"Submit","icon":"icon-arrow-right"},"jform[elem_wide]":{"checked":false},"jform[elem_class]":{"value":""},"jform[elem_label]":{"value":"Register"},"jform[elem_subtitle]":{"value":""}},"LM56777e2bbdaf4":{"jform[elem_type]":{"value":"label","readonly":true,"button":"Label","icon":"icon-quote icon-align-justify"},"jform[elem_wide]":{"checked":false},"jform[elem_class]":{"value":""},"jform[elem_label]":{"value":"By registering, <a href=\"index.php?option=com_content&amp;view=article&amp;id=73&amp;Itemid=295\" target=\"_blank\">I agree to the terms.<\/a>"}}}}]}, ialProps = {"layout":{"jform[layout_columns]":"3","jform[layout_margin]":"20px","jform[layout_width]":"250px"}};</script>
+<form action="/component/users/?Itemid=101" method="post" name="ialRegister" class="ial-form">
+  <input type="hidden" value="com_users" name="option" />
+  <input type="hidden" value="registration.register" name="task" />
+  <input type="hidden" name="f2c17db6932cfbaf0e903ab340d0a8f1" value="1" /></form>
+
+<br style="clear:both" />
+
+
+  <div style="text-align:center; *display:inline; margin: 10px 0;">
+        <div class="socialIco" data-oauth="facebook" title="Use Facebook account">
+      <div class="socialImg facebookImg"><div class="socialImgHover facebookImg"></div></div>
+    </div>
+      </div>
+
+    </div>
+	</div>
+
+</div><form name="ialText" style="display:none">
+  <input type="hidden" name="COM_USERS_REGISTER_REQUIRED" value="&lt;strong class=&quot;red&quot;&gt;*&lt;/strong&gt; Required field" />
+  <input type="hidden" name="COM_USERS_REGISTRATION" value="User Registration" />
+  <input type="hidden" name="IAL_PLEASE_WAIT" value="Please wait" />
+  <input type="hidden" name="IAL_VERY_WEAK" value="Very weak" />
+  <input type="hidden" name="IAL_WEAK" value="Weak" />
+  <input type="hidden" name="IAL_REASONABLE" value="Reasonable" />
+  <input type="hidden" name="IAL_STRONG" value="Strong" />
+  <input type="hidden" name="IAL_VERY_STRONG" value="Very strong" />
+</form></div></div>
+                    
+                </div>
+            </div>
+        
+        <div class="tm-container uk-container uk-container-center tm-container-large">
+
+                            <div class="tm-dropdown-overlay uk-position-relative" data-uk-dropdown-overlay="{cls:'tm-dropdown-overlay uk-position-absolute uk-width-1-1'}">
+                    <nav id="tm-navbar" class="tm-navbar uk-navbar uk-clearfix">
+
+                        <div class="uk-visible-large">
+                                                            <a class="uk-navbar-brand uk-float-left" href="https://www.midi.org">
+	<img src="/images/midilogo.png" alt="midilogo" /></a>
+                            
+                                                            <div class="uk-float-left"><ul class="uk-navbar-nav uk-hidden-small"><li><a href="/">Home</a></li><li><a href="/about">About</a></li><li><a href="/forum">Forum</a></li><li class="uk-active"><a href="/specifications">Specs</a></li><li><a href="/articles">Articles</a></li><li><a href="/our-partners">Partners</a></li><li><a href="https://midi.nonlineareducating.com/" target="_blank" rel="noopener noreferrer">Courses</a></li><li><a href="/contact-us">Contact</a></li><li><a href="/midi-signup">Join!</a></li><li><a href="#"><!-- START: Modules Anywhere --><!--  Modules Anywhere Message: The module cannot be placed because it is not published or assigned to this page. --><!-- END: Modules Anywhere --></a>
+</li></ul></div>
+                            
+                            
+                                                            <div class="uk-float-right">
+<form id="search-40" class="uk-search" action="/specifications" method="post" role="search" data-uk-search="{'source': '/component/search/?tmpl=raw&amp;type=json&amp;ordering=&amp;searchphrase=all', 'param': 'searchword', 'msgResultsHeader': 'Search Results', 'msgMoreResults': 'More Results', 'msgNoResults': 'No results found', flipDropdown: 1}">
+	<input class="uk-search-field" type="search" name="searchword" placeholder="search...">
+	<input type="hidden" name="task"   value="search">
+	<input type="hidden" name="option" value="com_search">
+	<input type="hidden" name="Itemid" value="291">
+</form></div>
+                                                    </div>
+
+                                                    <a href="#offcanvas" class="uk-navbar-toggle uk-hidden-large uk-navbar-flip" data-uk-offcanvas></a>
+                        
+                                                    <div class="tm-logo-small uk-navbar-content uk-hidden-large">
+                                <a href="https://www.midi.org">
+	<img src="/images/midilogo.png" alt="midilogo" width="110" height="63" /></a>
+                            </div>
+                        
+                    </nav>
+                </div>
+            
+            <div class="tm-container-background">
+                                    <section id="tm-top-a" class="uk-grid uk-grid-collapse tm-block-divider uk-grid-divider" data-uk-grid-match="{target:'> div > .uk-panel'}" data-uk-grid-margin>
+<div class="uk-width-1-1"><div class="uk-panel">
+<div class="uk-contrast" data-uk-slideshow="{}">
+
+    <div class="uk-position-relative">
+
+        <ul class="uk-slideshow uk-overlay-active">
+        
+            <li style="min-height: 300px;">
+
+                
+                    <img src="/cache/widgetkit/specs-2070556be5.jpg" alt="The Official MIDI Specifications" width="1200" height="300">
+                    
+                                        <div class="uk-overlay-panel uk-flex uk-flex-center uk-flex-middle uk-text-center uk-overlay-fade">
+
+                                                <div>
+                        
+                                                <h3 class="uk-h2">
+
+                            The Official MIDI Specifications
+                            
+                        </h3>
+                        
+                        
+                        
+                                                </div>
+                        
+                    </div>
+                    
+                
+            </li>
+
+                </ul>
+
+        
+        
+    </div>
+
+    
+</div>
+</div></div>
+</section>
+                
+                
+                
+                                    <div id="tm-middle" class="tm-middle uk-grid uk-grid-collapse" data-uk-grid-match>
+
+                                                    <div class="tm-main uk-width-medium-2-3 uk-grid-collapse">
+
+                                                                    <section id="tm-main-top" class="tm-main-top uk-grid uk-grid-collapse tm-block-divider uk-grid-divider uk-grid-collapse" data-uk-grid-match="{target:'> div > .uk-panel'}" data-uk-grid-margin>
+<div class="uk-width-1-1"><div class="uk-panel uk-panel-space"><ul class="uk-breadcrumb"><li><a href="/">Home</a></li><li><a href="/specifications">Specs</a></li><li><a href="/specifications/category/gm-specifications">General MIDI (&quot;GM&quot;) Specifications</a></li><li class="uk-active"><span>GM 1 Sound Set</span></li></ul></div></div>
+</section>
+                                
+                                                                    <main id="tm-content" class="tm-content uk-panel uk-panel-space">
+
+                                        
+                                        <div id="system-message-container">
+</div>
+<div class="yoo-zoo product-uikit product-uikit-gm-level-1-sound-set">
+
+	
+
+<h1> GM 1 Sound Set </h1>
+
+
+	 <div class="uk-margin">General MIDI's most recognized feature is the defined list of sounds (or "patches"). However, General MIDI does not actually define the way the sound will be reproduced, only the name of that sound.&nbsp;Though this can obviously result in wide variations in performance from the same song data on different GM sound sources, the authors of General MIDI felt it important to allow each manufacturer to have their own ideas and express their personal aesthetics when it comes to picking the exact timbres for each sound.<br /><br />Each manufacturer must insure that their sounds provide an acceptable representation of song data written for General MIDI. Guidelines for developing GM compatible sound sets and song data are available.<br />
+<ul>
+<li>The names of the instruments indicate what sort of sound will be heard when that instrument number (MIDI Program Change or "PC#") is selected on the GM1 synthesizer.<br /><br /></li>
+<li>These sounds are the same for all MIDI Channels except Channel 10, which has only "percussion" sounds.</li>
+</ul>
+<div>
+<table border="1" align="center">
+<tbody>
+<tr>
+<td colspan="2">
+<p align="center"><strong>General MIDI Level 1 Instrument Families</strong></p>
+</td>
+</tr>
+<tr>
+<td colspan="2">The General MIDI Level 1 instrument sounds are grouped by families. In each family are 8 specific instruments.</td>
+</tr>
+<tr>
+<td align="center"><strong>PC#</strong></td>
+<td align="center"><strong>Family Name</strong></td>
+</tr>
+<tr>
+<td>1-8</td>
+<td>Piano</td>
+</tr>
+<tr>
+<td>9-16</td>
+<td>Chromatic Percussion</td>
+</tr>
+<tr>
+<td>17-24</td>
+<td>Organ</td>
+</tr>
+<tr>
+<td>25-32</td>
+<td>Guitar</td>
+</tr>
+<tr>
+<td>33-40</td>
+<td>Bass</td>
+</tr>
+<tr>
+<td>41-48</td>
+<td>Strings</td>
+</tr>
+<tr>
+<td>49-56</td>
+<td>Ensemble</td>
+</tr>
+<tr>
+<td>57-64</td>
+<td>Brass</td>
+</tr>
+<tr>
+<td>65-72</td>
+<td>Reed</td>
+</tr>
+<tr>
+<td>73-80</td>
+<td>Pipe</td>
+</tr>
+<tr>
+<td>81-88</td>
+<td>Synth Lead</td>
+</tr>
+<tr>
+<td>89-96</td>
+<td>Synth Pad</td>
+</tr>
+<tr>
+<td>97-104</td>
+<td>Synth Effects</td>
+</tr>
+<tr>
+<td>105-112</td>
+<td>Ethnic</td>
+</tr>
+<tr>
+<td>113-120</td>
+<td>Percussive</td>
+</tr>
+<tr>
+<td>121-128</td>
+<td>Sound Effects</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>&nbsp;</p>
+<div>
+<table border="1" align="center">
+<tbody>
+<tr>
+<td colspan="2">
+<p align="center"><strong>General MIDI Level 1 Instrument Patch Map</strong></p>
+</td>
+</tr>
+<tr>
+<td colspan="2"><strong>Note: </strong>While GM1 does not define the actual characteristics of any sounds, the names in parentheses after each of the synth leads, pads, and sound effects are, in particular, intended only as guides).</td>
+</tr>
+<tr>
+<td align="center"><strong>PC#</strong></td>
+<td align="center"><strong>Instrument Name</strong></td>
+</tr>
+<tr>
+<td>1.</td>
+<td>Acoustic Grand Piano</td>
+</tr>
+<tr>
+<td>2.</td>
+<td>Bright Acoustic Piano</td>
+</tr>
+<tr>
+<td>3.</td>
+<td>Electric Grand Piano</td>
+</tr>
+<tr>
+<td>4.</td>
+<td>Honky-tonk Piano</td>
+</tr>
+<tr>
+<td>5.</td>
+<td>Electric Piano 1</td>
+</tr>
+<tr>
+<td>6.</td>
+<td>Electric Piano 2</td>
+</tr>
+<tr>
+<td>7.</td>
+<td>Harpsichord</td>
+</tr>
+<tr>
+<td>8.</td>
+<td>Clavi</td>
+</tr>
+<tr>
+<td>9.</td>
+<td>Celesta</td>
+</tr>
+<tr>
+<td>10.</td>
+<td>Glockenspiel</td>
+</tr>
+<tr>
+<td>11.</td>
+<td>Music Box</td>
+</tr>
+<tr>
+<td>12.</td>
+<td>Vibraphone</td>
+</tr>
+<tr>
+<td>13.</td>
+<td>Marimba</td>
+</tr>
+<tr>
+<td>14.</td>
+<td>Xylophone</td>
+</tr>
+<tr>
+<td>15.</td>
+<td>Tubular Bells</td>
+</tr>
+<tr>
+<td>16.</td>
+<td>Dulcimer</td>
+</tr>
+<tr>
+<td>17.</td>
+<td>Drawbar Organ</td>
+</tr>
+<tr>
+<td>18.</td>
+<td>Percussive Organ</td>
+</tr>
+<tr>
+<td>19.</td>
+<td>Rock Organ</td>
+</tr>
+<tr>
+<td>20.</td>
+<td>Church Organ</td>
+</tr>
+<tr>
+<td>21.</td>
+<td>Reed Organ</td>
+</tr>
+<tr>
+<td>22.</td>
+<td>Accordion</td>
+</tr>
+<tr>
+<td>23.</td>
+<td>Harmonica</td>
+</tr>
+<tr>
+<td>24.</td>
+<td>Tango Accordion</td>
+</tr>
+<tr>
+<td>25.</td>
+<td>Acoustic Guitar (nylon)</td>
+</tr>
+<tr>
+<td>26.</td>
+<td>Acoustic Guitar (steel)</td>
+</tr>
+<tr>
+<td>27.</td>
+<td>Electric Guitar (jazz)</td>
+</tr>
+<tr>
+<td>28.</td>
+<td>Electric Guitar (clean)</td>
+</tr>
+<tr>
+<td>29.</td>
+<td>Electric Guitar (muted)</td>
+</tr>
+<tr>
+<td>30.</td>
+<td>Overdriven Guitar</td>
+</tr>
+<tr>
+<td>31.</td>
+<td>Distortion Guitar</td>
+</tr>
+<tr>
+<td>32.</td>
+<td>Guitar harmonics</td>
+</tr>
+<tr>
+<td>33.</td>
+<td>Acoustic Bass</td>
+</tr>
+<tr>
+<td>34.</td>
+<td>Electric Bass (finger)</td>
+</tr>
+<tr>
+<td>35.</td>
+<td>Electric Bass (pick)</td>
+</tr>
+<tr>
+<td>36.</td>
+<td>Fretless Bass</td>
+</tr>
+<tr>
+<td>37.</td>
+<td>Slap Bass 1</td>
+</tr>
+<tr>
+<td>38.</td>
+<td>Slap Bass 2</td>
+</tr>
+<tr>
+<td>39.</td>
+<td>Synth Bass 1</td>
+</tr>
+<tr>
+<td>40.</td>
+<td>Synth Bass 2</td>
+</tr>
+<tr>
+<td>41.</td>
+<td>Violin</td>
+</tr>
+<tr>
+<td>42.</td>
+<td>Viola</td>
+</tr>
+<tr>
+<td>43.</td>
+<td>Cello</td>
+</tr>
+<tr>
+<td>44.</td>
+<td>Contrabass</td>
+</tr>
+<tr>
+<td>45.</td>
+<td>Tremolo Strings</td>
+</tr>
+<tr>
+<td>46.</td>
+<td>Pizzicato Strings</td>
+</tr>
+<tr>
+<td>47.</td>
+<td>Orchestral Harp</td>
+</tr>
+<tr>
+<td>48.</td>
+<td>Timpani</td>
+</tr>
+<tr>
+<td>49.</td>
+<td>String Ensemble 1</td>
+</tr>
+<tr>
+<td>50.</td>
+<td>String Ensemble 2</td>
+</tr>
+<tr>
+<td>51.</td>
+<td>SynthStrings 1</td>
+</tr>
+<tr>
+<td>52.</td>
+<td>SynthStrings 2</td>
+</tr>
+<tr>
+<td>53.</td>
+<td>Choir Aahs</td>
+</tr>
+<tr>
+<td>54.</td>
+<td>Voice Oohs</td>
+</tr>
+<tr>
+<td>55.</td>
+<td>Synth Voice</td>
+</tr>
+<tr>
+<td>56.</td>
+<td>Orchestra Hit</td>
+</tr>
+<tr>
+<td>57.</td>
+<td>Trumpet</td>
+</tr>
+<tr>
+<td>58.</td>
+<td>Trombone</td>
+</tr>
+<tr>
+<td>59.</td>
+<td>Tuba</td>
+</tr>
+<tr>
+<td>60.</td>
+<td>Muted Trumpet</td>
+</tr>
+<tr>
+<td>61.</td>
+<td>French Horn</td>
+</tr>
+<tr>
+<td>62.</td>
+<td>Brass Section</td>
+</tr>
+<tr>
+<td>63.</td>
+<td>SynthBrass 1</td>
+</tr>
+<tr>
+<td>64.</td>
+<td>SynthBrass 2</td>
+</tr>
+<tr>
+<td>65.</td>
+<td>Soprano Sax</td>
+</tr>
+<tr>
+<td>66.</td>
+<td>Alto Sax</td>
+</tr>
+<tr>
+<td>67.</td>
+<td>Tenor Sax</td>
+</tr>
+<tr>
+<td>68.</td>
+<td>Baritone Sax</td>
+</tr>
+<tr>
+<td>69.</td>
+<td>Oboe</td>
+</tr>
+<tr>
+<td>70.</td>
+<td>English Horn</td>
+</tr>
+<tr>
+<td>71.</td>
+<td>Bassoon</td>
+</tr>
+<tr>
+<td>72.</td>
+<td>Clarinet</td>
+</tr>
+<tr>
+<td>73.</td>
+<td>Piccolo</td>
+</tr>
+<tr>
+<td>74.</td>
+<td>Flute</td>
+</tr>
+<tr>
+<td>75.</td>
+<td>Recorder</td>
+</tr>
+<tr>
+<td>76.</td>
+<td>Pan Flute</td>
+</tr>
+<tr>
+<td>77.</td>
+<td>Blown Bottle</td>
+</tr>
+<tr>
+<td>78.</td>
+<td>Shakuhachi</td>
+</tr>
+<tr>
+<td>79.</td>
+<td>Whistle</td>
+</tr>
+<tr>
+<td>80.</td>
+<td>Ocarina</td>
+</tr>
+<tr>
+<td>81.</td>
+<td>Lead 1 (square)</td>
+</tr>
+<tr>
+<td>82.</td>
+<td>Lead 2 (sawtooth)</td>
+</tr>
+<tr>
+<td>83.</td>
+<td>Lead 3 (calliope)</td>
+</tr>
+<tr>
+<td>84.</td>
+<td>Lead 4 (chiff)</td>
+</tr>
+<tr>
+<td>85.</td>
+<td>Lead 5 (charang)</td>
+</tr>
+<tr>
+<td>86.</td>
+<td>Lead 6 (voice)</td>
+</tr>
+<tr>
+<td>87.</td>
+<td>Lead 7 (fifths)</td>
+</tr>
+<tr>
+<td>88.</td>
+<td>Lead 8 (bass + lead)</td>
+</tr>
+<tr>
+<td>89.</td>
+<td>Pad 1 (new age)</td>
+</tr>
+<tr>
+<td>90.</td>
+<td>Pad 2 (warm)</td>
+</tr>
+<tr>
+<td>91.</td>
+<td>Pad 3 (polysynth)</td>
+</tr>
+<tr>
+<td>92.</td>
+<td>Pad 4 (choir)</td>
+</tr>
+<tr>
+<td>93.</td>
+<td>Pad 5 (bowed)</td>
+</tr>
+<tr>
+<td>94.</td>
+<td>Pad 6 (metallic)</td>
+</tr>
+<tr>
+<td>95.</td>
+<td>Pad 7 (halo)</td>
+</tr>
+<tr>
+<td>96.</td>
+<td>Pad 8 (sweep)</td>
+</tr>
+<tr>
+<td>97.</td>
+<td>FX 1 (rain)</td>
+</tr>
+<tr>
+<td>98.</td>
+<td>FX 2 (soundtrack)</td>
+</tr>
+<tr>
+<td>99.</td>
+<td>FX 3 (crystal)</td>
+</tr>
+<tr>
+<td>100.</td>
+<td>FX 4 (atmosphere)</td>
+</tr>
+<tr>
+<td>101.</td>
+<td>FX 5 (brightness)</td>
+</tr>
+<tr>
+<td>102.</td>
+<td>FX 6 (goblins)</td>
+</tr>
+<tr>
+<td>103.</td>
+<td>FX 7 (echoes)</td>
+</tr>
+<tr>
+<td>104.</td>
+<td>FX 8 (sci-fi)</td>
+</tr>
+<tr>
+<td>105.</td>
+<td>Sitar</td>
+</tr>
+<tr>
+<td>106.</td>
+<td>Banjo</td>
+</tr>
+<tr>
+<td>107.</td>
+<td>Shamisen</td>
+</tr>
+<tr>
+<td>108.</td>
+<td>Koto</td>
+</tr>
+<tr>
+<td>109.</td>
+<td>Kalimba</td>
+</tr>
+<tr>
+<td>110.</td>
+<td>Bag pipe</td>
+</tr>
+<tr>
+<td>111.</td>
+<td>Fiddle</td>
+</tr>
+<tr>
+<td>112.</td>
+<td>Shanai</td>
+</tr>
+<tr>
+<td>113.</td>
+<td>Tinkle Bell</td>
+</tr>
+<tr>
+<td>114.</td>
+<td>Agogo</td>
+</tr>
+<tr>
+<td>115.</td>
+<td>Steel Drums</td>
+</tr>
+<tr>
+<td>116.</td>
+<td>Woodblock</td>
+</tr>
+<tr>
+<td>117.</td>
+<td>Taiko Drum</td>
+</tr>
+<tr>
+<td>118.</td>
+<td>Melodic Tom</td>
+</tr>
+<tr>
+<td>119.</td>
+<td>Synth Drum</td>
+</tr>
+<tr>
+<td>120.</td>
+<td>Reverse Cymbal</td>
+</tr>
+<tr>
+<td>121.</td>
+<td>Guitar Fret Noise</td>
+</tr>
+<tr>
+<td>122.</td>
+<td>Breath Noise</td>
+</tr>
+<tr>
+<td>123.</td>
+<td>Seashore</td>
+</tr>
+<tr>
+<td>124.</td>
+<td>Bird Tweet</td>
+</tr>
+<tr>
+<td>125.</td>
+<td>Telephone Ring</td>
+</tr>
+<tr>
+<td>126.</td>
+<td>Helicopter</td>
+</tr>
+<tr>
+<td>127.</td>
+<td>Applause</td>
+</tr>
+<tr>
+<td>128.</td>
+<td>Gunshot</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>&nbsp;</p>
+<div>
+<table border="1" align="center">
+<tbody>
+<tr>
+<td colspan="2">
+<p align="center"><strong>General MIDI Level 1 Percussion Key Map</strong></p>
+</td>
+</tr>
+<tr>
+<td colspan="2">On MIDI Channel 10, each MIDI Note number ("Key#") corresponds to a different drum sound, as shown below. GM-compatible instruments must have the sounds on the keys shown here. While many current instruments also have additional sounds above or below the range show here, and may even have additional "kits" with variations of these sounds, only these sounds are supported by General MIDI Level 1 devices.</td>
+</tr>
+<tr>
+<td>
+<p><strong>Key#</strong></p>
+</td>
+<td>
+<p><strong>Drum Sound</strong></p>
+</td>
+</tr>
+<tr>
+<td>
+<p>35</p>
+</td>
+<td>
+<p>Acoustic Bass Drum</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>36</p>
+</td>
+<td>
+<p>Bass Drum 1</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>37</p>
+</td>
+<td>
+<p>Side Stick</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>38</p>
+</td>
+<td>
+<p>Acoustic Snare</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>39</p>
+</td>
+<td>
+<p>Hand Clap</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>40</p>
+</td>
+<td>
+<p>Electric Snare</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>41</p>
+</td>
+<td>
+<p>Low Floor Tom</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>42</p>
+</td>
+<td>
+<p>Closed Hi Hat</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>43</p>
+</td>
+<td>
+<p>High Floor Tom</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>44</p>
+</td>
+<td>
+<p>Pedal Hi-Hat</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>45</p>
+</td>
+<td>
+<p>Low Tom</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>46</p>
+</td>
+<td>
+<p>Open Hi-Hat</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>47</p>
+</td>
+<td>
+<p>Low-Mid Tom</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>48</p>
+</td>
+<td>
+<p>Hi-Mid Tom</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>49</p>
+</td>
+<td>
+<p>Crash Cymbal 1</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>50</p>
+</td>
+<td>
+<p>High Tom</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>51</p>
+</td>
+<td>
+<p>Ride Cymbal 1</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>52</p>
+</td>
+<td>
+<p>Chinese Cymbal</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>53</p>
+</td>
+<td>
+<p>Ride Bell</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>54</p>
+</td>
+<td>
+<p>Tambourine</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>55</p>
+</td>
+<td>
+<p>Splash Cymbal</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>56</p>
+</td>
+<td>
+<p>Cowbell</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>57</p>
+</td>
+<td>
+<p>Crash Cymbal 2</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>58</p>
+</td>
+<td>
+<p>Vibraslap</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>59</p>
+</td>
+<td>
+<p>Ride Cymbal 2</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>60</p>
+</td>
+<td>
+<p>Hi Bongo</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>61</p>
+</td>
+<td>
+<p>Low Bongo</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>62</p>
+</td>
+<td>
+<p>Mute Hi Conga</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>63</p>
+</td>
+<td>
+<p>Open Hi Conga</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>64</p>
+</td>
+<td>
+<p>Low Conga</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>65</p>
+</td>
+<td>
+<p>High Timbale</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>66</p>
+</td>
+<td>
+<p>Low Timbale</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>67</p>
+</td>
+<td>
+<p>High Agogo</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>68</p>
+</td>
+<td>
+<p>Low Agogo</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>69</p>
+</td>
+<td>
+<p>Cabasa</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>70</p>
+</td>
+<td>
+<p>Maracas</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>71</p>
+</td>
+<td>
+<p>Short Whistle</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>72</p>
+</td>
+<td>
+<p>Long Whistle</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>73</p>
+</td>
+<td>
+<p>Short Guiro</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>74</p>
+</td>
+<td>
+<p>Long Guiro</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>75</p>
+</td>
+<td>
+<p>Claves</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>76</p>
+</td>
+<td>
+<p>Hi Wood Block</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>77</p>
+</td>
+<td>
+<p>Low Wood Block</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>78</p>
+</td>
+<td>
+<p>Mute Cuica</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>79</p>
+</td>
+<td>
+<p>Open Cuica</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>80</p>
+</td>
+<td>
+<p>Mute Triangle</p>
+</td>
+</tr>
+<tr>
+<td>
+<p>81</p>
+</td>
+<td>
+<p>Open Triangle</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div></div> 
+
+
+
+	
+</div>
+                                    </main>
+                                
+                                
+                            </div>
+                        
+                                                                                                                                        <aside class="tm-sidebar-a uk-width-medium-1-3 tm-block-divider tm-sidebar-divider"><div class="uk-panel uk-panel-box uk-panel-box-secondary">
+	<h2 style="text-align: center;">Join now. It's Free.</h2>
+<p style="text-align: center;"><a href="/midi-signup" target="_self" class="uk-button uk-margin-top">Join MIDI.org</a></p></div>
+<div class="uk-panel uk-panel-box uk-panel-box-primary"><h3 class="uk-panel-title">Learn More in Our Forum</h3><div id="ed" class="ed-mod m-recent-discussions">
+
+    
+	<div class="ed-list--vertical has-dividers--bottom-space">
+		        <div class="ed-list__item">
+            <div class="">
+                                    <div class="o-flag__img t-lg-mr--md">
+                        <div class="ed-mod__section">
+
+                            <div class="o-col-sm">
+                                <div class="o-flag">
+                                    <div class="o-flag__image o-flag--top">
+                                        
+<div class="o-avatar-status is-offline">
+        	<div class="o-avatar-status__indicator"></div>
+    
+	<a href="/forum/profile/10248-wake-on-wan"
+	    class="o-avatar o-avatar--sm"
+
+                data-ed-provide="tooltip"
+        data-placement="top"
+        title="Amadeus"
+        
+        	>
+	    	        <img src="https://www.midi.org//media/com_easydiscuss/images/default_avatar.png" alt="Amadeus"/>
+	    	</a>
+</div>
+
+                                    </div>
+                                    <div class="o-flag__body">
+                                        <a href="/forum/profile/10248-wake-on-wan" class="ed-user-name">Amadeus</a>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                                <div class="">
+                    <div class="m-your-discussions__content
+                                                                                                                        ">
+                        <div class="m-post-title">
+                                                        <a href="/forum/744-info-on-the-grammar-of-td9-seq-files" class="m-post-title__link">
+                                Info on the grammar of TD9 .seq files                            </a>
+                        </div>
+
+                        
+
+                        <div class="m-list--inline m-list--has-divider t-lg-mb-sm">
+                                                            <div class="m-list__item t-fs--sm">
+                                    <div class="">
+                                        98 Hits                                    </div>
+                                </div>
+                            
+                                                            <div class="m-list__item t-fs--sm">
+                                    <div class="">
+                                        0 Votes                                    </div>
+                                </div>
+                            
+                                                    </div>
+
+                        <div class="m-list--inline m-list--has-divider t-lg-mb-sm">
+
+                                                            <div class="m-list__item t-fs--sm">
+                                    In <a href=/forum/forums/7-midi-specifications>MIDI Specifications</a>                                </div>
+                                                                                        <div class="m-list__item t-fs--sm">
+                                    Posted on Wednesday, May 03 2017, 06:09 PM                                </div>
+                                                    </div>
+
+                                                    <div class="">
+                                
+                                <!-- post status here: accepted, onhold, working rejected -->
+                                                                                                                                                            </div>
+                                                
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+	            <div class="ed-list__item">
+            <div class="">
+                                    <div class="o-flag__img t-lg-mr--md">
+                        <div class="ed-mod__section">
+
+                            <div class="o-col-sm">
+                                <div class="o-flag">
+                                    <div class="o-flag__image o-flag--top">
+                                        
+<div class="o-avatar-status is-offline">
+        	<div class="o-avatar-status__indicator"></div>
+    
+	<a href="/forum/profile/10275-omartiguattor"
+	    class="o-avatar o-avatar--sm"
+
+                data-ed-provide="tooltip"
+        data-placement="top"
+        title="Omar"
+        
+        	>
+	    	        <img src="https://www.midi.org//media/com_easydiscuss/images/default_avatar.png" alt="Omar"/>
+	    	</a>
+</div>
+
+                                    </div>
+                                    <div class="o-flag__body">
+                                        <a href="/forum/profile/10275-omartiguattor" class="ed-user-name">Omar</a>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                                <div class="">
+                    <div class="m-your-discussions__content
+                                                                                                                        ">
+                        <div class="m-post-title">
+                                                        <a href="/forum/745-help-configuring-midi-connections-cz5000-sq80-hr16-mmt8" class="m-post-title__link">
+                                Help configuring MIDI connections CZ5000 &gt; SQ80                            </a>
+                        </div>
+
+                        
+
+                        <div class="m-list--inline m-list--has-divider t-lg-mb-sm">
+                                                            <div class="m-list__item t-fs--sm">
+                                    <div class="">
+                                        42 Hits                                    </div>
+                                </div>
+                            
+                                                            <div class="m-list__item t-fs--sm">
+                                    <div class="">
+                                        0 Votes                                    </div>
+                                </div>
+                            
+                                                    </div>
+
+                        <div class="m-list--inline m-list--has-divider t-lg-mb-sm">
+
+                                                            <div class="m-list__item t-fs--sm">
+                                    In <a href=/forum/forums/2-midi-connections>MIDI Connections</a>                                </div>
+                                                                                        <div class="m-list__item t-fs--sm">
+                                    Posted on Friday, May 05 2017, 06:05 PM                                </div>
+                                                    </div>
+
+                                                    <div class="">
+                                
+                                <!-- post status here: accepted, onhold, working rejected -->
+                                                                                                                                                            </div>
+                                                
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+	            <div class="ed-list__item">
+            <div class="">
+                                    <div class="o-flag__img t-lg-mr--md">
+                        <div class="ed-mod__section">
+
+                            <div class="o-col-sm">
+                                <div class="o-flag">
+                                    <div class="o-flag__image o-flag--top">
+                                        
+<div class="o-avatar-status is-offline">
+        	<div class="o-avatar-status__indicator"></div>
+    
+	<a href="/forum/profile/10203-jotti"
+	    class="o-avatar o-avatar--sm"
+
+                data-ed-provide="tooltip"
+        data-placement="top"
+        title="Johan"
+        
+        	>
+	    	        <img src="https://www.midi.org//media/com_easydiscuss/images/default_avatar.png" alt="Johan"/>
+	    	</a>
+</div>
+
+                                    </div>
+                                    <div class="o-flag__body">
+                                        <a href="/forum/profile/10203-jotti" class="ed-user-name">Johan</a>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                                <div class="">
+                    <div class="m-your-discussions__content
+                                                                                                                        ">
+                        <div class="m-post-title">
+                                                        <a href="/forum/740-creating-a-midi-trombone" class="m-post-title__link">
+                                Creating a midi trombone                            </a>
+                        </div>
+
+                        
+
+                        <div class="m-list--inline m-list--has-divider t-lg-mb-sm">
+                                                            <div class="m-list__item t-fs--sm">
+                                    <div class="">
+                                        173 Hits                                    </div>
+                                </div>
+                            
+                                                            <div class="m-list__item t-fs--sm">
+                                    <div class="">
+                                        0 Votes                                    </div>
+                                </div>
+                            
+                                                    </div>
+
+                        <div class="m-list--inline m-list--has-divider t-lg-mb-sm">
+
+                                                            <div class="m-list__item t-fs--sm">
+                                    In <a href=/forum/forums/6-creating-with-midi>Creating with MIDI</a>                                </div>
+                                                                                        <div class="m-list__item t-fs--sm">
+                                    Posted on Monday, May 01 2017, 04:27 PM                                </div>
+                                                    </div>
+
+                                                    <div class="">
+                                
+                                <!-- post status here: accepted, onhold, working rejected -->
+                                                                                                                                                            </div>
+                                                
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+	            <div class="ed-list__item">
+            <div class="">
+                                    <div class="o-flag__img t-lg-mr--md">
+                        <div class="ed-mod__section">
+
+                            <div class="o-col-sm">
+                                <div class="o-flag">
+                                    <div class="o-flag__image o-flag--top">
+                                        
+<div class="o-avatar-status is-offline">
+        	<div class="o-avatar-status__indicator"></div>
+    
+	<a href="/forum/profile/10128-blookey22"
+	    class="o-avatar o-avatar--sm"
+
+                data-ed-provide="tooltip"
+        data-placement="top"
+        title="Alicia"
+        
+        	>
+	    	        <img src="https://www.midi.org//media/com_easydiscuss/images/default_avatar.png" alt="Alicia"/>
+	    	</a>
+</div>
+
+                                    </div>
+                                    <div class="o-flag__body">
+                                        <a href="/forum/profile/10128-blookey22" class="ed-user-name">Alicia</a>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                                <div class="">
+                    <div class="m-your-discussions__content
+                                                                                                                        ">
+                        <div class="m-post-title">
+                                                        <a href="/forum/738-advice-for-a-total-newbie" class="m-post-title__link">
+                                Advice for a total NEWBIE                            </a>
+                        </div>
+
+                        
+
+                        <div class="m-list--inline m-list--has-divider t-lg-mb-sm">
+                                                            <div class="m-list__item t-fs--sm">
+                                    <div class="">
+                                        256 Hits                                    </div>
+                                </div>
+                            
+                                                            <div class="m-list__item t-fs--sm">
+                                    <div class="">
+                                        0 Votes                                    </div>
+                                </div>
+                            
+                                                    </div>
+
+                        <div class="m-list--inline m-list--has-divider t-lg-mb-sm">
+
+                                                            <div class="m-list__item t-fs--sm">
+                                    In <a href=/forum/forums/8-getting-started-with-midi>Getting Started with MIDI</a>                                </div>
+                                                                                        <div class="m-list__item t-fs--sm">
+                                    Posted on Friday, April 28 2017, 08:20 AM                                </div>
+                                                    </div>
+
+                                                    <div class="">
+                                
+                                <!-- post status here: accepted, onhold, working rejected -->
+                                                                                                                                                            </div>
+                                                
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+	            <div class="ed-list__item">
+            <div class="">
+                                    <div class="o-flag__img t-lg-mr--md">
+                        <div class="ed-mod__section">
+
+                            <div class="o-col-sm">
+                                <div class="o-flag">
+                                    <div class="o-flag__image o-flag--top">
+                                        
+<div class="o-avatar-status is-offline">
+        	<div class="o-avatar-status__indicator"></div>
+    
+	<a href="/forum/profile/9949-ahmedmok"
+	    class="o-avatar o-avatar--sm"
+
+                data-ed-provide="tooltip"
+        data-placement="top"
+        title="Ahmed "
+        
+        	>
+	    	        <img src="https://www.midi.org//media/com_easydiscuss/images/default_avatar.png" alt="Ahmed "/>
+	    	</a>
+</div>
+
+                                    </div>
+                                    <div class="o-flag__body">
+                                        <a href="/forum/profile/9949-ahmedmok" class="ed-user-name">Ahmed </a>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                                <div class="">
+                    <div class="m-your-discussions__content
+                                                                                                                        ">
+                        <div class="m-post-title">
+                                                        <a href="/forum/725-own-the-korgm3-and-use-it-with-klefar-ak-pro-to-use-an-oriental-program-it-is-connected-by-midi-in-now-i-want-to-use-midi-keaboard-with-korgm3-how-can-i-use-it-note-that-midi-in-for-korgm3-is-used-for-scale-tuning-converter-i-am-playing-live-and-i-want-to-use-korgm3-sounds-by-playing-on-midi-keaboard-i-tried-it-earlier-through-the-midi-cable-the-cable-was-connected-in-midi-in-to-the-m3-midi-out-of-midi-keaboard-now-midi-in-use-of-klefar-pro" class="m-post-title__link">
+                                Own the korgm3. . And use it with KLEFAR AK PRO to                            </a>
+                        </div>
+
+                        
+
+                        <div class="m-list--inline m-list--has-divider t-lg-mb-sm">
+                                                            <div class="m-list__item t-fs--sm">
+                                    <div class="">
+                                        139 Hits                                    </div>
+                                </div>
+                            
+                                                            <div class="m-list__item t-fs--sm">
+                                    <div class="">
+                                        0 Votes                                    </div>
+                                </div>
+                            
+                                                    </div>
+
+                        <div class="m-list--inline m-list--has-divider t-lg-mb-sm">
+
+                                                            <div class="m-list__item t-fs--sm">
+                                    In <a href=/forum/forums/2-midi-connections>MIDI Connections</a>                                </div>
+                                                                                        <div class="m-list__item t-fs--sm">
+                                    Posted on Wednesday, April 19 2017, 08:02 AM                                </div>
+                                                    </div>
+
+                                                    <div class="">
+                                
+                                <!-- post status here: accepted, onhold, working rejected -->
+                                                                                                                                                            </div>
+                                                
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+	    	</div>
+
+    </div>
+</div></aside>
+                                                    
+                    </div>
+                
+                
+                
+                                    <section id="tm-bottom-c" class="uk-grid uk-grid-collapse tm-block-alternative uk-grid-divider" data-uk-grid-match="{target:'> div > .uk-panel'}" data-uk-grid-margin>
+<div class="uk-width-1-1"><div class="uk-panel tm-margin-xlarge">
+	
+
+<div class="uk-grid-width-1-1 uk-grid-width-small-1-2 uk-grid-width-large-1-4 uk-grid uk-grid-match uk-text-left " data-uk-grid-match="{target:'> div > .uk-panel', row:true}" data-uk-grid-margin >
+
+
+    <div>
+        <div class="uk-panel">
+
+            
+            
+            
+            
+            
+            
+            
+                        <div class="uk-margin"><p>Follow us on</p>
+<p>
+  <a href="https://twitter.com/midiassociation" class="uk-icon-hover uk-icon-small uk-icon-twitter"></a>
+  <a href="https://www.facebook.com/TheMIDIAssociation/" class="uk-icon-hover uk-icon-small uk-icon-facebook"></a>
+  <li></li>
+  <li></li>
+  <li><a href="/privacy-policy">Privacy Policy</a></li>
+  <li><a href="/terms-of-use">Terms of Use</a></li>
+</ul></div>
+            
+            
+            
+            
+        </div>
+    </div>
+
+
+    <div>
+        <div class="uk-panel">
+
+            
+            
+            
+            
+            
+            
+            
+                        <div class="uk-margin"><h3 class="tm-tag-5 tm-title-border">Articles</h3>
+<ul class="uk-list uk-list-line">
+  <li><a href="/index.php/articles/categories/getting-started-with-midi">Getting Started</a></li>
+  <li><a href="/index.php/articles/categories/midi-news">MIDI News</a></li>
+  <li><a href="/index.php/articles/categories/midi-stories">MIDI Stories</a></li>
+  <li><a href="/index.php/articles/categories/MIDI%20Connections">MIDI Connections</a></li>
+  <li><a href="/index.php/articles/categories/MIDI%20hardware">MIDI Hardware</a></li>
+  <li><a href="/index.php/articles/categories/MIDI%20Software">MIDI Software</a></li>
+  <li><a href="/index.php/articles/categories/Creating%20with%20MIDI">Creating with MIDI</a></li>
+</ul></div>
+            
+            
+            
+            
+        </div>
+    </div>
+
+
+    <div>
+        <div class="uk-panel">
+
+            
+            
+            
+            
+            
+            
+            
+                        <div class="uk-margin"><h3 class="tm-tag-1 tm-title-border">Forum</h3>
+<ul class="uk-list uk-list-line">
+  <li><a href="/index.php/forum/categories/listings/the-midi-association">The MIDI Association</a></li>
+  <li><a href="/index.php/forum/categories/listings/getting-started-with-midi">Getting Started </a></li>
+  <li><a href="/index.php/forum/categories/listings/midi-news-stories">MIDI News & Stories</a></li>
+  <li><a href="/index.php/forum/welcome-to-the-midi-software-section-of-the-forums">MIDI Software</a></li>
+  <li><a href="/index.php/forum/welcome-to-the-midi-hardware-section-of-the-forum">MIDI Hardware</a></li>
+</ul></div>
+            
+            
+            
+            
+        </div>
+    </div>
+
+
+    <div>
+        <div class="uk-panel">
+
+            
+            
+            
+            
+            
+            
+            
+                        <div class="uk-margin"><h3 class="tm-tag-4 tm-title-border">About MMA</h3>
+<ul class="uk-list uk-list-line">
+<li><a href="/about-the-mma">MMA Services</a></li>
+<li><a href="/specifications/category/complete-midi-1-0-detailed-specification">MMA Specifications</a></li>
+<li><a href="/request-sysex-id">Request a SysEx ID</a></li>
+<li><a href="/mma-trademark-policies">Trademark Policies</a></li>
+<li><a href="/mma-ip-policy">IP Policy</a></li>
+<li><a href="/join-the-midi-manufacturers-association">Join the MMA</a></li>
+<li><a href="/mma-renewal">Pay Dues & ID Fees</a></li>
+</ul></div>
+            
+            
+            
+            
+        </div>
+    </div>
+
+
+</div>
+</div></div>
+</section>
+                            </div>
+
+            
+            <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-18241461-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+        </div>
+
+                    <div id="offcanvas" class="uk-offcanvas">
+                <div class="uk-offcanvas-bar uk-offcanvas-bar-flip"><div class="uk-panel">
+<form id="search-113" class="uk-search" action="/specifications" method="post" role="search" >
+	<input class="uk-search-field" type="search" name="searchword" placeholder="search...">
+	<input type="hidden" name="task"   value="search">
+	<input type="hidden" name="option" value="com_search">
+	<input type="hidden" name="Itemid" value="107">
+</form></div>
+<ul class="uk-nav uk-nav-offcanvas"><li><a href="/">Home</a></li><li><a href="/about">About</a></li><li><a href="/forum">Forum</a></li><li class="uk-active"><a href="/specifications">Specs</a></li><li><a href="/articles">Articles</a></li><li><a href="/our-partners">Partners</a></li><li><a href="https://midi.nonlineareducating.com/" target="_blank" rel="noopener noreferrer">Courses</a></li><li><a href="/contact-us">Contact</a></li><li><a href="/midi-signup">Join!</a></li><li><a href="#"><!-- START: Modules Anywhere --><!--  Modules Anywhere Message: The module cannot be placed because it is not published or assigned to this page. --><!-- END: Modules Anywhere --></a>
+</li></ul></div>
+            </div>
+        
+    </div>
+
+</body>
+</html>

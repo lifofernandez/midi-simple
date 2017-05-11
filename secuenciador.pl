@@ -25,11 +25,11 @@ use Data::Dumper;
 
 =head1 ARGUMENTS
 
- --entradas   Multiples Tracks en formato YAML acepta archivos o carpetas.
- --salida     Archivo .mid a generar.
- --bpm        Pulsos por minuto para la secuencia.
- --help       Imprime esta ayuda en vez de generar secuencia MIDI.
- --man        Imprime la pagina man completa en vez de generar MIDI.
+ -e, --entradas   Multiples Tracks en formato YAML (acepta archivos o carpetas).
+ -s, --salida     Archivo .mid a generar.
+ -b, --bpm        Pulsos por minuto para la secuencia.
+ -h, --help       Imprime esta ayuda en vez de generar secuencia MIDI.
+ -m, --man        Imprime la pagina man completa en vez de generar MIDI.
 
  Los argumentos pueden declararse tanto en forma larga como corta.
  Por ejemplo:
@@ -38,8 +38,8 @@ use Data::Dumper;
 
 =head1 OPTIONS
 
- --info       Informacion sobre, modulos, entorno y programa.
- --verbose    Expone los elementos previo a secuenciarlos. 
+ -m, --info       Informacion sobre, modulos, entorno y programa.
+ -v, --verbose    Expone los elementos previo a secuenciarlos. 
 =cut
 
 my $version = '0.01.00';
@@ -71,7 +71,7 @@ pod2usage( -verbose => 2 ) && exit if defined $man;
 my $tic = 240; 
 my $pulso = int( ( 60 / $bpm ) * 1000000 );
 my $simbolo_prima = "^";
-# Carga de archivos o carpetas
+# Carga de archivos o carpetas #TODO revisar, tira error si no es archivo
 my @CONFIGS = ();
 for( @entradas ){
     if( -f $_ ){
@@ -188,7 +188,9 @@ for( @CONFIGS ){
                my $altura = @alturas[ ( $cabezal ) % scalar @alturas ];
                my $nota_st = '';
                my @VOCES = ();
+
                for( @{ $motivo{ voces }{ procesas } } ){
+             #         print Dumper ($_);
                     if ( $_ ne 0 ){
                         # posicion en en set de alturas para la esta voz 
                         my $cabezal_voz = ( $cabezal + $_ ) - 1;
@@ -335,17 +337,24 @@ sub prosesar_sets{
            ( ref( $H->{ $v } ) eq 'HASH' ) &&
            ( exists $H->{ $v }{ set } )
         ){
+             
             my $grano = $H->{ $v }{ grano } // 1;
             my $operador = $H->{ $v }{ operador } // '*';
+            my @array_original = @{ $H->{ $v }{ set } };
+            #enc array, operador, grano-
             my @array_evaluado = map {
                eval $_
-            } @{ $H->{ $v }{ set } };
+            } @array_original;
             my @array_procesado = map { 
                eval( $_ . $operador . $grano ) 
             } @array_evaluado;
+            # retur array_evaluado-
             my $reverse = $H->{ $v }{ revertir } // 0;
             @array_procesado = reverse @array_procesado if $reverse;
             $H->{ $v }{ procesas } = \@array_procesado;
+            if( ref( $H->{ $v }{ sot }  ) eq 'ARRAY'){ 
+                print Dumper(@array_procesado);
+            }
         }
         # microforma range suport
         if( ref( $H->{ $v } ) eq 'ARRAY'){ 
@@ -524,10 +533,11 @@ END{
  secuenciador.pl       0.00.01
 
 =head1 BUGS
-
+ duracion = [4] es mas de lo que corresponde
 
 =head1 TODO
 
+ Agregar verbose cantidad total de duraciones del motivo/estructura
  Agregar soporte para cambio de:  metro, chanel y programa entre MOTIVOS
  Revisar ordenador 'alturas' y  propiedad altura de los componentes
  Control de superposicion o separacion entre Estructuras, Motivos y Componentes.
