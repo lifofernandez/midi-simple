@@ -193,13 +193,22 @@ for( @CONFIGS ){
                my $nota_st =  $altura . " ";
 
                my @polys = ( $altura );
-               my $voz = @voces[  $indice  % scalar @voces ];
-               my $poly = $altura + $voz;
-               if ( $voz && !$absoluta ){
-                   $poly = @alturas[ $voz % scalar @alturas ];
+
+               print Dumper( @dinamicas[0]  );
+
+               if( ref( $voces[0] ) eq 'ARRAY' ){ 
+                   for( @voces ){
+                       #        print Dumper( $_ );
+                   }
+               }else{
+                   my $voz = @voces[ $indice  % scalar @voces ];
+                   my $poly = $altura + $voz;
+                   if ( $voz && !$absoluta ){
+                       $poly = @alturas[ $voz % scalar @alturas ];
+                   }
+                   push @polys, $poly;
+                   $nota_st = $nota_st . $poly. " ";
                }
-               push @polys, $poly;
-               $nota_st = $nota_st . $poly. " ";
                 
                # for( @voces ){
                #    my $voz ;
@@ -364,24 +373,25 @@ sub prosesar_sets{
            ( exists $H->{ $v }{ set } )
         ){
              
-            my $grano = $H->{ $v }{ grano } // 1;
-            my $operador = $H->{ $v }{ operador } // '*';
             my @array_original = @{ $H->{ $v }{ set } };
-            #enc array, operador, grano-
-            my @array_evaluado = map {
-               eval $_
-            } @array_original;
-            my @array_procesado = map { 
-               eval( $_ . $operador . $grano ) 
-            } @array_evaluado;
-            # retur array_evaluado-
+
+            if( ref( $array_original[0] ) eq 'ARRAY'){ 
+                #print Dumper( @array_original );
+            }
+            my $operador = $H->{ $v }{ operador } // '*';
+            my $grano = $H->{ $v }{ grano } // 1;
+            my @array_procesado = eval_array(
+                \@array_original,
+                $operador,
+                $grano,
+            );
+            #print Dumper( @array_procesado);
+
             my $reverse = $H->{ $v }{ revertir } // 0;
             @array_procesado = reverse @array_procesado if $reverse;
             $H->{ $v }{ procesas } = \@array_procesado;
-            #if( ref( $H->{ $v }{ sot }  ) eq 'ARRAY'){ 
-            #    print Dumper(@array_procesado);
-            #}
         }
+
         # microforma range suport
         if( ref( $H->{ $v } ) eq 'ARRAY'){ 
             my @array_evaluado = map {
@@ -391,6 +401,37 @@ sub prosesar_sets{
         }
     }
     return %{ $H };
+}
+
+# Evaluar y mapear arrays 
+sub eval_array{
+    my (
+        $array_in, 
+        $operador, 
+        $grano, 
+    ) = @_;
+    my @array_in = @{ $array_in } ;
+    my @array_out = () ;
+    if ( ref( @array_in[0] ) ne 'ARRAY' ){
+        my @array_ranges = map {
+           eval $_
+        } @array_in ;
+        my @array_eval = map { 
+           eval( $_ . $operador . $grano ) 
+        } @array_ranges;
+        @array_out = @array_eval;
+    # If array_in == AoA
+    }else{ 
+        for( @array_in ){
+            my @array_child = eval_array(
+                \@{ $_ },
+                $operador,
+                $grano,
+            );
+            push @array_out, @array_child;
+        }
+    }
+    return \@array_out;
 }
 
 # Pasar propiedades ausentes de %Ha > %Hb 
