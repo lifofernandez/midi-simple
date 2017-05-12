@@ -195,18 +195,43 @@ for( @CONFIGS ){
                # esto es solo para poder ordenar por altura, 
                my $altura = @alturas[ $cabezal  % scalar @alturas ];
 
-               my @polys = ( $altura );
+               my @polys = ( );
 
-               #print  Dumper ( @voces ) ;
 
                #TODO TENGO QUE RESOLVER ESTO
                my $voces_st =  "VOCES: ";
                if( ref( $voces[0] ) eq 'ARRAY' ){ 
-                   for( @voces ){
-                       print Dumper( $_ );
-                   }
-               }else{
 
+                   for( @voces ){
+                       my @voces_voz = @{ $_ }; 
+                       my $voz = @voces_voz[ $indice  % scalar @voces_voz ];
+
+                       # TODO optimizar, el resto es todo igual
+                       # if( ref( $_ ) ne 'ARRAY' ){ }
+
+                       my $poly = ' '.0;
+                       if ( $voz ){
+                           if ( $relacion eq 'absoluta' ){
+                               # independiente de la altura y del cabezal
+                               $poly = $voz;
+                           }elsif( $relacion eq 'directa' ){
+                               # relacion directa con la altura
+                               $poly = $altura + $voz;
+                           }elsif( $relacion eq 'fija' ){
+                               # como puntero independiente
+                               $voz = $voz - 1; 
+                               $poly = @alturas[ $voz % scalar @alturas ];
+                           }elsif( $relacion eq 'relativa' ){
+                               # como puntero relativo al cabezal actual
+                               my $cabezal_voz = $cabezal + $voz - 1; 
+                               $poly = @alturas[ $cabezal_voz % scalar @alturas ];
+                           }
+                       }
+                       push @polys, $poly;
+                       $voces_st = $voces_st . $poly . " ";
+                   }
+
+               }else{
                    my $voz = @voces[ $indice  % scalar @voces ];
                    my $poly = 0;
                    if ( $voz ){
@@ -217,7 +242,7 @@ for( @CONFIGS ){
                            # relacion directa con la altura
                            $poly = $altura + $voz;
                        }elsif( $relacion eq 'fija' ){
-                           # como puntero independiente, dentro del set de alturas fijo  
+                           # como puntero independiente
                            $voz = $voz - 1; 
                            $poly = @alturas[ $voz % scalar @alturas ];
                        }elsif( $relacion eq 'relativa' ){
@@ -229,39 +254,15 @@ for( @CONFIGS ){
                    push @polys, $poly;
                    $voces_st = $voces_st . $poly . " ";
                }
-                
-               # for( @voces ){
-               #    my $voz ;
-               #    my $relacion = @voces[ ( $cabezal ) % scalar @voces ];
-               #    if( ref( $_  ) eq 'ARRAY'){ 
-               #     #    for( @{ $_ } ){
-               #     #       my $relacion = @voces[ ( $cabezal ) % scalar @voces ];
-               #     #       $voz = 
-               #     #    }    
-               #    }else{
-               #        # my $caebzal_voz = @voces[ ( $cabezal ) % scalar @voces ];
-               #    }
-               #}
-
-               #for( @{ $motivo{ voces }{ procesas } } ){
-               #     if ( $_ ne 0 ){
-               #         # posicion en en set de alturas para la esta voz 
-               #         my $cabezal_voz = ( $cabezal + $_ ) - 1;
-               #         my $voz = @alturas[ $cabezal_voz % scalar @alturas ];
-               #         push @VOCES, $voz;
-               #         $nota_st  = $nota_st . $voz  . " ";
-               #     }
-               #}
-
                
                my $duracion  = @duraciones[ $indice % scalar @duraciones ];
                my $dinamica  = @dinamicas[ $indice % scalar @dinamicas ];
-               # Esto es inecesario, ya que dinamica 0 = silencio...
                if ( $_ eq 0 ){
+                   # Supuestamente inecesario
+                   # MIDI velocity : 0 = no nota...
                    $altura = 0;
                    $dinamica = 0;
                    splice( @polys );
-                   $voces_st = "SILENCIO";
                }
                my $componente = {
                   indice   => $indice,
@@ -332,10 +333,12 @@ for( @CONFIGS ){
                  reverse sort { $C{ $a }{ $orden } <=> $C{ $b }{ $orden } } keys %C:
                  sort { $C{ $a }{ $orden } <=> $C{ $b }{ $orden } } keys %C
              ){
+                 my $altura = $C{ $componenteID }{ altura };
+
                  my $final = $tic * $C{ $componenteID }{ duracion };
                  my @V = @{ $C{ $componenteID }{ voces } };
                  # Sin Voces = SILENCIO
-                 if ( !@V ){
+                 if ( !$altura ){
                      $momento = $momento + $final;
                      next;
                  }
@@ -350,21 +353,33 @@ for( @CONFIGS ){
                  my $dinamica = int(
                      127 * ( $C{ $componenteID }{ dinamica } + $rand ) 
                  );
-                 # Polifonia 
+
+                 # ahora la altura original no vienen adentro de las "voces"
+                 # agregar altura original
+                 push @events, (
+                     [ 'note_on' , $momento, $canal, $altura, $dinamica ],
+                 );
+
+                 # Empiezaz Polifonia 
                  for( @V ){
+                     my $momento_poly = 0;
                      my $altura = $_;
                      push @events, (
-                         [ 'note_on' , $momento, $canal, $altura, $dinamica ],
+                         [ 'note_on' , $momento_poly, $canal, $altura, $dinamica ],
                      );
-                     $momento = 0;
                  }
                  $momento = $momento + $recorte; 
+                 push @events, (
+                      [ 'note_off', $final,  $canal, $altura, 0 ],
+                 );
+
+                 # se apaga Polifonia 
                  for( @V ){
+                     my $final_poly = 0;
                      my $altura = $_;
                      push @events, (
-                         [ 'note_off', $final,  $canal, $altura, 0 ],
+                         [ 'note_off', $final_poly,  $canal, $altura, 0 ],
                      );
-                     $final = 0;
                  }
             }
         }
