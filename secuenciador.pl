@@ -196,9 +196,10 @@ for( @CONFIGS ){
 
                #print  Dumper ( @voces ) ;
 
+               #TODO TENGO QUE RESOLVER ESTO
                if( ref( $voces[0] ) eq 'ARRAY' ){ 
                    for( @voces ){
-                       #        print Dumper( $_ );
+                               print Dumper( $_ );
                    }
                }else{
                    my $voz = @voces[ $indice  % scalar @voces ];
@@ -385,7 +386,7 @@ sub prosesar_sets{
                 $operador,
                 $grano,
             );
-            print Dumper( @array_procesado);
+            #print Dumper( @array_procesado);
 
             my $reverse = $H->{ $v }{ revertir } // 0;
             @array_procesado = reverse @array_procesado if $reverse;
