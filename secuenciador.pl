@@ -194,7 +194,7 @@ for( @CONFIGS ){
 
                my @polys = ( $altura );
 
-               print Dumper( @dinamicas[0]  );
+               #print  Dumper ( @voces ) ;
 
                if( ref( $voces[0] ) eq 'ARRAY' ){ 
                    for( @voces ){
@@ -242,7 +242,7 @@ for( @CONFIGS ){
                    $altura = 0;
                    $dinamica = 0;
                    splice( @polys );
-                   $voces_st=  "SILENCIO";
+                   $voces_st = "SILENCIO";
                }
                my $componente = {
                   indice   => $indice,
@@ -372,7 +372,7 @@ sub prosesar_sets{
            ( ref( $H->{ $v } ) eq 'HASH' ) &&
            ( exists $H->{ $v }{ set } )
         ){
-             
+
             my @array_original = @{ $H->{ $v }{ set } };
 
             if( ref( $array_original[0] ) eq 'ARRAY'){ 
@@ -385,7 +385,7 @@ sub prosesar_sets{
                 $operador,
                 $grano,
             );
-            #print Dumper( @array_procesado);
+            print Dumper( @array_procesado);
 
             my $reverse = $H->{ $v }{ revertir } // 0;
             @array_procesado = reverse @array_procesado if $reverse;
@@ -410,9 +410,20 @@ sub eval_array{
         $operador, 
         $grano, 
     ) = @_;
-    my @array_in = @{ $array_in } ;
+    my @array_in = @$array_in;
     my @array_out = () ;
-    if ( ref( @array_in[0] ) ne 'ARRAY' ){
+    if ( ref( $array_in[0] ) eq 'ARRAY' ){
+        # If array_in == AoA
+        for ( @array_in ) {
+            my @array_tmp = @$_ ;
+            my @array_child = eval_array(
+                \@array_tmp,
+                $operador,
+                $grano,
+            );
+            push @array_out, \@array_child;
+        }
+    }else{ 
         my @array_ranges = map {
            eval $_
         } @array_in ;
@@ -420,18 +431,8 @@ sub eval_array{
            eval( $_ . $operador . $grano ) 
         } @array_ranges;
         @array_out = @array_eval;
-    # If array_in == AoA
-    }else{ 
-        for( @array_in ){
-            my @array_child = eval_array(
-                \@{ $_ },
-                $operador,
-                $grano,
-            );
-            push @array_out, @array_child;
-        }
     }
-    return \@array_out;
+    return @array_out;
 }
 
 # Pasar propiedades ausentes de %Ha > %Hb 

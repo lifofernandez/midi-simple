@@ -46,7 +46,6 @@ defacto:
     set         : [1..9] 
     operador    : '*' 
     grano       : .1 
-    revertir : true
     fluctuacion : .3  
 
 ########################################
