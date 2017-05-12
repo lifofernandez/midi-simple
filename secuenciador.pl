@@ -169,8 +169,11 @@ for( @CONFIGS ){
             print "   ALTURAS: " if $verbose;
             print "@alturas\n" if $verbose;
             my @voces =   @{ $motivo{ voces }{ procesas } };
-            # Relacion relativa al set de alturas,  por defecto
-            my $absoluta = $motivo{ voces }{ absolutas }; 
+            # Relaciones entre voces
+            # absoluta: altura + voz
+            # fija: dicha "voz" como puntero del set de alturas
+            # relativa: "cabezal + voz" como puntero del set de alturas
+            my $relacion = $motivo{ voces }{ relacion } // 'relativa'; 
 
             my @microforma =  @{ $motivo{ microforma } };
             @microforma = reverse @microforma if $motivo{ revertir_microforma };
@@ -178,7 +181,8 @@ for( @CONFIGS ){
             print "   MICROFORMA: " if $verbose;
             print "@microforma\n" if $verbose;
             print "   ORDENADOR: " . $motivo{ ordenador }. "\n" if $verbose;
-            print "   REVERTIR: " . $motivo{ revertir }. "\n" if $verbose && $motivo{ revertir };
+            print "   REVERTIR: " . $motivo{ revertir }. "\n" 
+                if $verbose && $motivo{ revertir };
             my @duraciones = @{ $motivo{ duraciones }{ procesas } };
             my @dinamicas  = @{ $motivo{ dinamicas }{ procesas } };
             my $indice = 0;
@@ -189,26 +193,41 @@ for( @CONFIGS ){
                my $cabezal = $_ - 1; 
                # reservar un elemento ( 0 ) para representar  silencio.
                # esto es solo para poder ordenar por altura, 
-               my $altura = @alturas[ ( $cabezal ) % scalar @alturas ];
-               my $nota_st =  $altura . " ";
+               my $altura = @alturas[ $cabezal  % scalar @alturas ];
 
                my @polys = ( $altura );
 
                #print  Dumper ( @voces ) ;
 
                #TODO TENGO QUE RESOLVER ESTO
+               my $voces_st =  "VOCES: ";
                if( ref( $voces[0] ) eq 'ARRAY' ){ 
                    for( @voces ){
-                               print Dumper( $_ );
+                       print Dumper( $_ );
                    }
                }else{
+
                    my $voz = @voces[ $indice  % scalar @voces ];
-                   my $poly = $altura + $voz;
-                   if ( $voz && !$absoluta ){
-                       $poly = @alturas[ $voz % scalar @alturas ];
+                   my $poly = 0;
+                   if ( $voz ){
+                       if ( $relacion eq 'absoluta' ){
+                           # independiente de la altura y del cabezal
+                           $poly = $voz;
+                       }elsif( $relacion eq 'directa' ){
+                           # relacion directa con la altura
+                           $poly = $altura + $voz;
+                       }elsif( $relacion eq 'fija' ){
+                           # como puntero independiente, dentro del set de alturas fijo  
+                           $voz = $voz - 1; 
+                           $poly = @alturas[ $voz % scalar @alturas ];
+                       }elsif( $relacion eq 'relativa' ){
+                           # como puntero relativo al cabezal actual
+                           my $cabezal_voz = $cabezal + $voz - 1; 
+                           $poly = @alturas[ $cabezal_voz % scalar @alturas ];
+                       }
                    }
                    push @polys, $poly;
-                   $nota_st = $nota_st . $poly. " ";
+                   $voces_st = $voces_st . $poly . " ";
                }
                 
                # for( @voces ){
@@ -233,7 +252,6 @@ for( @CONFIGS ){
                #         $nota_st  = $nota_st . $voz  . " ";
                #     }
                #}
-               my $voces_st =  "ALTURAS: " . $nota_st;
 
                
                my $duracion  = @duraciones[ $indice % scalar @duraciones ];
@@ -259,6 +277,7 @@ for( @CONFIGS ){
                print "INDICE: " . $indice . " " if $verbose;
                print "\tCABEZAL: " . ( $cabezal + 1) . " " if $verbose;
                print "\tDINAMICA: " . int( $dinamica * 127 ) if $verbose;
+               print "\tALTURA: " . $altura  if $verbose;
                print "\t" . $voces_st  if $verbose;
                print "\tDURACION: " . $duracion . "qn" if $verbose;
                print "\n" if $verbose;
