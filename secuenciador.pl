@@ -168,6 +168,8 @@ for( @CONFIGS ){
             } @{ $motivo{ alturas }{ procesas } };
             print "   ALTURAS: " if $verbose;
             print "@alturas\n" if $verbose;
+            my $transponer = $motivo{ alturas }{ transponer };
+            print "   TRASPONER: " . $transponer . "\n" if $verbose && $transponer;
             my @microforma =  @{ $motivo{ microforma } } ;
             @microforma = reverse @microforma if $motivo{ revertir_microforma };
             my $repetir_motivo =   $motivo{ repetir } // 1;
@@ -191,7 +193,7 @@ for( @CONFIGS ){
                for( @{ $motivo{ voces }{ procesas } } ){
                     if ( $_ ne 0 ){
                         # posicion en en set de alturas para la esta voz 
-                        my $cabezal_voz = ( $cabezal + $_ ) - 1;
+                        my $cabezal_voz = ( $cabezal + $_ + $transponer) - 1;
                         my $voz = @alturas[ $cabezal_voz % scalar @alturas ];
                         push @VOCES, $voz;
                         $nota_st  = $nota_st . $voz  . " ";
