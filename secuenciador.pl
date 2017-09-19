@@ -43,7 +43,7 @@ use Data::Dumper;
 =cut
 
 my $version = '0.01.00';
-my $site    = 'http://www.github.com/lifofernandez';
+my $site    = 'http://www.github.com/lifofernandez/midi-simple';
 my (
     $salida,
     $help,
@@ -72,6 +72,7 @@ my $tic = 240;
 my $pulso = int( ( 60 / $bpm ) * 1000000 );
 my $simbolo_prima = "^";
 # Carga de archivos o carpetas
+# TODO: revisar carpetas andetro de carpetas
 my @CONFIGS = ();
 for( @entradas ){
     if( -f $_ ){
@@ -84,7 +85,7 @@ for( @entradas ){
 }
 
 ########################################
-# PREPROCESO DE ELEMENTOS
+# PRE-PROCESO DE ELEMENTOS
 my @tracks;
 for( @CONFIGS ){
     my $config_file = LoadFile( $_ );
@@ -166,23 +167,30 @@ for( @CONFIGS ){
                   $motivo{ alturas }{ tonica } +
                   ( 12 * $motivo{ alturas }{ octava } )
             } @{ $motivo{ alturas }{ procesas } };
-            print "   ALTURAS: " if $verbose;
-            print "@alturas\n" if $verbose;
+
             my $transponer = 0; 
             $transponer = $motivo{ alturas }{ transponer } if $motivo{ alturas }{ transponer };
-            print "   TRASPONER: " . $transponer . "\n" if $verbose && $transponer;
             my @microforma =  @{ $motivo{ microforma } } ;
             @microforma = reverse @microforma if $motivo{ revertir_microforma };
             my $repetir_motivo =   $motivo{ repetir } // 1;
-            print "   MICROFORMA: " if $verbose;
-            print "@microforma\n" if $verbose;
-            print "   ORDENADOR: " . $motivo{ ordenador }. "\n" if $verbose;
-            print "   REVERTIR: " . $motivo{ revertir }. "\n" if $verbose && $motivo{ revertir };
+
+
             my @duraciones = @{ $motivo{ duraciones }{ procesas } };
             my @dinamicas  = @{ $motivo{ dinamicas }{ procesas } };
             my $indice = 0;
             my @COMPONENTES = ();
-            say "   COMPONENTES" if $verbose;
+
+	    if( $verbose ){ 
+                print "   ALTURAS: " . 
+                     "@alturas\n" .
+                     "   MICROFORMA: " .
+                     "@microforma\n" .
+                     "   ORDENADOR: " . $motivo{ ordenador }. "\n" ;
+                print "   REVERTIR: " . $motivo{ revertir } . "\n" if $motivo{ revertir };
+                print "   TRASPONER: " . $transponer . "\n" if $transponer;
+                say "   COMPONENTES";
+	     }
+
             for( ( @microforma ) x $repetir_motivo ){
                # posicion en set de alturas
                my $cabezal = $_ - 1; 
@@ -203,7 +211,7 @@ for( @CONFIGS ){
                my $voces_st =  "ALTURAS: " . $nota_st;
                my $duracion  = @duraciones[ $indice % scalar @duraciones ];
                my $dinamica  = @dinamicas[ $indice % scalar @dinamicas ];
-               # Esto es inecesario, ya que dinamica 0 = silencio...
+               # Redundante, ya que dinamica 0 = silencio...
                if ( $_ eq 0 ){
                    $altura = 0;
                    $dinamica = 0;
@@ -219,14 +227,15 @@ for( @CONFIGS ){
                };
                push @COMPONENTES, $componente;
                $indice++;
-               # verbosidad
-               print "    " if $verbose;
-               print "INDICE: " . $indice . " " if $verbose;
-               print "\tCABEZAL: " . ( $cabezal + 1) . " " if $verbose;
-               print "\tDINAMICA: " . int( $dinamica * 127 ) if $verbose;
-               print "\t" . $voces_st  if $verbose;
-               print "\tDURACION: " . $duracion . "qn" if $verbose;
-               print "\n" if $verbose;
+	       if( $verbose ){ 
+               print "    " .
+                    "INDICE: " . $indice . " " .
+                    "\tCABEZAL: " . ( $cabezal + 1) . " " .
+                    "\tDINAMICA: " . int( $dinamica * 127 ) .
+                    "\t" . $voces_st .
+                    "\tDURACION: " . $duracion . "qn" .
+                    "\n"; 
+              }
             }
             # Paso AoH a HoH
             my %temp_comps; 
