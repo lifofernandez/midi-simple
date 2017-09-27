@@ -2,7 +2,7 @@
 # Cofiguraciones generales del Track
 constantes:
   nombre       : FelizCumple,  melodia
-  metro        : 9/8
+  metro        : 9/8 # 1 compas = 9 * .5 = 4.5
   macroforma   : [ A ]
   repeticiones : 1
 
@@ -20,9 +20,8 @@ defacto:
                    12, 2+12, 4+12, 5+12, 7+12, 9+12, 11+12 ] # Diatonica Mayor 
   voces:
     set         : [ 1 ] 
-    # set         : [ 5, 8, 3 ] # armonizacion 6/4
   duraciones:
-    set         : [ 1,.5, (1.5)x2 ]
+    set         : [ 1, .5, (1.5)x2 ]
   dinamicas:
     set         : [ .8 ] 
     fluctuacion : .1
@@ -41,7 +40,7 @@ ESTRUCTURAS:
         microforma : [ 11,11, 10, 8 ]
       b:
         duraciones:
-          set         : [ 1.5, 3 ]
+          set      : [ 1.5, 3 ]
         microforma : [ 8, 7 ]
       b^:
         microforma : [ 9, 8 ]

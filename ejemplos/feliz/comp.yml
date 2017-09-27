@@ -1,8 +1,8 @@
 ########################################
 # Cofiguraciones generales del Track
 constantes:
-  nombre       : FelizCumple,  melodia
-  metro        : 9/8
+  nombre       : FelizCumple, acompañamiento
+  metro        : 9/8 # 1 compas = 9 * .5 = 4.5
   macroforma   : [ A ]
   repeticiones : 1
 
@@ -16,8 +16,11 @@ defacto:
   tonica     : 60 # C central 
   transponer : 0 
   intervalos:
-    set         : [ 0, 2, 4, 5, 7, 9, 11,
-                   12, 2+12, 4+12, 5+12, 7+12, 9+12, 11+12 ] # Diatonica Mayor 
+    set         : [ 
+     -12, 2-12, 4-12, 5-12, 7-12, 9-12, 11-12,
+       0, 2,    4,    5,    7,    9,    11,
+      12, 2+12, 4+12, 5+12, 7+12, 9+12, 11+12,
+    ] # Diatonica Mayor 
   voces:
     #set         : [ 1 ] 
     set         : [ 5, 8, 3 ] # armonizacion 6/4
