@@ -173,8 +173,6 @@ for( @CONFIGS ){
             my @microforma =  @{ $motivo{ microforma } } ;
             @microforma = reverse @microforma if $motivo{ revertir_microforma };
             my $repetir_motivo =   $motivo{ repetir } // 1;
-
-
             my @duraciones = @{ $motivo{ duraciones }{ factura } };
             my @dinamicas  = @{ $motivo{ dinamicas }{ factura } };
             my $indice = 0;
