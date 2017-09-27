@@ -166,7 +166,7 @@ for( @CONFIGS ){
                   $_ +
                   $motivo{ tonica } +
                   ( 12 * $motivo{ octava } )
-            } @{ $motivo{ intervalos }{ procesas } };
+            } @{ $motivo{ intervalos }{ factura } };
 
             my $transponer = 0; 
             $transponer = $motivo{ transponer } if $motivo{ transponer };
@@ -175,8 +175,8 @@ for( @CONFIGS ){
             my $repetir_motivo =   $motivo{ repetir } // 1;
 
 
-            my @duraciones = @{ $motivo{ duraciones }{ procesas } };
-            my @dinamicas  = @{ $motivo{ dinamicas }{ procesas } };
+            my @duraciones = @{ $motivo{ duraciones }{ factura } };
+            my @dinamicas  = @{ $motivo{ dinamicas }{ factura } };
             my $indice = 0;
             my @COMPONENTES = ();
 
@@ -199,9 +199,9 @@ for( @CONFIGS ){
                my $altura = @alturas[ ( $cabezal ) % scalar @alturas ];
                my $nota_st = '';
                my @VOCES = ();
-               for( @{ $motivo{ voces }{ procesas } } ){
+               for( @{ $motivo{ voces }{ factura } } ){
                     if ( $_ ne 0 ){
-                        # posicion en en set de intervalos para la esta voz 
+                        # posicion en en set de intervalos para esta voz 
                         my $cabezal_voz = ( $cabezal + $_ + $transponer ) - 1;
                         my $voz = @alturas[ $cabezal_voz % scalar @alturas ];
                         push @VOCES, $voz;
@@ -249,7 +249,7 @@ for( @CONFIGS ){
 
     # TESTS
     # print Dumper %{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ dinamicas} };
-    # print Dumper @{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ voces }{procesas} };
+    # print Dumper @{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ voces }{factura } };
     # print Dumper %{ $ESTRUCTURAS{ A }{ MOTIVOS }{ "a^" } };
     # print Dumper @{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ microforma } };
     # print Dumper @{ $ESTRUCTURAS{ A }{ forma } };
@@ -341,33 +341,33 @@ $opus->write_to_file( $salida );
 # SUBS
 # Reecorre 1 HASH, evalua custom sets y arrays regulares
 sub prosesar_sets{
-    my $H = shift;
-    for my $v( keys %{ $H } ){
+    my $HASH = shift;
+    for my $item( keys %{ $HASH } ){
         if(
-           ( ref( $H->{ $v } ) eq 'HASH' ) &&
-           ( exists $H->{ $v }{ set } )
+           ( ref( $HASH->{ $item } ) eq 'HASH' ) &&
+           ( exists $HASH->{ $item }{ set } )
         ){
-            my $grano = $H->{ $v }{ grano } // 1;
-            my $operador = $H->{ $v }{ operador } // '*';
+            my $grano = $HASH->{ $item }{ grano } // 1;
+            my $operador = $HASH->{ $item }{ operador } // '*';
             my @array_evaluado = map {
                eval $_
-            } @{ $H->{ $v }{ set } };
+            } @{ $HASH->{ $item }{ set } };
             my @array_procesado = map { 
                eval( $_ . $operador . $grano ) 
             } @array_evaluado;
-            my $reverse = $H->{ $v }{ revertir } // 0;
+            my $reverse = $HASH->{ $item }{ revertir } // 0;
             @array_procesado = reverse @array_procesado if $reverse;
-            $H->{ $v }{ procesas } = \@array_procesado;
+            $HASH->{ $item }{ factura } = \@array_procesado;
         }
-        # microforma range suport
-        if( ref( $H->{ $v } ) eq 'ARRAY'){ 
+        # microforma "Perl's range" suport
+        if( ref( $HASH->{ $item } ) eq 'ARRAY'){ 
             my @array_evaluado = map {
                eval $_
-            } @{ $H->{ $v } };
-            $H->{ $v } = \@array_evaluado;
+            } @{ $HASH->{ $item } };
+            $HASH->{ $item } = \@array_evaluado;
         }
     }
-    return %{ $H };
+    return %{ $HASH };
 }
 
 # Pasar propiedades ausentes de %Ha > %Hb 

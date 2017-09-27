@@ -1,2 +1,2 @@
 audio.driver alsa
-audio.period-size9 40
+audio.period-size 64

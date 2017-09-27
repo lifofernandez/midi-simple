@@ -1,0 +1,45 @@
+########################################
+# Cofiguraciones generales del Track
+constantes:
+  nombre       : FelizCumple,  melodia
+  metro        : 9/8
+  macroforma   : [ A ]
+  repeticiones : 1
+
+########################################
+# Cofiguracion de los motivos por defecto
+defacto:
+  canal      : 3
+  programa   : 2
+  ordenador  : indice
+  octava     : 0  # 
+  tonica     : 60 # C central 
+  transponer : 0 
+  intervalos:
+    set         : [ 0, 2, 4, 5, 7, 9, 11,
+                   12, 2+12, 4+12, 5+12, 7+12, 9+12, 11+12 ] # Diatonica Mayor 
+  voces:
+    #set         : [ 1 ] 
+    set         : [ 5, 8, 3 ] # armonizacion 6/4
+  duraciones:
+    set         : [ 4.5 ]
+  dinamicas:
+    set         : [ .8 ] 
+    fluctuacion : .1
+
+ESTRUCTURAS:
+  A:
+    forma: [ a, b, a, b^, a^, a^^, a^^^, b^ ]
+    MOTIVOS:
+      a:
+        microforma : [ 5 ]
+      a^:
+        microforma : [ 5 ]
+      a^^:
+        microforma : [ 8 ]
+      a^^^:
+        microforma : [ 11 ]
+      b:
+        microforma : [ 8 ]
+      b^:
+        microforma : [ 9 ]
