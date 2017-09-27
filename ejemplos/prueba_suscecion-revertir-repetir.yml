@@ -13,10 +13,10 @@ defacto:
   canal      : 1
   programa   : 1
   ordenador  : indice
-  alturas:
+  octava      : 0  # central 
+  tonica      : 60 # C
+  intervalos:
     set         : [ 0, 2, 4, 5, 7, 9, 11, 12,2+12]
-    octava      : 0  # central 
-    tonica      : 60 # C
   voces:
     set         : [ 1 ] 
     #set         : [ 1, 3, 5, 8 ] 

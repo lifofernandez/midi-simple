@@ -11,13 +11,14 @@ defacto:
   canal      : 1 
   programa   : 1
   ordenador  : indice 
-  alturas:
+  octava     : 2 
+  tonica     : 60
+  transponer  : 1
+
+  intervalos:
     #set         : [0,2,3,5,7,9,10] # dorico
     set         : [0,2,3,5,-5,-3,-2] # dorico 5 6M 7m abajo
     #set         : [0,3,5,7,10] # penta
-    octava      : 2 
-    tonica      : 60
-    transponer  : 1
   voces:
     # relacion entre casilleros del set de alturas
     set         : [ -3,-1,0,2,4 ] 
