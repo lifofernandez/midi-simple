@@ -22,7 +22,8 @@ defacto:
       12, 2+12, 4+12, 5+12, 7+12, 9+12, 11+12,
     ] # Diatonica Mayor 
   voces:
-    set         : [ 5, 8, 3 ] # armonizacion 6/4
+     set         : [ 3, 5, 8 ] 
+      #- set         : [ 2, 4, 7 ] # armonizacion 6/4
   duraciones:
     set         : [ 4.5 ]
   dinamicas:

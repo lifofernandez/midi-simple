@@ -197,7 +197,8 @@ for( @CONFIGS ){
                my $altura = @alturas[ ( $cabezal ) % scalar @alturas ];
                my $nota_st = '';
                my @VOCES = ();
-               for( @{ $motivo{ voces }{ factura } } ){
+               for( @{ $motivo{ voces }{ factura } }[0] ){
+		    print Dumper( $_ );
                     if ( $_ ne 0 ){
                         # posicion en en set de intervalos para esta voz 
                         my $cabezal_voz = ( $cabezal + $_ + $transponer ) - 1;
@@ -214,7 +215,7 @@ for( @CONFIGS ){
                    $altura = 0;
                    $dinamica = 0;
                    splice( @VOCES );
-                   $voces_st=  "SILENCIO";
+                   $voces_st = "SILENCIO";
                }
                my $componente = {
                   indice   => $indice,
@@ -282,11 +283,11 @@ for( @CONFIGS ){
              my $revertir = $M{ revertir};
              for my $componenteID ( 
                  $revertir ? 
-                 reverse sort { $C{ $a }{ $orden } <=> $C{ $b }{ $orden } } keys %C:
-                 sort { $C{ $a }{ $orden } <=> $C{ $b }{ $orden } } keys %C
+                     reverse sort { $C{ $a }{ $orden } <=> $C{ $b }{ $orden } } keys %C:
+                     sort { $C{ $a }{ $orden } <=> $C{ $b }{ $orden } } keys %C
              ){
                  my $final = $tic * $C{ $componenteID }{ duracion };
-                 my @V = @{ $C{ $componenteID }{ voces } };
+                 my @V = @{ $C{ $componenteID }{ voces } }; # esto va ser un AoA
                  # Sin Voces = SILENCIO
                  if ( !@V ){
                      $momento = $momento + $final;
@@ -357,7 +358,7 @@ sub prosesar_sets{
             @array_procesado = reverse @array_procesado if $reverse;
             $HASH->{ $item }{ factura } = \@array_procesado;
         }
-        # microforma "Perl's range" suport
+        # "Perl's range" suport
         if( ref( $HASH->{ $item } ) eq 'ARRAY'){ 
             my @array_evaluado = map {
                eval $_
@@ -368,7 +369,7 @@ sub prosesar_sets{
     return %{ $HASH };
 }
 
-# Pasar propiedades ausentes de %Ha > %Hb 
+# Pasar propiedades ausentes de %Ha a %Hb 
 sub heredar{
     my( $padre, $hijo ) = @_;
     my $c = 1;
@@ -414,8 +415,8 @@ END{
 
 =head1 DESCRIPTION
 
- Cada track MIDI es representado por una hoja de analisis con las 
- configuraciones necesarias para obtener una progresion musical.
+ Cada track MIDI es representado por una ficha  con las configuraciones
+necesarias para obtener una progresion musical.
 
  La organizacion interna de estas configuraciones de track trata de 
  ser lo mas autodescriptiva posible y representar una hoja de analisis 
@@ -427,9 +428,11 @@ END{
  Los elementos principales de los motivos (Alturtas, Voces, Duraciones y Dinamicas)
  tienen ciertas propiedades que son tratadas iguales en todos: set, operador, grano y
  revertir). Soportan rangos y operaciones matematicas (necesita explicacion)
+
  Ciertas propiedades son particulares de cada elemento:
 
- Para los intervalos, la referencia esta declarada con la propiedad "tonica" y
+ Para los intervalos, 
+ la referencia esta declarada con la propiedad "tonica" y
  y podemos mover todo el set con la propiedad octava.
  Las duraciones pueden ser acotadas usando las propiedades recorte y retraso   
  Las dinamicas pueden ser "humanizadas" usando la propiedad fluctuacion.
@@ -487,31 +490,33 @@ END{
          microforma : [ 9, 8 ]
 
  Esta no es la unica manera de represantar esta melodia y 
- existen mas opciones diponibles que a las expuestas.
+ existen otras opciones a la expuesta.
 
  Mas inforamcion en los ejemplos.
 
 =head1 Utilidades
 
 =head2 Polifonia
+ Las voces son posiciones en el set de intervalos
 
  Explicar
 
-=head2 Herencia
+=head2 herencia
 
   Estructuras y Motivos pueden compartir propiedades vinculandose mediante 
   el simbolo "^" final del nombre d ela estructura
 
-=head2 Repetir
+=head2 repetir
 
  Todas las listas formales de elementos (Macroforma, Forma y Microforma) pueden
  ser repetidas N veces segun el el valor declarado.
 
-=head2 Revertir
+=head2 revertir
 
  Todos los Sets listas de elementos formales pueden ser revertidos  
  con la propiedad "revertir" con un valor como true o 1 
  En el caso de los motivos, se revierte el orden de los componentes. 
+
  Para revertir la microforma en si, el orden de la lista de posiciones en el set
  de intervalos, usar la propiedad revertir_microforma;
 
