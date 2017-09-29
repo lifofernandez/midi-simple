@@ -375,9 +375,10 @@ sub evaluar{
         }
         return $ENTRADA; 
     } 
+
     if( 
        !ref( $ENTRADA ) && 
-       ( $ENTRADA =~ /^[0-9,.E]+$/ )
+       ( $ENTRADA =~ /\d/)
     ){
         my $RESULTADO = eval $ENTRADA ;
         return $RESULTADO;
