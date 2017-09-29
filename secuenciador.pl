@@ -367,41 +367,30 @@ sub prosesar_sets{
     }
     return %{ $HASH };
 }
-# Recursive Evaluation
-my @AoA = [
-    2*13,
-    [33,4,3+5],
-    [3,4,2x13],
-];
 
-#print Dumper (@AoA);
-my @AoAeval = evaluar( \@AoA );
-#my $notAoA = evaluar( '2 + 4' );
-#print Dumper ( $notAoA );
-#print Dumper ( $AoAeval[0][0]);
-# revisar por que agrega un nivel al ARRAY 
+## Recursive Evaluation
+#my @AoA = [
+#    2*13,
+#    [33,4,3+5],
+#    [3,4,2x13],
+#];
+#
+#my @AoAeval = evaluar( @AoA );
+#my $pepe = '2+4';
+#my $notAoA = evaluar( '2+3');
 
+# Evaluar recursivamente @AoAs (o SCALARS)
 sub evaluar{
     my $ENTRADA = shift;
-    print Dumper ( $ENTRADA);
     if( ref( $ENTRADA ) eq 'ARRAY'){ 
-        my @RESULTADO = ();
         for( @{ $ENTRADA } ){
-            my $item;
             if( ref( $_ ) eq 'ARRAY' ){ 
-                $item = evaluar( $_ );
+            	my $item = evaluar( $_ );
             }
-            push @RESULTADO, $item;
-
-	    # else{
-	    #         #$item = eval $_ ;
-	    # }
-
         }
-
-        return \@RESULTADO; 
-    } else {
-
+        return $ENTRADA; 
+    } 
+    if( ref( \$ENTRADA ) eq 'SCALAR'){ 
         my $RESULTADO = eval $ENTRADA ;
         return $RESULTADO;
     }
