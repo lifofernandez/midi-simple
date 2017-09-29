@@ -18,6 +18,8 @@ defacto:
   intervalos:
     set         : [ 0, 2, 4, 5, 7, 9, 11,
                    12, 2+12, 4+12, 5+12, 7+12, 9+12, 11+12 ] # Diatonica Mayor 
+  boces:
+    set         : [ 1 ] 
   voces:
     set         : [ 1 ] 
   duraciones:

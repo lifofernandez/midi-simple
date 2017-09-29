@@ -197,6 +197,8 @@ for( @CONFIGS ){
                my $altura = @alturas[ ( $cabezal ) % scalar @alturas ];
                my $nota_st = '';
                my @VOCES = ();
+	       #my @boces =  @{ $motivo{ boces }{ factura } };
+		   #print "@boces\n";
                for( @{ $motivo{ voces }{ factura } } ){
                     if ( $_ ne 0 ){
                         # posicion en en set de intervalos para esta voz 
@@ -345,72 +347,62 @@ sub prosesar_sets{
            ( ref( $HASH->{ $item } ) eq 'HASH' ) &&
            ( exists $HASH->{ $item }{ set } )
         ){
+
+            my @set_evaluado = evaluar( $HASH->{ $item }{ set } );
+
             my $grano = $HASH->{ $item }{ grano } // 1;
             my $operador = $HASH->{ $item }{ operador } // '*';
-            my @array_evaluado = map {
-               eval $_
-            } @{ $HASH->{ $item }{ set } };
-            my @array_procesado = map { 
+            my @set_procesado = map { 
                eval( $_ . $operador . $grano ) 
-            } @array_evaluado;
+            } @set_evaluado;
+
             my $reverse = $HASH->{ $item }{ revertir } // 0;
-            @array_procesado = reverse @array_procesado if $reverse;
-            $HASH->{ $item }{ factura } = \@array_procesado;
+
+            @set_procesado = reverse @set_procesado if $reverse;
+            $HASH->{ $item }{ factura } = \@set_procesado;
         }
         # "Perl's range" suport
-        if( ref( $HASH->{ $item } ) eq 'ARRAY'){ 
-            my @array_evaluado = map {
-               eval $_
-            } @{ $HASH->{ $item } };
-            $HASH->{ $item } = \@array_evaluado;
-        }
+	#if( ref( $HASH->{ $item } ) eq 'ARRAY'){ 
+        #    print Dumper( $HASH->{ $item } );
+        #    my @array_evaluado = map {
+        #       eval $_
+        #    } @{ $HASH->{ $item } };
+        #    $HASH->{ $item } = \@array_evaluado;
+        #}
+	# $HASH->{ $item } = evaluar( @{ $HASH->{ $item } } );
+        $HASH->{ $item } = evaluar( $HASH->{ $item } );
     }
     return %{ $HASH };
 }
-# Recursive Evaluation
-my @AoA = [
-    2*13,
-    [33,4,3+5],
-    [3,4,2x13],
-];
-
-#print Dumper (@AoA);
-my @AoAeval = evaluar( \@AoA );
-#my $notAoA = evaluar( '2 + 4' );
-#print Dumper ( $notAoA );
-#print Dumper ( $AoAeval[0][0]);
-# revisar por que agrega un nivel al ARRAY 
 
 sub evaluar{
-    my $ENTRADA = shift;
-    print Dumper ( $ENTRADA);
-    if( ref( $ENTRADA ) eq 'ARRAY'){ 
-        my @RESULTADO = ();
-        for( @{ $ENTRADA } ){
-            my $item;
+    my $ITEM = shift;
+    if( ref( $ITEM ) eq 'ARRAY'){ 
+        print Dumper( $ITEM );
+	    
+        for( @{ $ITEM } ){
             if( ref( $_ ) eq 'ARRAY' ){ 
-                $item = evaluar( $_ );
+                $_ = evaluar( $_ );
             }
-            push @RESULTADO, $item;
-
-	    # else{
-	    #         #$item = eval $_ ;
-	    # }
-
         }
 
-        return \@RESULTADO; 
-    } else {
+        my @array_evaluado = map {
+           eval $_
+        } @{ $_ } ;
 
-        my $RESULTADO = eval $ENTRADA ;
-        return $RESULTADO;
+        $ITEM = \@array_evaluado;
+
+    	return @{ $ITEM }; 
+    }else{
+    	return $ITEM; 
     }
 }
+
 
 # Pasar propiedades ausentes de %Ha a %Hb 
 sub heredar{
     my( $padre, $hijo ) = @_;
-    my $c = 1;
+    #my $c = 1;
     for my $propiedad(
         keys %{ $padre }
     ){
