@@ -14,13 +14,13 @@ defacto:
   ordenador  : indice
   octava     : 0  # 
   tonica     : 60 # C central 
-  transponer : 0 
+  transponer : 1
   intervalos:
     set         : [ 
      -12, 2-12, 4-12, 5-12, 7-12, 9-12, 11-12,
        0, 2,    4,    5,    7,    9,    11,
       12, 2+12, 4+12, 5+12, 7+12, 9+12, 11+12,
-    ] # Diatonica Mayor 
+    ]  
 
   # boces:
   #   set: [
@@ -32,7 +32,7 @@ defacto:
      set         : [ 3, 5, 8 ] 
       #- set     : [ 2, 4, 7 ] # armonizacion 6/4
   duraciones:
-    set         : [ 4.5 ]
+    set         : [ .5*9 ]
   dinamicas:
     set         : [ .8 ] 
     fluctuacion : .1

@@ -345,39 +345,24 @@ sub prosesar_sets{
            ( ref( $HASH->{ $item } ) eq 'HASH' ) &&
            ( exists $HASH->{ $item }{ set } )
         ){
+            my $set_evaluado = evaluar( $HASH->{ $item }{set} ); ;
+
             my $grano = $HASH->{ $item }{ grano } // 1;
             my $operador = $HASH->{ $item }{ operador } // '*';
-            my @array_evaluado = map {
-               eval $_
-            } @{ $HASH->{ $item }{ set } };
-            my @array_procesado = map { 
+            my @set_procesado = map { 
                eval( $_ . $operador . $grano ) 
-            } @array_evaluado;
+            } @{ $set_evaluado };
             my $reverse = $HASH->{ $item }{ revertir } // 0;
-            @array_procesado = reverse @array_procesado if $reverse;
-            $HASH->{ $item }{ factura } = \@array_procesado;
+
+            @set_procesado = reverse @set_procesado if $reverse;
+
+            $HASH->{ $item }{ factura } = \@set_procesado;
         }
-        # "Perl's range" suport
-        if( ref( $HASH->{ $item } ) eq 'ARRAY'){ 
-            my @array_evaluado = map {
-               eval $_
-            } @{ $HASH->{ $item } };
-            $HASH->{ $item } = \@array_evaluado;
-        }
+        $HASH->{ $item } = evaluar( $HASH->{ $item } ); ;
     }
     return %{ $HASH };
 }
 
-## Recursive Evaluation
-#my @AoA = [
-#    2*13,
-#    [33,4,3+5],
-#    [3,4,2x13],
-#];
-#
-#my @AoAeval = evaluar( @AoA );
-#my $pepe = '2+4';
-#my $notAoA = evaluar( '2+3');
 
 # Evaluar recursivamente @AoAs (o SCALARS)
 sub evaluar{
@@ -390,9 +375,15 @@ sub evaluar{
         }
         return $ENTRADA; 
     } 
-    if( ref( \$ENTRADA ) eq 'SCALAR'){ 
+    if( 
+       !ref( $ENTRADA ) && 
+       ( $ENTRADA =~ /^[0-9,.E]+$/ )
+    ){
         my $RESULTADO = eval $ENTRADA ;
         return $RESULTADO;
+    }else{
+        #if( ref( $ENTRADA ) eq 'HASH'){ 
+        return $ENTRADA; 
     }
 }
 
