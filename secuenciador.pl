@@ -170,7 +170,14 @@ for( @CONFIGS ){
 
             my $transponer = 0; 
             $transponer = $motivo{ transponer } if $motivo{ transponer };
-            my @microforma =  @{ $motivo{ microforma } } ;
+	    #my @microforma =  $motivo{ microforma }  ;
+
+	    my @microforma = @{ $motivo{ microforma } } ;
+
+	    my @m =   @{ $motivo{ microform }} ;
+	    my @mm = evaluar( \@m );
+	    print Dumper( @mm ); 
+
             @microforma = reverse @microforma if $motivo{ revertir_microforma };
             my $repetir_motivo =   $motivo{ repetir } // 1;
             my @duraciones = @{ $motivo{ duraciones }{ factura } };
@@ -345,7 +352,8 @@ sub prosesar_sets{
            ( ref( $HASH->{ $item } ) eq 'HASH' ) &&
            ( exists $HASH->{ $item }{ set } )
         ){
-            my $set_evaluado = evaluar( $HASH->{ $item }{set} ); ;
+		#my $set_evaluado = evaluar( @{$HASH->{ $item }{set} ); ;
+            my $set_evaluado = $HASH->{ $item }{set} ; ;
 
             my $grano = $HASH->{ $item }{ grano } // 1;
             my $operador = $HASH->{ $item }{ operador } // '*';
@@ -372,31 +380,45 @@ my @AoA = [
     "A" x 20,
 ];
 my @AoAevaluado = evaluar( @AoA);
-print Dumper ( @AoAevaluado );
+print Dumper ( \@AoAevaluado );
+my @A = [
+    22,
+    23,
+    22+23,
+    ];
+my @Aevaluado = evaluar( @A);
+print Dumper ( \@Aevaluado );
+my $S = "V" x 22;
+my $Sevaluado = evaluar( $S);
+print Dumper ( $Sevaluado );
 
 # Evaluar recursivamente @AoAs (o SCALARS)
 sub evaluar{
     my $ENTRADA = shift;
     if( ref( $ENTRADA ) eq 'ARRAY'){ 
+	my @RESULTADOS = ();    
         for( @{ $ENTRADA } ){
-            if( ref( $_ ) eq 'ARRAY' ){ 
-            	my $item = evaluar( $_ );
-            }
+           my $item = $_ ;
+           $item = evaluar( $item );
+	   push @RESULTADOS, $item;
         }
+	#return @RESULTADOS;
     } 
 
     if( 
        !ref( $ENTRADA ) 
-         && 
-	 ( $ENTRADA =~ /\d/)
+       && 
+       ( $ENTRADA =~ /\d/)
     ){
         my $RESULTADO = eval $ENTRADA ;
-        return $RESULTADO;
+	return $RESULTADO;
     }else{
-        #if( ref( $ENTRADA ) eq 'HASH'){ 
-        return $ENTRADA; 
+    	return $ENTRADA; 
     }
 }
+
+
+
 
 # Pasar propiedades ausentes de %Ha a %Hb 
 sub heredar{
