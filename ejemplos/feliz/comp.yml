@@ -44,7 +44,7 @@ ESTRUCTURAS:
       a:
         microforma : [ 22+5,22, ]
       a^:
-        microforma : [ 5 ]
+        microforma : [ 3,5 ]
       a^^:
         microforma : [ 8 ]
       a^^^:

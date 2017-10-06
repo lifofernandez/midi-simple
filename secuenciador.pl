@@ -362,7 +362,17 @@ sub prosesar_sets{
     }
     return %{ $HASH };
 }
-
+my @AoA = [
+    22,
+    [12,22+33],
+    [1+2,13],
+    'perro',
+    2 x 5,
+    2/3,
+    "A" x 20,
+];
+my @AoAevaluado = evaluar( @AoA);
+print Dumper ( @AoAevaluado );
 
 # Evaluar recursivamente @AoAs (o SCALARS)
 sub evaluar{
@@ -373,12 +383,12 @@ sub evaluar{
             	my $item = evaluar( $_ );
             }
         }
-        return $ENTRADA; 
     } 
 
     if( 
-       !ref( $ENTRADA ) && 
-       ( $ENTRADA =~ /\d/)
+       !ref( $ENTRADA ) 
+         && 
+	 ( $ENTRADA =~ /\d/)
     ){
         my $RESULTADO = eval $ENTRADA ;
         return $RESULTADO;
