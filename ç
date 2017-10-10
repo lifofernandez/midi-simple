@@ -90,7 +90,6 @@ my @tracks;
 for( @CONFIGS ){
     my $config_file = LoadFile( $_ );
     my %constantes = %{ $config_file->{ constantes } };
-    #%constantes = procesar_sets( \%constantes );
     my $metro = $constantes{ metro } // '4/4';
     my (
         $numerador,
@@ -108,13 +107,16 @@ for( @CONFIGS ){
     # Propiedades generales que heredan todos los motivos
     # y que pueden ser sobreescritas en c/u.
     my %defacto  = %{ $config_file->{ defacto } };
-
     my $canal = $defacto{ canal };
     say "CANAL: ".$canal if $verbose;
     my $programa = $defacto{ programa };
     say "PROGRAMA: ".$programa if $verbose;
 
-    my @macroforma = @{ $constantes{ macroforma } } ;
+    my @macroforma = @{$constantes{ macroforma }} ;
+    my @mm= map { 
+       eval ($_)    
+    } @macroforma;
+    print Dumper (@mm);
 
     @macroforma = reverse @macroforma if $constantes{ revertir };
 
@@ -352,69 +354,53 @@ sub procesar_sets{
     my $HASH = shift;
     for my $item( keys %{ $HASH } ){
         if(
-           ( ref( $HASH->{ $item } ) eq 'HASH' ) 
+           ( ref( $HASH->{ $item } ) eq 'HASH' ) &&
+           ( exists $HASH->{ $item }{ set } )
         ){
-            if(
-               ( exists $HASH->{ $item }{ set } )
-            ){
-	        my $set = $HASH->{ $item }{set} ; ;
+            my @set_evaluado = evaluar( @{$HASH->{ $item }{set}} ); ;
+	    # my $set_evaluado = $HASH->{ $item }{set} ; ;
 
-                my $grano = $HASH->{ $item }{ grano } // 1;
-                my $operador = $HASH->{ $item }{ operador } // '*';
-                my @set_procesado = map { 
-                   eval( $_ . $operador . $grano ) 
-                } @{ $set } ;
-                my $reverse = $HASH->{ $item }{ revertir } // 0;
+            my $grano = $HASH->{ $item }{ grano } // 1;
+            my $operador = $HASH->{ $item }{ operador } // '*';
+            my @set_procesado = map { 
+               eval( $_ . $operador . $grano ) 
+            } @set_evaluado ;
+            my $reverse = $HASH->{ $item }{ revertir } // 0;
 
-                @set_procesado = reverse @set_procesado if $reverse;
+            @set_procesado = reverse @set_procesado if $reverse;
 
-                $HASH->{ $item }{ factura } = \@set_procesado;
-            }
-            if(
-               ( ref( $HASH->{ $item } ) eq 'ARRAY' ) 
-            ){
-	        my @set = @{ $HASH->{ $item }} ;
-                my @set_procesado = map { 
-                   eval( $_  ) 
-                } @set  ;
-                $HASH->{ $item } = \@set_procesado;
-            }
+            $HASH->{ $item }{ factura } = \@set_procesado;
         }
-   
+
         $HASH->{ $item } = evaluar( $HASH->{ $item } ); ;
     }
     return %{ $HASH };
 }
-#my @AoA = [
-#    22,
-#    [12,22+33],
-#    [1+2,13],
-#    'perro',
-#    2 x 5,
-#    2/3,
-#    "A" x 20,
-#];
-#my @AoAevaluado = evaluar( @AoA);
-#print Dumper ( @AoAevaluado );
-#my @A = [
-#    22,
-#    23,
-#    22+23,
-#    ];
-#my @Aevaluado = evaluar( @A);
-#print Dumper ( @Aevaluado );
-#my $S = "V" x 22;
-#my $Sevaluado = evaluar( $S);
-#print Dumper ( $Sevaluado );
-#
-## Evaluar recursivamente 
+my @AoA = [
+    22,
+    [12,22+33],
+    [1+2,13],
+    'perro',
+    2 x 5,
+    2/3,
+    "A" x 20,
+];
+my @AoAevaluado = evaluar( @AoA);
+print Dumper ( @AoAevaluado );
+my @A = [
+    22,
+    23,
+    22+23,
+    ];
+my @Aevaluado = evaluar( @A);
+print Dumper ( @Aevaluado );
+my $S = "V" x 22;
+my $Sevaluado = evaluar( $S);
+print Dumper ( $Sevaluado );
+
+# Evaluar recursivamente 
 sub evaluar{
-   my $ENTRADA = shift;
-   if( ref($ENTRADA) eq 'ARRAY'){
-       foreach( @{ $ENTRADA } ){ 
-           evaluar($_);
-       }
-   }
+    my $ENTRADA = shift;
    return $ENTRADA; 
 }
 
@@ -596,7 +582,6 @@ necesarias para obtener una progresion musical.
 
 =head1 TODO
 
- agregar eval a defacto y constantes
  Agregar soporte para cambio de:  metro, chanel y programa entre MOTIVOS
  Revisar ordenador 'intervalos' y  propiedad altura de los componentes
  Control de superposicion o separacion entre Estructuras, Motivos y Componentes.

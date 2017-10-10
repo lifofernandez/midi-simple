@@ -2,9 +2,9 @@
 # Cofiguraciones generales del Track
 constantes:
   nombre       : FelizCumple, acompañamiento
-  metro        : 9/8 # 1 compas = 9 * .5 = 4.5
-  macroforma   : [ A ]
-  repeticiones : 1
+  metro        : 9/8 # 1 compas = .5 * 9 = 4.5
+  macroforma   : [ A, A ]
+  repetir : 1
 
 ########################################
 # Cofiguracion de los motivos por defecto
@@ -14,7 +14,7 @@ defacto:
   ordenador  : indice
   octava     : 0  # 
   tonica     : 30 # C central 
-  transponer : 1+2
+  transponer : 1
   intervalos:
     set         : [ 
      -12, 2-12, 4-12, 5-12, 7-12, 9-12, 11-12,
@@ -39,19 +39,18 @@ defacto:
 
 ESTRUCTURAS:
   A:
-          #forma: [ a, b, a, b^, a^, a^^, a^^^, b^ ]
-    forma: [ a, ]
+    forma: [ a, b, a, b^, a^, a^^, a^^^, b^ ]
+          #forma: [ a, ]
     MOTIVOS:
       a:
-        microforma : [ 22, 23, 22 ]
-        microform : [ 22+33, 22+3, 22 ]
-        #      a^:
-        #        microforma : [ 3,5 ]
-        #      a^^:
-        #        microforma : [ 8 ]
-        #      a^^^:
-        #        microforma : [ 11 ]
-        #      b:
-        #        microforma : [ 8 ]
-        #      b^:
-        #        microforma : [ 9 ]
+        microforma : [ (1)x4 , (5)x3,2 ]
+      a^:
+        microforma : [ 3,5 ]
+      a^^:
+        microforma : [ 8 ]
+      a^^^:
+        microforma : [ 11 ]
+      b:
+        microforma : [ 8 ]
+      b^:
+        microforma : [ 9 ]
