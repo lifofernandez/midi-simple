@@ -258,6 +258,7 @@ for( @CONFIGS ){
     # TESTS
     # print Dumper %{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ dinamicas} };
     # print Dumper @{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ voces }{factura } };
+    # print Dumper (@{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ boces } });
     # print Dumper %{ $ESTRUCTURAS{ A }{ MOTIVOS }{ "a^" } };
     # print Dumper @{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ microforma } };
     # print Dumper @{ $ESTRUCTURAS{ A }{ forma } };
@@ -357,8 +358,9 @@ sub procesar_sets{
             if(
                ( exists $HASH->{ $item }{ set } )
             ){
-	        my $set = $HASH->{ $item }{set} ; ;
+	        my $set = $HASH->{ $item }{ set } ; ;
 
+		#my @sett = evaluar(@{$set}); ;
                 my $grano = $HASH->{ $item }{ grano } // 1;
                 my $operador = $HASH->{ $item }{ operador } // '*';
                 my @set_procesado = map { 
@@ -370,15 +372,12 @@ sub procesar_sets{
 
                 $HASH->{ $item }{ factura } = \@set_procesado;
             }
-            if(
-               ( ref( $HASH->{ $item } ) eq 'ARRAY' ) 
-            ){
-	        my @set = @{ $HASH->{ $item }} ;
-                my @set_procesado = map { 
-                   eval( $_  ) 
-                } @set  ;
-                $HASH->{ $item } = \@set_procesado;
-            }
+        }
+        if(
+           ( ref( $HASH->{ $item } ) eq 'ARRAY' ) 
+        ){
+            say 'ARRAY ADENTRO DEL HASH';
+            print Dumper ($HASH->{ $item}); 
         }
    
         $HASH->{ $item } = evaluar( $HASH->{ $item } ); ;
@@ -406,14 +405,14 @@ sub procesar_sets{
 #my $S = "V" x 22;
 #my $Sevaluado = evaluar( $S);
 #print Dumper ( $Sevaluado );
-#
-## Evaluar recursivamente 
+
+# Evaluar recursivamente 
 sub evaluar{
    my $ENTRADA = shift;
    if( ref($ENTRADA) eq 'ARRAY'){
-       foreach( @{ $ENTRADA } ){ 
+	   # foreach( @{ $ENTRADA } ){ 
            evaluar($_);
-       }
+	   #}
    }
    return $ENTRADA; 
 }
