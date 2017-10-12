@@ -167,6 +167,7 @@ for( @CONFIGS ){
             ########################################
             # Procesar motivos armar componetes
             # combinado parametros ( altura, duracion, dinamicas, etc )
+
             my @alturas = map {
                   $_ +
                   $motivo{ tonica } +
@@ -188,6 +189,8 @@ for( @CONFIGS ){
             my $indice = 0;
             my @COMPONENTES = ();
 
+
+
 	    if( $verbose ){ 
                 print "   ALTURAS: " . 
                      "@alturas\n" .
@@ -199,8 +202,17 @@ for( @CONFIGS ){
                 say "   COMPONENTES";
 	     }
 
+	    # Polifonia
+            my @ACORDES = ();
+            for( @{ $motivo{ acordes } } ){
+                my @acorde_eval = map { 
+                   eval( $_ ) 
+                } @{ $_ };
+		push @ACORDES, \@acorde_eval;
+	    }
+
             for( ( @microforma ) x $repetir_motivo ){
-               # posicion en set de intervalos
+               # indice/puntero en set de intervalos
                my $cabezal = $_ - 1; 
                # reservar un elemento ( 0 ) para representar  silencio.
                # esto es solo para poder ordenar por altura, 
@@ -258,7 +270,7 @@ for( @CONFIGS ){
     # TESTS
     # print Dumper %{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ dinamicas} };
     # print Dumper @{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ voces }{factura } };
-    # print Dumper (@{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ boces } });
+    # print Dumper (@{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ acordes } });
     # print Dumper %{ $ESTRUCTURAS{ A }{ MOTIVOS }{ "a^" } };
     # print Dumper @{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ microforma } };
     # print Dumper @{ $ESTRUCTURAS{ A }{ forma } };
@@ -358,7 +370,7 @@ sub procesar_sets{
             if(
                ( exists $HASH->{ $item }{ set } )
             ){
-	        my $set = $HASH->{ $item }{ set } ; ;
+	        my $set = $HASH->{ $item }{ set };
 
 		#my @sett = evaluar(@{$set}); ;
                 my $grano = $HASH->{ $item }{ grano } // 1;
@@ -373,49 +385,22 @@ sub procesar_sets{
                 $HASH->{ $item }{ factura } = \@set_procesado;
             }
         }
-        if(
-           ( ref( $HASH->{ $item } ) eq 'ARRAY' ) 
-        ){
-            say 'ARRAY ADENTRO DEL HASH';
-            print Dumper ($HASH->{ $item}); 
-        }
-   
-        $HASH->{ $item } = evaluar( $HASH->{ $item } ); ;
+	# $HASH->{ $item } = evaluar( $HASH->{ $item } ); 
     }
     return %{ $HASH };
 }
-#my @AoA = [
-#    22,
-#    [12,22+33],
-#    [1+2,13],
-#    'perro',
-#    2 x 5,
-#    2/3,
-#    "A" x 20,
-#];
-#my @AoAevaluado = evaluar( @AoA);
-#print Dumper ( @AoAevaluado );
-#my @A = [
-#    22,
-#    23,
-#    22+23,
-#    ];
-#my @Aevaluado = evaluar( @A);
-#print Dumper ( @Aevaluado );
-#my $S = "V" x 22;
-#my $Sevaluado = evaluar( $S);
-#print Dumper ( $Sevaluado );
+
 
 # Evaluar recursivamente 
-sub evaluar{
-   my $ENTRADA = shift;
-   if( ref($ENTRADA) eq 'ARRAY'){
-	   # foreach( @{ $ENTRADA } ){ 
-           evaluar($_);
-	   #}
-   }
-   return $ENTRADA; 
-}
+#sub evaluar{
+#   my $ENTRADA = shift;
+#   if( ref($ENTRADA) eq 'ARRAY'){
+#	   # foreach( @{ $ENTRADA } ){ 
+#           evaluar($_);
+#	   #}
+#   }
+#   return $ENTRADA; 
+#}
 
 
 
