@@ -174,8 +174,8 @@ for( @CONFIGS ){
                   ( 12 * $motivo{ octava } )
             } @{ $motivo{ intervalos }{ factura } };
 
-            my $transponer = 0; 
-            $transponer = $motivo{ transponer } if $motivo{ transponer };
+            my $transportar = 0; 
+            $transportar = $motivo{ transportar } if $motivo{ transportar };
 
 
             my @microforma = map { 
@@ -186,6 +186,7 @@ for( @CONFIGS ){
             my $repetir_motivo =   $motivo{ repetir } // 1;
             my @duraciones = @{ $motivo{ duraciones }{ factura } };
             my @dinamicas  = @{ $motivo{ dinamicas }{ factura } };
+            my $fluctuacion = $motivo{ dinamicas }{ fluctuacion };
             my $indice = 0;
             my @COMPONENTES = ();
 
@@ -198,18 +199,23 @@ for( @CONFIGS ){
                      "@microforma\n" .
                      "   ORDENADOR: " . $motivo{ ordenador }. "\n" ;
                 print "   REVERTIR: " . $motivo{ revertir } . "\n" if $motivo{ revertir };
-                print "   TRASPONER: " . $transponer . "\n" if $transponer;
+                print "   TRASPONER: " . $transportar . "\n" if $transportar;
                 say "   COMPONENTES";
 	     }
 
 	    # Polifonia
-            my @ACORDES = ();
-            for( @{ $motivo{ acordes } } ){
-                my @acorde_eval = map { 
-                   eval( $_ ) 
-                } @{ $_ };
-		push @ACORDES, \@acorde_eval;
+            my @BLOQUES = ();
+	    if( !exists( $motivo{ bloques } ) ){
+                 @BLOQUES = [[0]]; 
+            }else{
+                for( @{ $motivo{ bloques } } ){
+                    my @bloque_eval = map { 
+                       eval( $_ ) 
+                    } @{ $_ };
+	            push @BLOQUES, \@bloque_eval;
+	        }
 	    }
+
 
             for( ( @microforma ) x $repetir_motivo ){
                # indice/puntero en set de intervalos
@@ -218,26 +224,29 @@ for( @CONFIGS ){
                # esto es solo para poder ordenar por altura, 
                my $altura = @alturas[ ( $cabezal ) % scalar @alturas ];
                my $nota_st = '';
+
+               my @bloque = @{ $BLOQUES[ $indice % scalar @BLOQUES ] };
                my @VOCES = ();
-               for( @{ $motivo{ voces }{ factura } } ){
-                    if ( $_ ne 0 ){
-                        # posicion en en set de intervalos para esta voz 
-                        my $cabezal_voz = ( $cabezal + $_ + $transponer ) - 1;
+               for( @bloque ){
+                        # Posicion en en set de intervalos para esta voz 
+			my $voz_add = $_ - 1;
+                        my $cabezal_voz = ( $cabezal + $voz_add + $transportar ) ;
                         my $voz = @alturas[ $cabezal_voz % scalar @alturas ];
                         push @VOCES, $voz;
                         $nota_st  = $nota_st . $voz  . " ";
-                    }
                }
+
                my $voces_st =  "ALTURAS: " . $nota_st;
                my $duracion  = @duraciones[ $indice % scalar @duraciones ];
                my $dinamica  = @dinamicas[ $indice % scalar @dinamicas ];
-               # Redundante, ya que dinamica 0 = silencio...
-               if ( $_ eq 0 ){
-                   $altura = 0;
-                   $dinamica = 0;
-                   splice( @VOCES );
-                   $voces_st = "SILENCIO";
-               }
+	      
+	       ## Redundante, ya que dinamica 0 = silencio...
+               #if ( $_ eq 0 ){
+               #    $altura = 0;
+               #    $dinamica = 0;
+               #    splice( @VOCES );
+               #    $voces_st = "SILENCIO";
+               #}
                my $componente = {
                   indice   => $indice,
                   altura   => $altura,
@@ -251,7 +260,7 @@ for( @CONFIGS ){
                print "    " .
                     "INDICE: " . $indice . " " .
                     "\tCABEZAL: " . ( $cabezal + 1) . " " .
-                    "\tDINAMICA: " . int( $dinamica * 127 ) .
+                    "\tDINAMICA: " . int( $dinamica * 127 ) . ' +/- '. $fluctuacion.
                     "\t" . $voces_st .
                     "\tDURACION: " . $duracion . "qn" .
                     "\n"; 
@@ -270,7 +279,7 @@ for( @CONFIGS ){
     # TESTS
     # print Dumper %{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ dinamicas} };
     # print Dumper @{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ voces }{factura } };
-    # print Dumper (@{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ acordes } });
+    # print Dumper (@{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ bloques } });
     # print Dumper %{ $ESTRUCTURAS{ A }{ MOTIVOS }{ "a^" } };
     # print Dumper @{ $ESTRUCTURAS{ A }{ MOTIVOS }{ a }{ microforma } };
     # print Dumper @{ $ESTRUCTURAS{ A }{ forma } };
