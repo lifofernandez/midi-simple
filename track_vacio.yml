@@ -1,31 +1,44 @@
 ########################################
 # Cofiguraciones generales del Track
 constantes:
-  nombre     : Vacio
-  macroforma : [A]
-  repeticiones: 1
+  nombre       : Track Basico 
+  metro        : 4/4 # 9/8 # 1 compas = .5 * 9 = 4.5
+  macroforma   : [ A ]
+  repetir : 1
 
 ########################################
 # Cofiguracion de los motivos por defecto
 defacto:
-  canal      : 1 
-  programa   : 1
-  ordenador  : indice 
-  alturas:
-    set         : [0,2,4,5,7,9,11,12] # Diatonica Mayor 
-    octava      : 0  # central 
-    tonica      : 60 # C
-  voces:
-    set         : [ 0 ] 
+  canal       : 1
+  programa    : 1
+  ordenador   : indice
+  octava      : 0  # 
+  tonica      : 60 # C central 
+  transportar : 0
   duraciones:
-    set         : [ 1 ] 
+    set       : [ 1*4 ]
   dinamicas:
-    set         : [1] 
-    fluctuacion : .2  
-
+    set       : [ .8 ]
+    fluctuacion : .1
+  intervalos:
+    set : [ 
+      -12, 2-12, 4-12, 5-12, 7-12, 9-12, 11-12,
+        0, 2,    4,    5,    7,    9,    11,
+       12, 2+12, 4+12, 5+12, 7+12, 9+12, 11+12,
+     ]  
+   # Bloque: superpoisicion de punteros   
+  bloques: [
+     [ 1, 3,  5 ],
+     [ 5, 8, 10 ], #6/4
+  ]
+  
 ESTRUCTURAS:
   A:
-    forma: [a]
+    forma: [ a, b, a, b^ ]
     MOTIVOS:
       a:
-        microforma : [1] 
+        microforma : [ 1 ]
+      b:
+        microforma : [ 8 ]
+      b^:
+        microforma : [ 9 ]

@@ -1,0 +1,57 @@
+########################################
+# Cofiguraciones generales del Track
+constantes:
+  nombre       : Track Basico 
+  metro        : 4/4 # 9/8 # 1 compas = .5 * 9 = 4.5
+  macroforma   : [ A ]
+  repetir : 16 
+
+########################################
+# Cofiguracion de los motivos por defecto
+defacto:
+  canal       : 9 # bateria canal 10
+  programa    : 1
+  ordenador   : indice
+  octava      : 0   
+  tonica      : 35 # los sonidos de bateria arrancan en la tecla 35 
+  transportar : 0
+  duraciones:
+    set       : [ .5 ]
+  dinamicas:
+    set       : [ .8 ]
+    fluctuacion : .1
+  intervalos:
+    set : [ 0..50 ]  
+   # Bloque: superpoisicion de punteros   
+  bloques: [
+     [ 1, 10 ], # kick / hi-hat
+     [ 10 ],    # hi-hat
+     [ 4, 10 ], # snare / hi-hat 
+     [ 10 ],    # hi-hat
+  ]
+  
+ESTRUCTURAS:
+  A:
+    forma: [ a, a, a, a^ ]
+    MOTIVOS:
+      a:
+        microforma : [ 1,1,1,1, 1,1,1,1 ]
+      a^:
+        microforma : [ 1,1,1,1, 1,1,1,1, 1 ]
+        bloques: [
+           [ 1, 15 ], # kick / hi-hat
+           [ 10 ],    # hi-hat
+
+           [ 4, 10 ], # snare / hi-hat 
+           [ 10 ],    # hi-hat
+
+           [ 1, 10 ], # kick / hi-hat
+           [ 4 ],     # snare 
+           [ 1, 10 ], # kick / hi-hat
+
+           [ 4, 10 ], # snare / hi-hat 
+           [ 10 ],    # hi-hat
+        ]
+        duraciones:
+          set       : [ .5,.5, .5,.5, .25,.25,.5, .5,.5 ]
+
