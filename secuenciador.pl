@@ -260,7 +260,7 @@ for( @CONFIGS ){
                print "    " .
                     "INDICE: " . $indice . " " .
                     "\tCABEZAL: " . ( $cabezal + 1) . " " .
-                    "\tDINAMICA: " . int( $dinamica * 127 ) . ' +/- '. $fluctuacion.
+                    "\tDINAMICA: " . int( $dinamica * 127 ) . ' +/- '.int( $fluctuacion* 127 ) .
                     "\t" . $voces_st .
                     "\tDURACION: " . $duracion . "qn" .
                     "\n"; 
