@@ -10,7 +10,7 @@ constantes:
 # Cofiguracion de los motivos por defecto
 defacto:
   canal       : 9 # bateria canal 10
-  programa    : 5
+  programa    : 1
   ordenador   : indice
   octava      : 0   
   tonica      : 35 # DRUM 
@@ -44,7 +44,7 @@ ESTRUCTURAS:
     forma: [ a, b, c, b ]
     MOTIVOS:
       c:
-        microforma : [ 1,1,1 ]
+        microforma : [ (1)x3 ]
         bloques: [
            [ 1, 10 ], # kick / hi-hat
            [ 4 ],     # snare 
