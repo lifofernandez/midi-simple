@@ -206,7 +206,9 @@ for( @CONFIGS ){
 	    # Polifonia
             my @BLOQUES = ();
 	    if( !exists( $motivo{ bloques } ) ){
-                 @BLOQUES = [[0]]; 
+		 say ('eop');
+	            my @b = (1);
+	         push @BLOQUES, \@b;
             }else{
                 for( @{ $motivo{ bloques } } ){
                     my @bloque_eval = map { 
@@ -241,12 +243,12 @@ for( @CONFIGS ){
                my $dinamica  = @dinamicas[ $indice % scalar @dinamicas ];
 	      
 	       ## Redundante, ya que dinamica 0 = silencio...
-               #if ( $_ eq 0 ){
-               #    $altura = 0;
-               #    $dinamica = 0;
-               #    splice( @VOCES );
-               #    $voces_st = "SILENCIO";
-               #}
+               if ( $_ eq 0 ){
+                   $altura = 0;
+                   $dinamica = 0;
+                   splice( @VOCES );
+                   $voces_st = "SILENCIO";
+               }
                my $componente = {
                   indice   => $indice,
                   altura   => $altura,
@@ -260,7 +262,7 @@ for( @CONFIGS ){
                print "    " .
                     "INDICE: " . $indice . " " .
                     "\tCABEZAL: " . ( $cabezal + 1) . " " .
-                    "\tDINAMICA: " . int( $dinamica * 127 ) . ' +/- '.int( $fluctuacion* 127 ) .
+                    "\tDINAMICA: " . int( $dinamica * 127 ) . ' +/- '.int( $fluctuacion * 127 ) .
                     "\t" . $voces_st .
                     "\tDURACION: " . $duracion . "qn" .
                     "\n"; 
@@ -309,7 +311,7 @@ for( @CONFIGS ){
              my $orden = $M{ ordenador } // 'indice';
              my $retraso =  int( $tic * ( $M{ duraciones }{ retraso } // 0 ) );
              my $recorte =  int( $tic * ( $M{ duraciones }{ recorte } // 0 ) );
-             my $fluctuacion = $M{ dinamicas }{ fluctuacion };
+             my $fluctuacion ? $M{ dinamicas }{ fluctuacion } : 0;
 
              my $revertir = $M{ revertir};
              for my $componenteID ( 

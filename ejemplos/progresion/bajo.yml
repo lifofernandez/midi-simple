@@ -12,25 +12,20 @@ defacto:
   programa   : 33
   ordenador  : indice # ordenador de componentes (notas) 
   # puede ser reordenadas x altura, dinamica o duracion
-  octava      : 0
+  octava      : -1
   tonica      : 60
 
   intervalos:
     set         : [0,2,3,5,7,9,10,12] # dorico 
     # set         : [0,3,5,7,10] # penta
     reverse     : false 
-  voces: 
-    set         : [ 1 ] # una voz sola ;)
-    # set       : [ 0,2,5 ] # triada :)
-    # relacion    : paralela # todavia no implementado
-    # x ahora las voces recorren el set de alturas en dif casillero
   duraciones:
     set         : [1] 
     reverse     : false 
     retraso     : 0
     recorte     : .25 
   dinamicas:
-    set         : [1..9] 
+    set         : [ 8 ] 
     # TODO: agregar operaciones matematicas mas complejas
     # TODO: considerar poder cambiar orden op2 ** op1 
     operador    : '*' # se banca otros math op, 

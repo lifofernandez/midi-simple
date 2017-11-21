@@ -1,54 +1,60 @@
 ########################################
-# Cofiguraciones generales del Track
+# General Track Configs
 constantes:
   nombre     : Piano
   macroforma : [A,B,B]
   repeticiones: 1
 
 ########################################
-# Cofiguracion de los motivos por defecto
+# Configuracion por defecto de los motivos
 defacto:
   canal      : 1 
   programa   : 1
-  ordenador  : indice 
-  octava     : 2 
-  tonica     : 60
-  transponer  : 1
+  ordenador  : indice # ordenador de componentes (notas) 
+  # puede ser reordenadas x altura, dinamica o duracion
+  octava      : 0
+  tonica      : 60
 
   intervalos:
-    #set         : [0,2,3,5,7,9,10] # dorico
-    set         : [0,2,3,5,-5,-3,-2] # dorico 5 6M 7m abajo
-    #set         : [0,3,5,7,10] # penta
-  voces:
-    # relacion entre casilleros del set de alturas
-    set         : [ -3,-1,0,2,4 ] 
+    set         : [0,2,3,5,7,9,10,12] # dorico 
+    reverse     : false 
+  # relacion entre casilleros del set de alturas
+  bloques: [
+     [ -3,-1,0,2,4 ] 
+  ]
+  # relacion    : paralela # todavia no implementado
+  # x ahora las voces recorren el set de alturas en dif casillero
   duraciones:
-    set         : [ 1 ] 
-    retraso     : .5
-    recorte     : 0 
+    set         : [1] 
+    reverse     : false 
+    retraso     : 0
+    recorte     : .25 
   dinamicas:
-    set         : [1..9] 
-    operador    : '*' 
-    grano       : .1 
+    set         : [ 8 ] 
+    # TODO: agregar operaciones matematicas mas complejas
+    # TODO: considerar poder cambiar orden op2 ** op1 
+    operador    : '*' # se banca otros math op, 
+    grano       : .1  # se puede usar para cualquier set
     reverse     : true
-    fluctuacion : .3  
+    fluctuacion : .3  # humanizacion, opcional y cuestionable 
 
 ########################################
-# hash de ESTRUCTURAS > motivos
+# ESTRUCTURAS > motivos
 ESTRUCTURAS:
   A:
     forma: [a,b,b,a^,a^^]
+    # TODO: control de  gap/overlap motivos
     MOTIVOS:
       a:
-        microforma : [1,3,(5)x3,(0)x3,4,0,5,2,6] 
+        # microforma = progresion de alturas 
+        # elemento fundamental de un motivo
+        microforma : [1,3,(5)x3,(0)x3,4,0,5,2,6] # 0 = silencio
       a^:
         ordenador: altura
         dinamicas:
           set      : [.5,.4] 
       a^^:
         ordenador: indice
-        dinamicas:
-          set      : [.5,.4] 
       b:
         microforma : [1,3,5,7,8]
       c:
@@ -60,7 +66,7 @@ ESTRUCTURAS:
         microforma : [1,3,3,3,5]
         ordenador: dinamica
         dinamicas:
-          set      : [ 1..5 ] 
+          set      : [1..5] 
           grano    : .2 
       d:
         microforma : [1,3,1,5,2,6]
