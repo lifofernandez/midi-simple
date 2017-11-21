@@ -3,7 +3,7 @@
 constantes:
   nombre     : Feliz 
   metro        : 9/8 # 1 compas = 9 * .5 = 4.5
-  macroforma   : [ A ]
+  macroforma   : [ A, A^ ]
   repeticiones : 1
 
 ########################################
@@ -24,6 +24,9 @@ defacto:
       24, 2+24, 4+24, 5+24, 7+24, 9+24, 11+24 
     ] 
     reverse     : false 
+  bloques : [ 
+     [ 3, 5, 8 ],
+  ]
   duraciones:
     set         : [ 1, .5, 1.5, 1.5 ]
   dinamicas:
@@ -49,3 +52,18 @@ ESTRUCTURAS:
         microforma : [ 9, 8 ]
         duraciones:
           set      : [ 1.5, 3 ]
+  A^:
+    revertir: true
+    MOTIVOS:
+      a:
+        revertir: true
+      a^:
+        revertir: true
+      a^^:
+        revertir: true
+      a^^^:
+        revertir: true
+      b:
+        revertir: true
+      b^:
+        revertir: true
