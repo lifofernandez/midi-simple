@@ -3,7 +3,7 @@
 constantes:
   nombre       : Track Basico 
   metro        : 4/8 
-  macroforma   : [ ("A")x2,("A^")x4 ] #esta es la manera de repetir "movimientos": ("IDENTIFICADOR")xCANTIDAD
+  macroforma   : [ A, A^ ]
   repetir : 16 
 
 ########################################

@@ -114,7 +114,9 @@ for( @CONFIGS ){
     my $programa = $defacto{ programa };
     say "PROGRAMA: ".$programa if $verbose;
 
-    my @macroforma = @{ $constantes{ macroforma } } ;
+    my @macroforma = map { 
+       eval( $_ ) 
+    } @{ $constantes{ macroforma } };
 
     @macroforma = reverse @macroforma if $constantes{ revertir };
 
@@ -186,7 +188,8 @@ for( @CONFIGS ){
             my $repetir_motivo =   $motivo{ repetir } // 1;
             my @duraciones = @{ $motivo{ duraciones }{ factura } };
             my @dinamicas  = @{ $motivo{ dinamicas }{ factura } };
-            my $fluctuacion = $motivo{ dinamicas }{ fluctuacion };
+	    my $fluctuacion = $motivo{ dinamicas }{ fluctuacion };
+	    #my $fluctuacion ? $motivo{ dinamicas }{ fluctuacion } : 0;
             my $indice = 0;
             my @COMPONENTES = ();
 
@@ -206,8 +209,8 @@ for( @CONFIGS ){
 	    # Polifonia
             my @BLOQUES = ();
 	    if( !exists( $motivo{ bloques } ) ){
-		 say ('eop');
-	            my @b = (1);
+		 # say ('Genero bloque dummy');
+	         my @b = (1);
 	         push @BLOQUES, \@b;
             }else{
                 for( @{ $motivo{ bloques } } ){
@@ -259,6 +262,12 @@ for( @CONFIGS ){
                push @COMPONENTES, $componente;
                $indice++;
 	       if( $verbose ){ 
+		       #
+	       # revisar esto
+	       if( !$fluctuacion ){
+	           $fluctuacion = 0;
+	       }
+
                print "    " .
                     "INDICE: " . $indice . " " .
                     "\tCABEZAL: " . ( $cabezal + 1) . " " .
@@ -266,7 +275,7 @@ for( @CONFIGS ){
                     "\t" . $voces_st .
                     "\tDURACION: " . $duracion . "qn" .
                     "\n"; 
-              }
+               }
             }
             # Paso AoH a HoH
             my %temp_comps; 
@@ -311,7 +320,8 @@ for( @CONFIGS ){
              my $orden = $M{ ordenador } // 'indice';
              my $retraso =  int( $tic * ( $M{ duraciones }{ retraso } // 0 ) );
              my $recorte =  int( $tic * ( $M{ duraciones }{ recorte } // 0 ) );
-             my $fluctuacion ? $M{ dinamicas }{ fluctuacion } : 0;
+	     my $fluctuacion = $M{ dinamicas }{ fluctuacion };
+	     #my $fluctuacion ? $M{ dinamicas }{ fluctuacion } : 0;
 
              my $revertir = $M{ revertir};
              for my $componenteID ( 
